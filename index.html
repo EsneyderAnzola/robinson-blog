@@ -3,140 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Robinson Zapata - Data Strategist</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap" rel="stylesheet">
+  <title>Esneyder's Critical Thinking Blog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      background: linear-gradient(to right, #f4f4f4, #e8ecf1);
-      color: #333;
-      line-height: 1.6;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f9fa;
     }
-
     header {
-      background-color: #0d1b2a;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
       color: white;
-      padding: 2rem;
+      padding: 2rem 1rem;
       text-align: center;
     }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    section {
-      max-width: 1000px;
-      margin: auto;
+    .blog-post {
+      background: white;
+      border-radius: 12px;
       padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-
-    .intro {
-      font-size: 1.2rem;
-    }
-
-    .story {
-      margin-top: 2rem;
-      border-left: 4px solid #0077b6;
-      padding-left: 1rem;
-    }
-
-    .services {
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 1.5rem;
-      margin-top: 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .service-card {
-      margin-bottom: 1rem;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .service-card:hover {
-      background-color: #edf6f9;
-      transform: scale(1.02);
-    }
-
-    .image-section {
-      text-align: center;
-      margin: 2rem 0;
-    }
-
-    .image-section img {
-      max-width: 90%;
-      border-radius: 10px;
-    }
-
     footer {
-      background-color: #0d1b2a;
-      color: #fff;
+      background: #1f1c2c;
+      color: white;
       text-align: center;
       padding: 1rem;
-      margin-top: 2rem;
     }
-
-    @media (max-width: 768px) {
-      header h1 {
-        font-size: 1.8rem;
-      }
-
-      section {
-        padding: 1rem;
-      }
+    .btn-service {
+      background: #343a40;
+      color: white;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Robinson Zapata</h1>
-    <p>Data Strategist | Dashboard Architect | Business Intelligence Expert</p>
-  </header>
 
-  <section class="intro">
-    <p>Hello, I'm Robinson. My journey in analytics began not just with numbers, but with a deep desire to understand what drives people, markets, and decisions. Through my 6+ years of experience, I’ve turned scattered datasets into strategic blueprints that fuel business growth.</p>
+<header>
+  <h1>Esneyder's Blog</h1>
+  <p>Critical Thinking • Media Literacy • Literature Analysis</p>
+</header>
+
+<main class="container py-5">
+  <!-- Entrada 1 -->
+  <div class="blog-post">
+    <h2>Family and Culture Through Language</h2>
+    <p><strong>Category:</strong> Personal Reflection</p>
+    <p>This post explores how discussing family traditions has improved my vocabulary and strengthened my understanding of cultural values through English practice.</p>
+  </div>
+
+  <!-- Entrada 2 -->
+  <div class="blog-post">
+    <h2>Analyzing Media Bias</h2>
+    <p><strong>Category:</strong> Media Literacy</p>
+    <p>This entry presents a critical view of how different news outlets portray the same event, highlighting the importance of cross-checking sources and critical thinking in the digital age.</p>
+  </div>
+
+  <!-- Entrada 3 -->
+  <div class="blog-post">
+    <h2>Job Interviews in English</h2>
+    <p><strong>Category:</strong> Practical Use</p>
+    <p>In this section, I describe my experience preparing for English job interviews and the vocabulary strategies I used to express myself confidently.</p>
+  </div>
+
+  <!-- Entrada 4 -->
+  <div class="blog-post">
+    <h2>Why ‘Crime and Punishment’ Still Matters</h2>
+    <p><strong>Category:</strong> Literature Analysis</p>
+    <p>A critical reflection on Dostoevsky's novel and how its themes of guilt, morality, and justice are still relevant in modern society and the workplace.</p>
+  </div>
+
+  <!-- Entrada 5 -->
+  <div class="blog-post">
+    <h2>The Value of Asking ‘Why?’</h2>
+    <p><strong>Category:</strong> Critical Thinking</p>
+    <p>This post covers how forming questions and exploring "why" something happens improves comprehension and supports academic and professional development.</p>
+  </div>
+
+  <!-- Product/Service Window -->
+  <section class="text-center mt-5">
+    <h3>My Services</h3>
+    <p>If you're interested in training, data storytelling, or dashboard design with Power BI, I’m available for remote collaborations.</p>
+    <a href="mailto:your-email@example.com" class="btn btn-service">Contact Me</a>
   </section>
+</main>
 
-  <section class="story">
-    <h2>My Story</h2>
-    <p>I started in commercial intelligence, learning how data could influence retail execution and transform operational inefficiencies into measurable wins. My experience across industries has taught me to blend DAX, Power Query, and VBA into powerful narratives that help businesses make better decisions, faster.</p>
-    <p>Today, I architect full-circle dashboards, unify sources via ETL, and support cross-functional teams to thrive using data they can finally trust.</p>
-  </section>
+<footer>
+  <p>© 2025 Esneyder Anzola. All rights reserved.</p>
+</footer>
 
-  <section class="services">
-    <h2>What I Offer</h2>
-    
-    <div class="service-card">
-      <h3>Data Visualization & Dashboarding</h3>
-      <p>Dynamic Power BI dashboards that speak to your business KPIs, updated in real-time and designed for impact.</p>
-    </div>
-
-    <div class="service-card">
-      <h3>ETL Automation</h3>
-      <p>I build scalable, robust ETL pipelines that unify messy sources into clean, reliable insights for executives and sales teams.</p>
-    </div>
-
-    <div class="service-card">
-      <h3>Business Intelligence Consulting</h3>
-      <p>From Power Query to VBA macros, I advise brands on intelligent automation strategies across departments.</p>
-    </div>
-
-    <div class="service-card">
-      <h3>Predictive Insights</h3>
-      <p>Using statistical models and forecasting techniques, I help anticipate trends before they emerge.</p>
-    </div>
-  </section>
-
-  <section class="image-section">
-    <h2>Recent Work</h2>
-    <img src="https://images.unsplash.com/photo-1581090700227-1c2d529b92f4" alt="Dashboard Sample" />
-    <p><em>Strategic Dashboard Design for Multinational Retail Chain</em></p>
-  </section>
+</body>
+</html>
 
   <footer>
     <p>© 2025 Robinson Zapata | contact: robinson.data@domain.com</p>
