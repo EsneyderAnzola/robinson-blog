@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PDV - Asistente | Chatbot</title>
+    <title>PDV - Asistente Beer</title>
     <style>
         * {
             margin: 0;
@@ -209,11 +209,10 @@
         }
 
         .select-dropdown {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.55);
+            position: fixed;
+            left: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(50px);
             -webkit-backdrop-filter: blur(50px);
             border: 2px solid rgba(255, 255, 255, 0.5);
@@ -221,12 +220,12 @@
             max-height: 0;
             overflow: hidden;
             transition: all 0.4s;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
         }
 
         .select-dropdown.active {
-            max-height: 250px;
+            max-height: 70vh;
             overflow-y: auto;
             padding: 10px;
         }
@@ -244,7 +243,7 @@
             position: sticky;
             top: 0;
             padding: 8px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(25px);
             z-index: 10;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -340,6 +339,10 @@
             background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
         }
 
+        .action-button.skip-btn {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
         video {
             width: 100%;
             border-radius: 10px;
@@ -360,77 +363,6 @@
             color: #667781;
             margin-top: 8px;
             text-align: center;
-        }
-
-        .chat-input-area {
-            padding: 8px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-
-        .input-wrapper {
-            flex: 1;
-            background: white;
-            border-radius: 21px;
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-        }
-
-        #userInput {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 0.95em;
-            background: transparent;
-            color: #303030;
-        }
-
-        #sendBtn {
-            width: 42px;
-            height: 42px;
-            background: #25d366;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            transition: all 0.2s;
-        }
-
-        #sendBtn:active {
-            transform: scale(0.95);
-        }
-
-        #sendBtn:disabled {
-            background: #b0b0b0;
-        }
-
-        .typing-indicator {
-            display: flex;
-            gap: 4px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #667781;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-8px); }
         }
 
         .menu-options {
@@ -457,21 +389,76 @@
             transform: scale(0.98);
         }
 
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667781;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        .input-bubble {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            max-width: 85%;
+            margin-top: 8px;
+        }
+
+        .input-bubble-text {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            color: #303030;
+            font-weight: 500;
+        }
+
         .input-field {
             width: 100%;
             padding: 10px 12px;
             background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(25px);
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
             color: #303030;
             font-size: 0.9em;
             outline: none;
-            margin-top: 8px;
         }
 
         .input-field:focus {
             border-color: rgba(37, 211, 102, 0.6);
+        }
+
+        .send-input-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: all 0.3s;
+        }
+
+        .send-input-btn:active {
+            transform: scale(0.98);
         }
 
         @media (min-width: 768px) {
@@ -500,23 +487,15 @@
         </div>
 
         <div class="chat-messages" id="chatMessages"></div>
-
-        <div class="chat-input-area">
-            <div class="input-wrapper">
-                <input type="text" id="userInput" placeholder="Mensaje" disabled>
-            </div>
-            <button id="sendBtn" disabled>➤</button>
-        </div>
     </div>
 
     <video id="videoStream" autoplay playsinline></video>
     <canvas id="photoCanvas" style="display:none;"></canvas>
 
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
-    
+    <iframe name="hidden_iframe_ingreso" style="display:none;"></iframe>
     <form id="googleFormIngreso" 
           action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
-          target="hidden_iframe" 
+          target="hidden_iframe_ingreso" 
           method="POST"
           style="display:none;">
         <input type="text" name="entry.1176318650" id="asesorField">
@@ -527,35 +506,76 @@
         <input type="text" name="entry.1281420665" id="confirmacionField" value="Sí, es correcta">
     </form>
 
-    <form id="googleFormLineal"
-          action="https://docs.google.com/forms/d/e/1FAIpQLScieYTjkAlXma8QLdmMQD2q-gcQb3h8fBWlw1kAWdHrLs8Vow/formResponse"
-          target="hidden_iframe"
+    <iframe name="hidden_iframe_lineal" style="display:none;"></iframe>
+    <form id="googleFormLineal" 
+          action="https://docs.google.com/forms/d/e/1FAIpQLScieYTjkAlXma8QLdmMQD2q-gcQb3h8fBWlw1kAWdHrLs8Vow/formResponse" 
+          target="hidden_iframe_lineal" 
           method="POST"
           style="display:none;">
         <input type="text" name="entry.238753566" id="tipoMarcaField">
         <input type="text" name="entry.536323816" id="productoField">
-        <input type="text" name="entry.857124037" id="competidorField">
-        <input type="text" name="entry.1743244481" id="frentesField">
+        <input type="text" name="entry.857124037" id="numeroFrentesField">
+        <input type="text" name="entry.1305667853" id="datosCorrectosField" value="Sí">
     </form>
 
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCvuZE34DkSCMy7Z_dr7DEaye3a2K2nArlePMG8QuFnxBSjduy4OK8pB1eUR9Nb4PI/exec';
 
-        const formDataIngreso = { asesor: '', ubicacion: '', selfie: '', ciudad: '', puntoVenta: '' };
-        const formDataLineal = { tipoMarca: '', producto: '', competidor: '', frentes: '' };
+        const formDataIngreso = {
+            asesor: '',
+            ubicacion: '',
+            selfie: '',
+            ciudad: '',
+            puntoVenta: ''
+        };
 
-        const asesores = ['Juan David Benavides González', 'Robinson Esneyder Zapata Anzola', 'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves', 'Maria Paula Contreras', 'Leidy Jhoanna Restrepo Zapata', 'Daniela Andrea Calvo Corena', 'Yadina Villanueva Sibaja', 'Sandra Viviana Zapata Viafara', 'Stefany Bernal Tique', 'Angie Vanessa Valenciano Romero', 'Sara Florez Velez', 'Sara Posso Quintero', 'Juliet Lasso Ramirez', 'Jenny Marcela Jaramillo Mejia', 'David Lopez Cardenas', 'Ashly Valentina Montoya Rincon', 'Jaime Andres Castro Diaz', 'Sergio Alejandro Murillo Gonzales'];
+        const formDataLineal = {
+            tipoMarca: '',
+            producto: '',
+            numeroFrente: ''
+        };
 
-        const ciudades = ['Arjona', 'Armenia', 'Barranquilla', 'Cali', 'Cartagena', 'Fusagasugá', 'Girardot', 'Guadalajara De Buga', 'Jamundi', 'La Mesa', 'Malambo', 'Manizales', 'Melgar', 'Neiva', 'Palmira', 'Pereira', 'Pereira- Dosquebradas', 'Popayan', 'Soledad', 'Tulua', 'Tunja', 'Turbaco', 'Villavicencio', 'Yumbo', 'Ibagué'];
+        const asesores = [
+            'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
+            'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
+            'Maria Paula Contreras', 'Leidy Jhoanna Restrepo Zapata',
+            'Daniela Andrea Calvo Corena', 'Yadina Villanueva Sibaja',
+            'Sandra Viviana Zapata Viafara', 'Stefany Bernal Tique',
+            'Angie Vanessa Valenciano Romero', 'Sara Florez Velez',
+            'Sara Posso Quintero', 'Juliet Lasso Ramirez',
+            'Jenny Marcela Jaramillo Mejia', 'David Lopez Cardenas',
+            'Ashly Valentina Montoya Rincon', 'Jaime Andres Castro Diaz',
+            'Sergio Alejandro Murillo Gonzales'
+        ];
 
-        const puntosVenta = ['STO 116 ARJONA', 'Ex 065 Exito Unicentro Armenia', 'Carulla Feria De Los Platanos', 'Sa 358 Portal Del Quindio', 'Sa 366 San Diego', 'Si 4235 Super Inter Las Americas', 'Ex 628 Exito Armenia', 'Si 4239 Super Inter Armenia Plaza', 'Oxxo Esquina Laureles', 'St 355 Armenia Norte'];
+        const ciudades = [
+            'Arjona', 'Armenia', 'Barranquilla', 'Cali', 'Cartagena', 'Fusagasugá',
+            'Girardot', 'Guadalajara De Buga', 'Jamundi', 'La Mesa', 'Malambo',
+            'Manizales', 'Melgar', 'Neiva', 'Palmira', 'Pereira', 'Pereira- Dosquebradas',
+            'Popayan', 'Soledad', 'Tulua', 'Tunja', 'Turbaco', 'Villavicencio',
+            'Yumbo', 'Ibagué'
+        ];
 
-        const productos = ['ANDINA LIGHT 330 ml x 6', 'CLUB COLOMBIA 330 ml', 'AGUILA 330 ml', 'POKER 330 ml'];
+        const puntosVenta = [
+            'STO 116 ARJONA', 'Ex 065 Exito Unicentro Armenia',
+            'Carulla Feria De Los Platanos', 'Sa 358 Portal Del Quindio',
+            'Sa 366 San Diego', 'Si 4235 Super Inter Las Americas',
+            'Ex 628 Exito Armenia', 'Si 4239 Super Inter Armenia Plaza',
+            'Oxxo Esquina Laureles', 'St 355 Armenia Norte'
+        ];
 
-        let currentModule = '';
+        const productosMarcaPropia = [
+            'ANDINA 330 ml x 6', 'ANDINA 330 ml x 24', 'ANDINA ZERO 330 ml x 6',
+            'CLUB COLOMBIA DORADA 330 ml x 6', 'CLUB COLOMBIA DORADA 330 ml x 24',
+            'POKER 330 ml x 6', 'POKER 330 ml x 24', 'PILSEN 330 ml x 6',
+            'COSTEÑA 330 ml x 6', 'ÁGUILA 330 ml x 6', 'ÁGUILA LIGHT 330 ml x 6'
+        ];
+
+        let currentFlow = '';
         let currentStep = 0;
         let videoStream = null;
         let photoBase64 = null;
+        let photoSkipped = false;
 
         const chatMessages = document.getElementById('chatMessages');
 
@@ -571,18 +591,22 @@
         function addBotMessage(text, customElement = null) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message bot-message';
+
             if (!customElement) {
                 const bubble = document.createElement('div');
                 bubble.className = 'message-content';
                 bubble.innerHTML = text;
+                
                 const time = document.createElement('div');
                 time.className = 'message-time';
                 time.textContent = getTime();
                 bubble.appendChild(time);
+                
                 wrapper.appendChild(bubble);
             } else {
                 wrapper.appendChild(customElement);
             }
+
             chatMessages.appendChild(wrapper);
             scrollToBottom();
         }
@@ -590,25 +614,30 @@
         function addUserMessage(text) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message user-message';
+
             const bubble = document.createElement('div');
             bubble.className = 'message-content';
             bubble.textContent = text;
+
             const time = document.createElement('div');
             time.className = 'message-time';
             time.textContent = getTime();
             bubble.appendChild(time);
+
             wrapper.appendChild(bubble);
             chatMessages.appendChild(wrapper);
             scrollToBottom();
         }
 
-        function createSelect(options, placeholder, label, callback) {
+        function createSelect(options, placeholder, label, onSelect) {
             const bubble = document.createElement('div');
             bubble.className = 'select-bubble';
+
             const titleDiv = document.createElement('div');
             titleDiv.className = 'select-bubble-text';
             titleDiv.textContent = label;
             bubble.appendChild(titleDiv);
+
             const selectId = 'select-' + Date.now();
             const container = document.createElement('div');
             container.innerHTML = `
@@ -626,12 +655,14 @@
                 </div>
             `;
             bubble.appendChild(container);
+
             setTimeout(() => {
                 const btn = document.getElementById(`${selectId}-btn`);
                 const dropdown = document.getElementById(`${selectId}-dropdown`);
                 const search = document.getElementById(`${selectId}-search`);
                 const optionsContainer = document.getElementById(`${selectId}-options`);
                 const textSpan = document.getElementById(`${selectId}-text`);
+
                 options.forEach(opt => {
                     const optDiv = document.createElement('div');
                     optDiv.className = 'select-option';
@@ -643,10 +674,11 @@
                         btn.style.pointerEvents = 'none';
                         btn.style.opacity = '0.6';
                         addUserMessage(opt);
-                        callback(opt);
+                        if (onSelect) onSelect(opt);
                     };
                     optionsContainer.appendChild(optDiv);
                 });
+
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     const isOpen = dropdown.classList.contains('active');
@@ -655,9 +687,14 @@
                     if (!isOpen) {
                         dropdown.classList.add('active');
                         btn.classList.add('active');
-                        search.focus();
+                        
+                        const btnRect = btn.getBoundingClientRect();
+                        dropdown.style.top = (btnRect.bottom + 8) + 'px';
+                        
+                        setTimeout(() => search.focus(), 100);
                     }
                 };
+
                 search.addEventListener('input', (e) => {
                     const term = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                     optionsContainer.querySelectorAll('.select-option').forEach(opt => {
@@ -665,6 +702,7 @@
                         opt.style.display = text.includes(term) ? 'block' : 'none';
                     });
                 });
+
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select')) {
                         dropdown.classList.remove('active');
@@ -672,6 +710,41 @@
                     }
                 });
             }, 100);
+
+            return bubble;
+        }
+
+        function createInputBubble(label, placeholder, onSubmit) {
+            const bubble = document.createElement('div');
+            bubble.className = 'input-bubble';
+
+            const inputId = 'input-' + Date.now();
+            bubble.innerHTML = `
+                <div class="input-bubble-text">${label}</div>
+                <input type="text" class="input-field" id="${inputId}" placeholder="${placeholder}">
+                <button class="send-input-btn" id="${inputId}-btn">Enviar</button>
+            `;
+
+            setTimeout(() => {
+                const input = document.getElementById(inputId);
+                const btn = document.getElementById(`${inputId}-btn`);
+
+                const submitValue = () => {
+                    const value = input.value.trim();
+                    if (value) {
+                        input.disabled = true;
+                        btn.disabled = true;
+                        addUserMessage(value);
+                        if (onSubmit) onSubmit(value);
+                    }
+                };
+
+                btn.onclick = submitValue;
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') submitValue();
+                });
+            }, 100);
+
             return bubble;
         }
 
@@ -679,48 +752,59 @@
             const container = document.createElement('div');
             container.className = 'capture-container';
             container.id = 'captureContainer';
+
             container.innerHTML = `
                 <div class="capture-title">Captura de ubicación y foto:</div>
                 <button class="action-button" id="locationBtn">📍 Capturar ubicación</button>
                 <button class="action-button camera-btn" id="cameraBtn" style="display:none;">📸 Abrir cámara</button>
+                <button class="action-button skip-btn" id="skipPhotoBtn" style="display:none;">⏭️ Continuar sin foto</button>
                 <video id="videoPreview" autoplay playsinline></video>
-                <button class="action-button" id="capturePhotoBtn" style="display:none;">✓ Capturar foto</button>
+                <button class="action-button" id="capturePhotoBtn" style="display:none;">✔ Capturar foto</button>
                 <img id="capturedPhoto" class="captured-photo">
                 <div class="info-text" id="infoText"></div>
             `;
+
             setTimeout(() => {
                 document.getElementById('locationBtn').onclick = captureLocation;
                 document.getElementById('cameraBtn').onclick = openCamera;
+                document.getElementById('skipPhotoBtn').onclick = skipPhoto;
                 document.getElementById('capturePhotoBtn').onclick = takePhoto;
             }, 100);
+
             return container;
         }
 
         function captureLocation() {
             const btn = document.getElementById('locationBtn');
             const infoText = document.getElementById('infoText');
+            
             btn.disabled = true;
             btn.innerHTML = '⏳ Obteniendo ubicación...';
             infoText.textContent = 'Obteniendo tu ubicación GPS...';
+
             if (!navigator.geolocation) {
                 infoText.textContent = '❌ Tu dispositivo no soporta geolocalización';
                 btn.disabled = false;
                 btn.innerHTML = '📍 Capturar ubicación';
                 return;
             }
+
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const coords = `${position.coords.latitude.toFixed(7)},${position.coords.longitude.toFixed(7)}`;
                     formDataIngreso.ubicacion = coords;
-                    btn.innerHTML = '✓ Ubicación capturada';
+                    
+                    btn.innerHTML = '✅ Ubicación capturada';
                     btn.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
-                    infoText.textContent = `✓ Coordenadas: ${coords}`;
+                    infoText.textContent = `✅ Coordenadas: ${coords}`;
+                    
                     setTimeout(() => {
                         document.getElementById('cameraBtn').style.display = 'block';
+                        document.getElementById('skipPhotoBtn').style.display = 'block';
                     }, 500);
                 },
                 (error) => {
-                    infoText.textContent = '❌ No se pudo obtener la ubicación';
+                    infoText.textContent = '❌ No se pudo obtener la ubicación. Por favor activa el GPS.';
                     btn.disabled = false;
                     btn.innerHTML = '📍 Reintentar';
                 },
@@ -732,24 +816,37 @@
             const btn = document.getElementById('cameraBtn');
             const video = document.getElementById('videoPreview');
             const infoText = document.getElementById('infoText');
+
             try {
                 btn.disabled = true;
                 btn.innerHTML = '⏳ Iniciando cámara...';
                 infoText.textContent = 'Iniciando cámara frontal...';
+
                 videoStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
                     audio: false
                 });
+
                 video.srcObject = videoStream;
                 video.style.display = 'block';
+                
                 btn.style.display = 'none';
+                document.getElementById('skipPhotoBtn').style.display = 'none';
                 document.getElementById('capturePhotoBtn').style.display = 'block';
-                infoText.textContent = '✓ Cámara activa. Cuando estés listo, captura tu foto.';
+                infoText.textContent = '✅ Cámara activa. Cuando estés listo, captura tu foto.';
+
             } catch (error) {
-                infoText.textContent = '❌ Error al acceder a la cámara';
+                infoText.textContent = '❌ Error al acceder a la cámara. Continúa sin foto.';
                 btn.disabled = false;
                 btn.innerHTML = '📸 Abrir cámara';
             }
+        }
+
+        function skipPhoto() {
+            photoSkipped = true;
+            formDataIngreso.selfie = 'No capturada';
+            addUserMessage('⏭️ Continuar sin foto');
+            processIngresoResponse('skipped_photo');
         }
 
         async function takePhoto() {
@@ -758,25 +855,31 @@
             const canvas = document.getElementById('photoCanvas');
             const capturedImg = document.getElementById('capturedPhoto');
             const infoText = document.getElementById('infoText');
+
             try {
                 btn.disabled = true;
                 btn.innerHTML = '⏳ Capturando...';
                 infoText.textContent = '📸 Capturando foto...';
+
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 const context = canvas.getContext('2d');
                 context.translate(canvas.width, 0);
                 context.scale(-1, 1);
                 context.drawImage(video, 0, 0);
+
                 photoBase64 = canvas.toDataURL('image/jpeg', 0.85);
                 capturedImg.src = photoBase64;
                 capturedImg.style.display = 'block';
+
                 if (videoStream) {
                     videoStream.getTracks().forEach(track => track.stop());
                 }
                 video.style.display = 'none';
                 btn.style.display = 'none';
+
                 infoText.textContent = '⏳ Subiendo foto a Drive...';
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -786,22 +889,28 @@
                         ubicacion: formDataIngreso.ubicacion
                     })
                 });
+
                 const result = await response.json();
+
                 if (result.success) {
-                    formDataIngreso.selfie = result.publicUrl;
-                    infoText.textContent = `✓ Foto guardada: ${result.fileName}`;
+                    formDataIngreso.selfie = result.publicUrl || result.directLink;
+                    infoText.textContent = `✅ Foto guardada: ${result.fileName}`;
+                    
                     setTimeout(() => {
-                        addUserMessage('✓ Ubicación y foto capturadas');
+                        addUserMessage('✅ Ubicación y foto capturadas');
                         processIngresoResponse('captured_data');
                     }, 1000);
                 } else {
                     throw new Error(result.error || 'Error al guardar');
                 }
+
             } catch (error) {
-                infoText.textContent = `❌ Error: ${error.message}`;
-                btn.disabled = false;
-                btn.innerHTML = '✓ Capturar foto';
-                btn.style.display = 'block';
+                infoText.textContent = `⚠️ Error al subir foto. Continuando...`;
+                formDataIngreso.selfie = 'Error al capturar';
+                setTimeout(() => {
+                    addUserMessage('⚠️ Continuando sin foto');
+                    processIngresoResponse('captured_data');
+                }, 1500);
             }
         }
 
@@ -829,8 +938,10 @@
 
         function processIngresoResponse(response) {
             showTyping();
+
             setTimeout(() => {
                 hideTyping();
+
                 switch(currentStep) {
                     case 0:
                         formDataIngreso.asesor = response;
@@ -840,202 +951,286 @@
                         }, 600);
                         currentStep++;
                         break;
+
                     case 1:
                         addBotMessage('¡Perfecto! ✅');
                         setTimeout(() => {
-                            addBotMessage('', createSelect(ciudades, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (val) => processIngresoResponse(val)));
+                            addBotMessage('', createSelect(ciudades, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
+                                processIngresoResponse(ciudad);
+                            }));
                         }, 600);
                         currentStep++;
                         break;
+
                     case 2:
                         formDataIngreso.ciudad = response;
-                        addBotMessage('Excelente ✓');
+                        addBotMessage('Excelente ✔');
                         setTimeout(() => {
-                            addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', 'Por último, tu punto de venta:', (val) => processIngresoResponse(val)));
+                            addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', 'Por último, tu punto de venta:', (punto) => {
+                                processIngresoResponse(punto);
+                            }));
                         }, 600);
                         currentStep++;
                         break;
+
                     case 3:
                         formDataIngreso.puntoVenta = response;
                         currentStep++;
-                        submitIngreso();
+                        submitFormIngreso();
                         break;
                 }
             }, 800);
         }
 
-        function submitIngreso() {
+        function submitFormIngreso() {
             addBotMessage('Enviando tu ingreso... ⏳');
+
             document.getElementById('asesorField').value = formDataIngreso.asesor;
             document.getElementById('ubicacionField').value = formDataIngreso.ubicacion;
             document.getElementById('selfieField').value = formDataIngreso.selfie;
             document.getElementById('ciudadField').value = formDataIngreso.ciudad;
             document.getElementById('puntoVentaField').value = formDataIngreso.puntoVenta;
+
             setTimeout(() => {
                 document.getElementById('googleFormIngreso').submit();
+
                 setTimeout(() => {
                     addBotMessage('✅ ¡Ingreso registrado exitosamente!');
-                    setTimeout(() => showMainMenu(), 800);
-                }, 1000);
-            }, 500);
-        }
-
-        function startLinealModule() {
-            currentModule = 'lineal';
-            currentStep = 0;
-            addBotMessage('Perfecto, registremos la participación lineal. 📊');
-            setTimeout(() => {
-                const bubble = document.createElement('div');
-                bubble.className = 'select-bubble';
-                bubble.innerHTML = `
-                    <div class="select-bubble-text">¿Qué tipo de marca vas a reportar?</div>
-                    <div class="menu-options">
-                        <button class="menu-button" onclick="processLinealResponse('MARCA PROPIA')">MARCA PROPIA</button>
-                        <button class="menu-button" onclick="processLinealResponse('MARCA COMPETENCIA')">MARCA COMPETENCIA</button>
-                    </div>
-                `;
-                addBotMessage('', bubble);
-                currentStep = 1;
-            }, 600);
-        }
-
-        function processLinealResponse(response) {
-            showTyping();
-            setTimeout(() => {
-                hideTyping();
-                switch(currentStep) {
-                    case 1:
-                        formDataLineal.tipoMarca = response;
-                        addUserMessage(response);
-                        addBotMessage('Tipo de marca registrado ✅');
-                        setTimeout(() => {
-                            if (response === 'MARCA PROPIA') {
-                                addBotMessage('', createSelect(productos, 'Selecciona...', 'Selecciona el producto:', (val) => processLinealResponse(val)));
-                            } else {
-                                const bubble = document.createElement('div');
-                                bubble.className = 'select-bubble';
-                                bubble.innerHTML = `
-                                    <div class="select-bubble-text">Escribe el nombre del competidor:</div>
-                                    <input type="text" class="input-field" id="competidorInput" placeholder="Ej: Coca Cola">
-                                    <button class="action-button" id="confirmCompetidorBtn" style="margin-top:8px;">✓ Continuar</button>
-                                `;
-                                addBotMessage('', bubble);
-                                setTimeout(() => {
-                                    document.getElementById('competidorInput').focus();
-                                    document.getElementById('confirmCompetidorBtn').onclick = () => {
-                                        const input = document.getElementById('competidorInput');
-                                        if (input.value.trim()) {
-                                            formDataLineal.competidor = input.value.trim();
-                                            formDataLineal.producto = 'N/A';
-                                            addUserMessage(formDataLineal.competidor);
-                                            processLinealResponse(formDataLineal.competidor);
-                                        }
-                                    };
-                                }, 100);
-                            }
-                        }, 600);
-                        currentStep = 2;
-                        break;
-                    case 2:
-                        if (formDataLineal.tipoMarca === 'MARCA PROPIA') {
-                            formDataLineal.producto = response;
-                            formDataLineal.competidor = 'N/A';
-                            addBotMessage('Producto registrado ✅');
-                        } else {
-                            addBotMessage('Competidor registrado ✅');
-                        }
-                        setTimeout(() => {
-                            const bubble = document.createElement('div');
-                            bubble.className = 'select-bubble';
-                            bubble.innerHTML = `
-                                <div class="select-bubble-text">¿Cuántos frentes tiene en el lineal?</div>
-                                <input type="number" class="input-field" id="frentesInput" placeholder="Ej: 4" min="1">
-                                <button class="action-button" id="confirmFrentesBtn" style="margin-top:8px;">✓ Enviar</button>
-                            `;
-                            addBotMessage('', bubble);
-                            setTimeout(() => {
-                                document.getElementById('frentesInput').focus();
-                                document.getElementById('confirmFrentesBtn').onclick = () => {
-                                    const input = document.getElementById('frentesInput');
-                                    if (input.value.trim() && parseInt(input.value) > 0) {
-                                        formDataLineal.frentes = input.value.trim();
-                                        addUserMessage(formDataLineal.frentes + ' frentes');
-                                        processLinealResponse(formDataLineal.frentes);
-                                    }
-                                };
-                            }, 100);
-                        }, 600);
-                        currentStep = 3;
-                        break;
-                    case 3:
-                        submitLineal();
-                        break;
-                }
-            }, 800);
-        }
-
-        function submitLineal() {
-            addBotMessage('Enviando reporte... ⏳');
-            document.getElementById('tipoMarcaField').value = formDataLineal.tipoMarca;
-            document.getElementById('productoField').value = formDataLineal.producto;
-            document.getElementById('competidorField').value = formDataLineal.competidor;
-            document.getElementById('frentesField').value = formDataLineal.frentes;
-            setTimeout(() => {
-                document.getElementById('googleFormLineal').submit();
-                setTimeout(() => {
-                    addBotMessage('✅ ¡Participación lineal registrada!');
+                    
                     setTimeout(() => {
-                        const bubble = document.createElement('div');
-                        bubble.className = 'select-bubble';
-                        bubble.innerHTML = `
-                            <div class="select-bubble-text">¿Deseas reportar más lineales?</div>
-                            <div class="menu-options">
-                                <button class="menu-button" onclick="resetLinealAndStart()">Sí, reportar otro</button>
-                                <button class="menu-button" onclick="showMainMenu()">No, volver al menú</button>
-                            </div>
-                        `;
-                        addBotMessage('', bubble);
+                        showMainMenu();
                     }, 800);
                 }, 1000);
             }, 500);
         }
 
-        function resetLinealAndStart() {
-            formDataLineal.tipoMarca = '';
-            formDataLineal.producto = '';
-            formDataLineal.competidor = '';
-            formDataLineal.frentes = '';
-            startLinealModule();
-        }
-
         function showMainMenu() {
-            addBotMessage('¿Qué deseas hacer?');
             const menuBubble = document.createElement('div');
             menuBubble.className = 'select-bubble';
+
             menuBubble.innerHTML = `
+                <div class="select-bubble-text">¿Qué deseas hacer?</div>
                 <div class="menu-options">
-                    <button class="menu-button" onclick="startIngresoModule()">📝 Registrar ingreso al PDV</button>
-                    <button class="menu-button" onclick="startLinealModule()">📊 Participación Lineal</button>
+                    <button class="menu-button" id="btnLineal">
+                        📊 Registrar Participación Lineal
+                    </button>
+                    <button class="menu-button" id="btnNuevoIngreso">
+                        🔄 Nuevo ingreso
+                    </button>
+                    <button class="menu-button" id="btnVerRespuestas">
+                        📈 Ver respuestas
+                    </button>
                 </div>
             `;
+
             addBotMessage('', menuBubble);
+
+            setTimeout(() => {
+                document.getElementById('btnLineal').onclick = () => {
+                    addUserMessage('📊 Registrar Participación Lineal');
+                    startLinealFlow();
+                };
+                document.getElementById('btnNuevoIngreso').onclick = () => location.reload();
+                document.getElementById('btnVerRespuestas').onclick = () => {
+                    window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank');
+                };
+            }, 100);
         }
 
-        function startIngresoModule() {
-            currentModule = 'ingreso';
+        function startLinealFlow() {
+            currentFlow = 'lineal';
             currentStep = 0;
-            addBotMessage('Perfecto, registremos tu ingreso al PDV. 📝');
+
+            showTyping();
             setTimeout(() => {
-                addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:', (val) => processIngresoResponse(val)));
-            }, 600);
+                hideTyping();
+                addBotMessage('¡Perfecto! Vamos a registrar la participación lineal. 📊');
+                setTimeout(() => {
+                    const selectBubble = createSelect(
+                        ['MARCA PROPIA', 'MARCA COMPETENCIA'],
+                        'Selecciona el tipo...',
+                        'Selecciona el tipo de marca:',
+                        (tipo) => processLinealResponse(tipo)
+                    );
+                    addBotMessage('', selectBubble);
+                }, 600);
+            }, 800);
+        }
+
+        function processLinealResponse(response) {
+            showTyping();
+
+            setTimeout(() => {
+                hideTyping();
+
+                switch(currentStep) {
+                    case 0:
+                        formDataLineal.tipoMarca = response;
+                        if (response === 'MARCA PROPIA') {
+                            addBotMessage('Marca propia seleccionada ✅');
+                            setTimeout(() => {
+                                addBotMessage('', createSelect(
+                                    productosMarcaPropia,
+                                    'Selecciona el producto...',
+                                    'Selecciona el producto:',
+                                    (producto) => {
+                                        formDataLineal.producto = producto;
+                                        addUserMessage(producto);
+                                        currentStep = 2;
+                                        processLinealResponse('producto_selected');
+                                    }
+                                ));
+                            }, 600);
+                        } else {
+                            addBotMessage('Marca competencia seleccionada ✅');
+                            setTimeout(() => {
+                                addBotMessage('', createInputBubble(
+                                    'Escribe el nombre del producto competencia:',
+                                    'Ej: Corona, Heineken...',
+                                    (producto) => {
+                                        formDataLineal.producto = producto;
+                                        currentStep = 2;
+                                        processLinealResponse('producto_selected');
+                                    }
+                                ));
+                            }, 600);
+                        }
+                        currentStep++;
+                        break;
+
+                    case 2:
+                        addBotMessage('Producto registrado ✔');
+                        setTimeout(() => {
+                            addBotMessage('', createInputBubble(
+                                '¿Cuántas caras/frentes tiene en el lineal?',
+                                'Ingresa un número...',
+                                (numero) => {
+                                    formDataLineal.numeroFrente = numero;
+                                    addUserMessage(numero);
+                                    currentStep++;
+                                    processLinealResponse('numero_selected');
+                                }
+                            ));
+                        }, 600);
+                        break;
+
+                    case 3:
+                        addBotMessage('Perfecto ✅');
+                        setTimeout(() => {
+                            showConfirmacionLineal();
+                        }, 600);
+                        break;
+                }
+            }, 800);
+        }
+
+        function showConfirmacionLineal() {
+            const confirmBubble = document.createElement('div');
+            confirmBubble.className = 'select-bubble';
+
+            confirmBubble.innerHTML = `
+                <div class="select-bubble-text">Confirma los datos:</div>
+                <div style="background: rgba(255,255,255,0.3); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.85em;">
+                    <div style="margin-bottom: 5px;"><strong>Tipo:</strong> ${formDataLineal.tipoMarca}</div>
+                    <div style="margin-bottom: 5px;"><strong>Producto:</strong> ${formDataLineal.producto}</div>
+                    <div><strong>Frentes:</strong> ${formDataLineal.numeroFrente}</div>
+                </div>
+                <div class="menu-options">
+                    <button class="menu-button" id="btnConfirmarLineal" style="background: rgba(37, 211, 102, 0.3); border-color: rgba(37, 211, 102, 0.5);">
+                        ✅ Sí, es correcto
+                    </button>
+                    <button class="menu-button" id="btnCancelarLineal" style="background: rgba(244, 67, 54, 0.3); border-color: rgba(244, 67, 54, 0.5);">
+                        ❌ No, corregir
+                    </button>
+                </div>
+            `;
+
+            addBotMessage('', confirmBubble);
+
+            setTimeout(() => {
+                document.getElementById('btnConfirmarLineal').onclick = () => {
+                    addUserMessage('✅ Sí, es correcto');
+                    submitFormLineal();
+                };
+                document.getElementById('btnCancelarLineal').onclick = () => {
+                    addUserMessage('❌ Voy a corregir');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Está bien, empecemos de nuevo. 🔄');
+                        setTimeout(() => startLinealFlow(), 800);
+                    }, 800);
+                };
+            }, 100);
+        }
+
+        function submitFormLineal() {
+            addBotMessage('Guardando participación lineal... ⏳');
+
+            document.getElementById('tipoMarcaField').value = formDataLineal.tipoMarca;
+            document.getElementById('productoField').value = formDataLineal.producto;
+            document.getElementById('numeroFrentesField').value = formDataLineal.numeroFrente;
+
+            setTimeout(() => {
+                document.getElementById('googleFormLineal').submit();
+
+                setTimeout(() => {
+                    addBotMessage('✅ ¡Participación lineal registrada!');
+                    
+                    setTimeout(() => {
+                        askForAnotherRegistro();
+                    }, 800);
+                }, 1000);
+            }, 500);
+        }
+
+        function askForAnotherRegistro() {
+            const askBubble = document.createElement('div');
+            askBubble.className = 'select-bubble';
+
+            askBubble.innerHTML = `
+                <div class="select-bubble-text">¿Deseas registrar otra participación?</div>
+                <div class="menu-options">
+                    <button class="menu-button" id="btnSiOtro">
+                        ✅ Sí, registrar otro
+                    </button>
+                    <button class="menu-button" id="btnNoMenu">
+                        🏠 No, ir al menú
+                    </button>
+                </div>
+            `;
+
+            addBotMessage('', askBubble);
+
+            setTimeout(() => {
+                document.getElementById('btnSiOtro').onclick = () => {
+                    addUserMessage('✅ Sí, registrar otro');
+                    formDataLineal.tipoMarca = '';
+                    formDataLineal.producto = '';
+                    formDataLineal.numeroFrente = '';
+                    startLinealFlow();
+                };
+                document.getElementById('btnNoMenu').onclick = () => {
+                    addUserMessage('🏠 Volver al menú');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        showMainMenu();
+                    }, 800);
+                };
+            }, 100);
         }
 
         setTimeout(() => {
-            addBotMessage('¡Hola! 👋 Bienvenido al sistema PDV Beer.');
+            addBotMessage('¡Hola! 👋 Soy tu asistente para registros en PDV.');
             setTimeout(() => {
-                addBotMessage('Este asistente te ayudará a registrar tu ingreso al PDV y participación lineal.');
-                setTimeout(() => showMainMenu(), 800);
-            }, 800);
+                addBotMessage('Puedo ayudarte con:<br>📍 Registro de ingreso (ubicación + selfie)<br>📊 Participación lineal de productos<br>📈 Consulta de respuestas');
+                setTimeout(() => {
+                    addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:', (asesor) => {
+                        processIngresoResponse(asesor);
+                    }));
+                }, 1200);
+            }, 1000);
         }, 500);
     </script>
 </body>
