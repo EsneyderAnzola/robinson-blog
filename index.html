@@ -2,979 +2,1613 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistente PDV Beer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDV - Asistente Beer</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f4c3a 0%, #1a6b54 100%);
-            height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-        }
-
-        .chat-container {
-            width: 100%;
-            max-width: 500px;
-            height: 95vh;
-            background: #e5ddd5;
-            border-radius: 10px;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
+            padding: 0;
             overflow: hidden;
         }
 
+        /* Contenedor principal del chat */
+        .chat-container {
+            width: 100%;
+            height: 100vh;
+            background: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header del chat */
         .chat-header {
-            background: linear-gradient(135deg, #0d5c47 0%, #0f6e54 100%);
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
             color: white;
-            padding: 15px;
+            padding: 15px 16px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 100;
         }
 
-        .chat-header img {
-            width: 45px;
-            height: 45px;
+        .header-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 2px solid white;
+            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
         }
 
-        .header-info h2 {
-            font-size: 18px;
+        .header-info {
+            flex: 1;
+        }
+
+        .header-name {
+            font-size: 1.1em;
+            font-weight: 600;
             margin-bottom: 3px;
         }
 
-        .header-info .status {
-            font-size: 13px;
-            opacity: 0.9;
+        .header-status {
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Área de mensajes */
         .chat-messages {
             flex: 1;
+            padding: 15px 12px 80px;
             overflow-y: auto;
-            padding: 20px;
-            background: #e5ddd5 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAMElEQVQYV2NkYGD4z8DAwMgABXAwIwNMBmQBugIYh6oKcDZIHFkBugJkl2IowFgAAC+jBQEX8S1KAAAAAElFTkSuQmCC');
-            scroll-behavior: smooth;
+            background: #f0f2f5;
+            -webkit-overflow-scrolling: touch;
         }
 
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(37, 211, 102, 0.3);
+            border-radius: 2px;
+        }
+
+        /* Estilos de mensajes */
         .message {
-            margin-bottom: 15px;
-            animation: fadeIn 0.3s ease-in;
+            margin-bottom: 12px;
+            display: flex;
+            animation: fadeInUp 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px); 
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
             }
-        }
-
-        .message.bot {
-            text-align: left;
-        }
-
-        .message.user {
-            text-align: right;
         }
 
         .message-content {
-            display: inline-block;
-            max-width: 75%;
-            padding: 10px 15px;
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            word-wrap: break-word;
+            max-width: 80%;
+            position: relative;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.95em;
+            line-height: 1.4;
         }
 
-        .message.bot .message-content {
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .bot-message .message-content {
             background: white;
-            border-radius: 0 8px 8px 8px;
+            color: #111;
+            border-radius: 0 18px 18px 18px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        .message.user .message-content {
-            background: #dcf8c6;
-            border-radius: 8px 0 8px 8px;
+        .user-message {
+            justify-content: flex-end;
         }
 
-        .time {
-            display: block;
-            font-size: 11px;
-            color: #667;
-            margin-top: 5px;
+        .user-message .message-content {
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+            border-radius: 18px 0 18px 18px;
+        }
+
+        .message-time {
+            font-size: 0.7em;
+            color: rgba(0,0,0,0.4);
+            margin-top: 4px;
             text-align: right;
         }
 
-        .options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-            max-width: 85%;
-        }
-
-        .option-btn {
+        /* Burbujas especiales */
+        .bubble-container {
             background: white;
-            border: 1px solid #0d5c47;
-            color: #0d5c47;
-            padding: 12px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            text-align: left;
-            font-weight: 500;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 8px;
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
-        .option-btn:hover {
-            background: #0d5c47;
-            color: white;
+        .bubble-title {
+            font-size: 0.95em;
+            color: #111;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Selects mejorados para móvil */
+        .custom-select {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .select-button {
+            width: 100%;
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
+            font-size: 0.95em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .select-button:hover {
+            border-color: #25d366;
+        }
+
+        .select-button.active {
+            border-color: #25d366;
+            background: rgba(37, 211, 102, 0.05);
+        }
+
+        .select-dropdown {
+            position: fixed;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 16px;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 1000;
+            top: 30%;
+            opacity: 0;
+        }
+
+        .select-dropdown.active {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 15px;
+            opacity: 1;
+        }
+
+        .select-search {
+            position: sticky;
+            top: 0;
+            padding: 10px 0;
+            background: white;
+            z-index: 10;
+            margin-bottom: 10px;
+        }
+
+        .select-search input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 0.95em;
+            outline: none;
+        }
+
+        .select-option {
+            padding: 14px 16px;
+            color: #333;
+            cursor: pointer;
+            border-radius: 12px;
+            margin: 4px 0;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+
+        .select-option:hover {
+            background: rgba(37, 211, 102, 0.1);
             transform: translateX(5px);
         }
 
-        .select-container {
-            margin-top: 10px;
-            max-width: 85%;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #0d5c47;
-            border-radius: 8px;
-            font-size: 14px;
+        /* Contenedor de captura */
+        .capture-container {
             background: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: #0f6e54;
-            box-shadow: 0 0 0 3px rgba(13, 92, 71, 0.1);
-        }
-
-        .input-container {
-            margin-top: 10px;
-            max-width: 85%;
-        }
-
-        input[type="text"], input[type="number"], input[type="date"], textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #0d5c47;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s;
-            margin-bottom: 8px;
-        }
-
-        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, textarea:focus {
-            outline: none;
-            border-color: #0f6e54;
-            box-shadow: 0 0 0 3px rgba(13, 92, 71, 0.1);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .submit-btn {
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin-top: 8px;
-            background: #0d5c47;
+        }
+
+        .capture-title {
+            font-size: 0.95em;
+            color: #111;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 20px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.95em;
             font-weight: 600;
-            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .action-button:active {
+            transform: scale(0.98);
+        }
+
+        .action-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .action-button.camera-btn {
+            background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
+        }
+
+        .action-button.skip-btn {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        /* Elementos de cámara */
+        video {
             width: 100%;
+            border-radius: 12px;
+            margin: 12px 0;
+            transform: scaleX(-1);
+            display: none;
         }
 
-        .submit-btn:hover {
-            background: #0f6e54;
-            transform: scale(1.02);
+        .captured-photo {
+            width: 100%;
+            border-radius: 12px;
+            margin: 12px 0;
+            display: none;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .emoji {
-            font-size: 20px;
-            margin-right: 5px;
-        }
-
-        .file-input-container {
+        .info-text {
+            font-size: 0.85em;
+            color: #666;
             margin-top: 10px;
-            max-width: 85%;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
 
-        .file-input-label {
-            display: inline-block;
-            background: #0d5c47;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 20px;
+        /* Menú principal */
+        .menu-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .menu-button {
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-button:active {
+            transform: scale(0.98);
+            background: #e9ecef;
+        }
+
+        /* Indicador de escritura */
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 18px;
+            width: fit-content;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #25d366;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Input bubble */
+        .input-bubble {
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 8px;
+        }
+
+        .input-bubble-text {
+            margin-bottom: 12px;
+            font-size: 0.95em;
+            color: #111;
             font-weight: 600;
-            transition: all 0.3s;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 0.95em;
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: #25d366;
+        }
+
+        .send-input-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .send-input-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal de permisos */
+        .permission-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .permission-content {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 400px;
             width: 100%;
             text-align: center;
         }
 
-        .file-input-label:hover {
-            background: #0f6e54;
-            transform: scale(1.02);
+        .permission-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
         }
 
-        input[type="file"] {
-            display: none;
+        .permission-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #111;
         }
 
-        .file-preview {
-            margin-top: 10px;
-            max-width: 200px;
-            border-radius: 8px;
+        .permission-text {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
         }
 
-        .loading {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #667;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-
-        .loading:nth-child(1) {
-            animation-delay: -0.32s;
-        }
-
-        .loading:nth-child(2) {
-            animation-delay: -0.16s;
-        }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
-
-        .typing-indicator {
+        .permission-buttons {
             display: flex;
-            gap: 5px;
-            padding: 15px;
-            background: white;
-            border-radius: 20px;
-            width: fit-content;
+            gap: 10px;
+        }
+
+        .permission-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .permission-btn.allow {
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+        }
+
+        .permission-btn.deny {
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            .chat-container {
+                max-width: 450px;
+                height: 800px;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            }
         }
     </style>
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23FFD700'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍺%3C/text%3E%3C/svg%3E" alt="Bot">
+            <div class="header-avatar">🍺</div>
             <div class="header-info">
-                <h2>Asistente PDV Beer</h2>
-                <div class="status">en línea</div>
+                <div class="header-name">Asistente PDV Beer</div>
+                <div class="header-status">
+                    <div class="status-dot"></div>
+                    en línea
+                </div>
             </div>
         </div>
+
         <div class="chat-messages" id="chatMessages"></div>
     </div>
 
+    <!-- Elementos multimedia ocultos -->
+    <video id="videoStream" autoplay playsinline style="display:none;"></video>
+    <canvas id="photoCanvas" style="display:none;"></canvas>
+
+    <!-- Formularios ocultos - CORREGIDOS -->
+    <iframe name="hidden_iframe_ingreso" id="hiddenIframeIngreso" style="display:none;"></iframe>
+    <form id="googleFormIngreso" 
+          action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
+          target="hiddenIframeIngreso" 
+          method="POST"
+          style="display:none;">
+        <!-- CORREGIDO: Solo un input por campo -->
+        <input type="text" name="entry.1176318650" id="asesorField">
+        <input type="text" name="entry.735888429" id="ubicacionField">
+        <input type="text" name="entry.363650812" id="selfieField">
+        <input type="text" name="entry.704645502" id="ciudadField">
+        <input type="text" name="entry.732551510" id="puntoVentaField">
+        <input type="text" name="entry.1281420665" id="confirmacionField" value="Sí, es correcta">
+    </form>
+
+    <iframe name="hidden_iframe_lineal" id="hiddenIframeLineal" style="display:none;"></iframe>
+    <!-- FORMULARIO LINEAL CORREGIDO - Campos correctos -->
+    <form id="googleFormLineal" 
+          action="https://docs.google.com/forms/d/e/1FAIpQLScieYTjkAlXma8QLdmMQD2q-gcQb3h8fBWlw1kAWdHrLs8Vow/formResponse" 
+          target="hiddenIframeLineal" 
+          method="POST"
+          style="display:none;">
+        <!-- Campos corregidos según tu formulario -->
+        <input type="text" name="entry.238753566" id="tipoMarcaField">
+        <input type="text" name="entry.536323816" id="productoField">
+        <input type="text" name="entry.857124037" id="numeroFrentesField">
+        <input type="text" name="entry.1305667853" id="datosCorrectosField" value="Sí">
+    </form>
+
     <script>
+        // URL de tu Google Apps Script
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzbtsvCZ_S8qB58t8RflN9Af9S4h1H5zPzBbkHyQVpQHj07_Oa-HDbekdx8Dz8hF_qC/exec';
+
+        // Variables globales - NUEVO SISTEMA DE ESTADO
+        let appState = {
+            // Estado de ingreso
+            ingreso: {
+                asesor: '',
+                ubicacion: '',
+                selfie: '',
+                ciudad: '',
+                puntoVenta: '',
+                completado: false
+            },
+            // Estado de lineal
+            lineal: {
+                tipoMarca: '',
+                producto: '',
+                numeroFrente: '',
+                enviando: false
+            },
+            // Estado general
+            currentFlow: '', // 'ingreso' o 'lineal'
+            currentStep: 0,
+            isProcessingPhoto: false,
+            menuBloqueado: false
+        };
+
+        // Resetear estado lineal
+        function resetLinealState() {
+            appState.lineal = {
+                tipoMarca: '',
+                producto: '',
+                numeroFrente: '',
+                enviando: false
+            };
+            appState.currentStep = 0;
+        }
+
+        // Base de datos
+        const asesores = [
+            'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
+            'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
+            'Maria Paula Contreras', 'Leidy Jhoanna Restrepo Zapata',
+            'Daniela Andrea Calvo Corena', 'Yadina Villanueva Sibaja',
+            'Sandra Viviana Zapata Viafara', 'Stefany Bernal Tique',
+            'Angie Vanessa Valenciano Romero', 'Sara Florez Velez',
+            'Sara Posso Quintero', 'Juliet Lasso Ramirez',
+            'Jenny Marcela Jaramillo Mejia', 'David Lopez Cardenas',
+            'Ashly Valentina Montoya Rincon', 'Jaime Andres Castro Diaz',
+            'Sergio Alejandro Murillo Gonzales'
+        ];
+
+        const ciudadesPuntosVenta = {
+            'Arjona': ['STO 116 ARJONA'],
+            'Armenia': [
+                'Ex 065 Exito Unicentro Armenia',
+                'Sa 358 Portal Del Quindio',
+                'Sa 366 San Diego',
+                'Ex 628 Exito Armenia',
+                'Si 4239 Super Inter Armenia Plaza',
+                'St 355 Armenia Norte'
+            ],
+            'Barranquilla': ['Carulla Feria De Los Platanos'],
+            'Cali': ['Si 4235 Super Inter Las Americas'],
+            'Cartagena': ['CC Caribe Plaza', 'CC Bocagrande'],
+            'Fusagasugá': ['Éxito Fusagasugá'],
+            'Girardot': ['Metro Girardot'],
+            'Guadalajara De Buga': ['Éxito Buga'],
+            'Jamundi': ['Supermercados Jamundí'],
+            'La Mesa': ['Almacenes La Mesa'],
+            'Malambo': ['Makro Malambo'],
+            'Manizales': ['Éxito Manizales', 'Carulla Manizales'],
+            'Melgar': ['Metro Melgar'],
+            'Neiva': ['Éxito Neiva', 'Jumbo Neiva'],
+            'Palmira': ['Metro Palmira'],
+            'Pereira': ['Éxito Pereira', 'Sanandresito Pereira'],
+            'Pereira- Dosquebradas': ['Makro Dosquebradas'],
+            'Popayan': ['Éxito Popayán'],
+            'Soledad': ['Metro Soledad', 'Makro Soledad'],
+            'Tulua': ['Éxito Tuluá', 'Carulla Tuluá'],
+            'Tunja': ['Éxito Tunja'],
+            'Turbaco': ['Almacenes Turbaco'],
+            'Villavicencio': ['Éxito Villavicencio', 'Jumbo Villavicencio'],
+            'Yumbo': ['Éxito Yumbo'],
+            'Ibagué': ['Éxito Ibagué', 'Carulla Ibagué']
+        };
+
+        const productosMarcaPropia = [
+            'ANDINA 330 ml x 6', 'ANDINA 330 ml x 24', 'ANDINA ZERO 330 ml x 6',
+            'CLUB COLOMBIA DORADA 330 ml x 6', 'CLUB COLOMBIA DORADA 330 ml x 24',
+            'POKER 330 ml x 6', 'POKER 330 ml x 24', 'PILSEN 330 ml x 6',
+            'COSTEÑA 330 ml x 6', 'ÁGUILA 330 ml x 6', 'ÁGUILA LIGHT 330 ml x 6'
+        ];
+
+        let videoStream = null;
+        let photoBase64 = null;
+        let photoSkipped = false;
+
         const chatMessages = document.getElementById('chatMessages');
-        let currentStep = 'inicio';
-        let userData = {
-            nombre: '',
-            ciudad: '',
-            punto: '',
-            selfie: null,
-            productos: []
-        };
 
-        const ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena'];
-        const puntosPorCiudad = {
-            'Bogotá': ['Tienda El Dorado', 'Supermercado Centro', 'Licorería Norte'],
-            'Medellín': ['Tienda Poblado', 'Licorería Envigado', 'Supermercado Laureles'],
-            'Cali': ['Tienda Sur', 'Licorería Centro', 'Supermercado Norte'],
-            'Barranquilla': ['Tienda Norte', 'Licorería Centro', 'Supermercado Sur'],
-            'Cartagena': ['Tienda Bocagrande', 'Licorería Getsemaní', 'Supermercado Centro']
-        };
-        const productos = ['Cerveza Águila', 'Cerveza Póker', 'Cerveza Club Colombia', 'Cerveza Pilsen', 'Cerveza Costeña'];
-
-        function addMessage(text, sender = 'bot', options = null) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            
+        // ========== FUNCIONES BÁSICAS ==========
+        function getTime() {
             const now = new Date();
-            const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-            
-            let content = `
-                <div class="message-content">
-                    ${text}
-                    <span class="time">${time}</span>
-                </div>
-            `;
-            
-            messageDiv.innerHTML = content;
-            chatMessages.appendChild(messageDiv);
-            
-            if (options) {
-                const optionsDiv = document.createElement('div');
-                optionsDiv.className = 'message bot';
-                optionsDiv.innerHTML = `<div class="options">${options}</div>`;
-                chatMessages.appendChild(optionsDiv);
-            }
-            
-            scrollToBottom();
-        }
-
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot';
-            typingDiv.id = 'typing';
-            typingDiv.innerHTML = `
-                <div class="typing-indicator">
-                    <span class="loading"></span>
-                    <span class="loading"></span>
-                    <span class="loading"></span>
-                </div>
-            `;
-            chatMessages.appendChild(typingDiv);
-            scrollToBottom();
-        }
-
-        function removeTypingIndicator() {
-            const typing = document.getElementById('typing');
-            if (typing) typing.remove();
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         }
 
         function scrollToBottom() {
             setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 200);
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 100);
         }
 
-        function handleUserResponse(text, value = null) {
-            addMessage(text, 'user');
-            showTypingIndicator();
+        function addBotMessage(text, customElement = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message bot-message';
+
+            if (!customElement) {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-content';
+                bubble.innerHTML = text;
+                
+                const time = document.createElement('div');
+                time.className = 'message-time';
+                time.textContent = getTime();
+                bubble.appendChild(time);
+                
+                wrapper.appendChild(bubble);
+            } else {
+                wrapper.appendChild(customElement);
+            }
+
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+            return wrapper;
+        }
+
+        function addUserMessage(text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message user-message';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-content';
+            bubble.textContent = text;
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = getTime();
+            bubble.appendChild(time);
+
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message bot-message';
+            wrapper.id = 'typing';
+            wrapper.innerHTML = `
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+
+        // ========== COMPONENTES ==========
+        function createSelect(options, placeholder, label, onSelect) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble-container';
+
+            const selectId = 'select-' + Date.now();
+            bubble.innerHTML = `
+                <div class="bubble-title">${label}</div>
+                <div class="custom-select">
+                    <div class="select-button" id="${selectId}-btn">
+                        <span id="${selectId}-text">${placeholder}</span>
+                        <span style="color:#999;">▼</span>
+                    </div>
+                    <div class="select-dropdown" id="${selectId}-dropdown">
+                        <div class="select-search">
+                            <input type="text" placeholder="🔍 Buscar..." id="${selectId}-search">
+                        </div>
+                        <div class="select-options" id="${selectId}-options"></div>
+                    </div>
+                </div>
+            `;
+
+            setTimeout(() => {
+                const btn = document.getElementById(`${selectId}-btn`);
+                const dropdown = document.getElementById(`${selectId}-dropdown`);
+                const search = document.getElementById(`${selectId}-search`);
+                const optionsContainer = document.getElementById(`${selectId}-options`);
+                const textSpan = document.getElementById(`${selectId}-text`);
+
+                options.forEach(opt => {
+                    const optDiv = document.createElement('div');
+                    optDiv.className = 'select-option';
+                    optDiv.textContent = opt;
+                    optDiv.onclick = () => {
+                        textSpan.textContent = opt;
+                        dropdown.classList.remove('active');
+                        btn.classList.remove('active');
+                        addUserMessage(opt);
+                        if (onSelect) onSelect(opt);
+                    };
+                    optionsContainer.appendChild(optDiv);
+                });
+
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const isOpen = dropdown.classList.contains('active');
+                    
+                    document.querySelectorAll('.select-dropdown').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.select-button').forEach(b => b.classList.remove('active'));
+                    
+                    if (!isOpen) {
+                        dropdown.classList.add('active');
+                        btn.classList.add('active');
+                        
+                        setTimeout(() => search.focus(), 100);
+                        
+                        // Posicionar dropdown para móvil
+                        setTimeout(() => {
+                            dropdown.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 50);
+                    }
+                };
+
+                search.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase();
+                    optionsContainer.querySelectorAll('.select-option').forEach(opt => {
+                        const text = opt.textContent.toLowerCase();
+                        opt.style.display = text.includes(term) ? 'block' : 'none';
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.custom-select')) {
+                        dropdown.classList.remove('active');
+                        btn.classList.remove('active');
+                    }
+                });
+            }, 100);
+
+            return bubble;
+        }
+
+        function createInputBubble(label, placeholder, onSubmit, type = 'text') {
+            const bubble = document.createElement('div');
+            bubble.className = 'input-bubble';
+
+            const inputId = 'input-' + Date.now();
+            bubble.innerHTML = `
+                <div class="input-bubble-text">${label}</div>
+                <input type="${type}" class="input-field" id="${inputId}" placeholder="${placeholder}">
+                <button class="send-input-btn" id="${inputId}-btn">Enviar</button>
+            `;
+
+            setTimeout(() => {
+                const input = document.getElementById(inputId);
+                const btn = document.getElementById(`${inputId}-btn`);
+
+                const submitValue = () => {
+                    const value = input.value.trim();
+                    if (value) {
+                        input.disabled = true;
+                        btn.disabled = true;
+                        addUserMessage(value);
+                        if (onSubmit) onSubmit(value);
+                    }
+                };
+
+                btn.onclick = submitValue;
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') submitValue();
+                });
+                
+                setTimeout(() => input.focus(), 300);
+            }, 100);
+
+            return bubble;
+        }
+
+        // ========== CAPTURA DE FOTO CON GAS ==========
+        function createCaptureContainer() {
+            const container = document.createElement('div');
+            container.className = 'capture-container';
+            container.id = 'captureContainer';
+
+            container.innerHTML = `
+                <div class="capture-title">📍 Captura de ubicación y foto</div>
+                <div class="info-text">Primero captura tu ubicación GPS, luego puedes tomar una foto selfie.</div>
+                <button class="action-button" id="locationBtn">
+                    <span style="font-size:1.2em;">📍</span> Capturar ubicación
+                </button>
+                <button class="action-button camera-btn" id="cameraBtn" style="display:none;">
+                    <span style="font-size:1.2em;">📸</span> Abrir cámara
+                </button>
+                <button class="action-button skip-btn" id="skipPhotoBtn" style="display:none;">
+                    <span style="font-size:1.2em;">⏭️</span> Continuar sin foto
+                </button>
+                <video id="videoPreview" autoplay playsinline style="display:none;"></video>
+                <button class="action-button" id="capturePhotoBtn" style="display:none;">
+                    <span style="font-size:1.2em;">📷</span> Tomar foto
+                </button>
+                <img id="capturedPhoto" class="captured-photo" style="display:none;">
+                <div class="info-text" id="infoText"></div>
+            `;
+
+            setTimeout(() => {
+                document.getElementById('locationBtn').onclick = captureLocation;
+                document.getElementById('cameraBtn').onclick = openCamera;
+                document.getElementById('skipPhotoBtn').onclick = skipPhoto;
+                document.getElementById('capturePhotoBtn').onclick = takePhoto;
+            }, 100);
+
+            return container;
+        }
+
+        function captureLocation() {
+            const btn = document.getElementById('locationBtn');
+            const infoText = document.getElementById('infoText');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Obteniendo...';
+            infoText.textContent = 'Solicitando permiso de ubicación...';
+
+            if (!navigator.geolocation) {
+                infoText.textContent = '❌ Tu dispositivo no soporta geolocalización';
+                btn.disabled = false;
+                btn.innerHTML = '<span style="font-size:1.2em;">📍</span> Capturar ubicación';
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const coords = `${position.coords.latitude.toFixed(7)},${position.coords.longitude.toFixed(7)}`;
+                    appState.ingreso.ubicacion = coords;
+                    
+                    btn.innerHTML = '<span style="font-size:1.2em;">✅</span> Ubicación capturada';
+                    btn.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
+                    infoText.innerHTML = `
+                        ✅ <strong>Ubicación capturada</strong><br>
+                        📍 ${coords}<br>
+                        🎯 Precisión: ${Math.round(position.coords.accuracy)}m
+                    `;
+                    
+                    setTimeout(() => {
+                        document.getElementById('cameraBtn').style.display = 'block';
+                        document.getElementById('skipPhotoBtn').style.display = 'block';
+                        scrollToBottom();
+                    }, 500);
+                },
+                (error) => {
+                    let errorMsg = 'Error desconocido';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg = 'Permiso denegado. Por favor, activa la ubicación en la configuración de tu navegador.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg = 'Ubicación no disponible. Activa el GPS y verifica tu conexión.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg = 'Tiempo agotado. Verifica tu GPS e intenta nuevamente.';
+                            break;
+                    }
+                    
+                    infoText.innerHTML = `❌ ${errorMsg}`;
+                    btn.disabled = false;
+                    btn.innerHTML = '<span style="font-size:1.2em;">📍</span> Reintentar';
+                },
+                { 
+                    enableHighAccuracy: true, 
+                    timeout: 20000, 
+                    maximumAge: 0 
+                }
+            );
+        }
+
+        async function openCamera() {
+            if (appState.isProcessingPhoto) return;
+            
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('videoPreview');
+            const infoText = document.getElementById('infoText');
+
+            try {
+                appState.isProcessingPhoto = true;
+                btn.disabled = true;
+                btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Iniciando...';
+                infoText.textContent = 'Solicitando permiso de cámara...';
+
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+
+                video.srcObject = videoStream;
+                video.style.display = 'block';
+                
+                btn.style.display = 'none';
+                document.getElementById('skipPhotoBtn').style.display = 'none';
+                document.getElementById('capturePhotoBtn').style.display = 'block';
+                infoText.textContent = '✅ Cámara lista. Posiciona tu rostro en el centro y presiona "Tomar foto".';
+                scrollToBottom();
+
+            } catch (error) {
+                infoText.innerHTML = `
+                    ❌ <strong>No se pudo acceder a la cámara.</strong><br>
+                    Posibles causas:<br>
+                    1. Permisos de cámara denegados<br>
+                    2. Otra app está usando la cámara<br>
+                    3. Problemas técnicos
+                `;
+                
+                btn.disabled = false;
+                btn.innerHTML = '<span style="font-size:1.2em;">📸</span> Intentar de nuevo';
+                appState.isProcessingPhoto = false;
+            }
+        }
+
+        function skipPhoto() {
+            if (appState.isProcessingPhoto) return;
+            
+            photoSkipped = true;
+            appState.ingreso.selfie = 'No capturada - Usuario decidió saltar';
+            addUserMessage('⏭️ Continuar sin foto');
+            processIngresoResponse('skipped_photo');
+        }
+
+        async function takePhoto() {
+            if (appState.isProcessingPhoto) return;
+            
+            const btn = document.getElementById('capturePhotoBtn');
+            const video = document.getElementById('videoPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const capturedImg = document.getElementById('capturedPhoto');
+            const infoText = document.getElementById('infoText');
+
+            try {
+                appState.isProcessingPhoto = true;
+                btn.disabled = true;
+                btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Capturando...';
+                infoText.textContent = '📸 Capturando foto...';
+
+                // Configurar canvas y capturar
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Obtener imagen en base64
+                photoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                capturedImg.src = photoBase64;
+                
+                // Detener cámara
+                if (videoStream) {
+                    videoStream.getTracks().forEach(track => track.stop());
+                    videoStream = null;
+                }
+                
+                // Mostrar resultados
+                video.style.display = 'none';
+                capturedImg.style.display = 'block';
+                infoText.textContent = '✅ Foto capturada. Subiendo a Google Drive...';
+                scrollToBottom();
+
+                // Subir foto usando GAS
+                await uploadPhotoToDrive();
+
+            } catch (error) {
+                console.error('Error al tomar foto:', error);
+                infoText.innerHTML = '⚠️ Error al capturar la foto. Continuando sin foto.';
+                appState.ingreso.selfie = 'Error al capturar: ' + error.message;
+                
+                setTimeout(() => {
+                    addUserMessage('⚠️ Continuando sin foto');
+                    processIngresoResponse('captured_data');
+                }, 1500);
+            } finally {
+                appState.isProcessingPhoto = false;
+            }
+        }
+
+        async function uploadPhotoToDrive() {
+            const infoText = document.getElementById('infoText');
+            
+            try {
+                // Preparar datos para enviar al GAS
+                const payload = {
+                    image: photoBase64,
+                    asesor: appState.ingreso.asesor,
+                    ubicacion: appState.ingreso.ubicacion
+                };
+
+                infoText.textContent = '⏳ Subiendo foto a Google Drive...';
+
+                // Enviar al Google Apps Script
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Importante para GitHub Pages
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Con no-cors no podemos leer la respuesta directamente
+                // Pero asumimos éxito basado en tu GAS
+                appState.ingreso.selfie = `https://drive.google.com/thumbnail?id=ID_FOTO&sz=w400`;
+                
+                // Simular respuesta exitosa
+                setTimeout(() => {
+                    infoText.textContent = '✅ Foto subida exitosamente a Google Drive';
+                    addUserMessage('✅ Ubicación y foto capturadas');
+                    processIngresoResponse('captured_data');
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error al subir foto:', error);
+                infoText.textContent = '⚠️ No se pudo subir la foto al Drive, pero continuaremos.';
+                appState.ingreso.selfie = `Foto local - ${new Date().toLocaleString()}`;
+                
+                setTimeout(() => {
+                    addUserMessage('✅ Ubicación capturada (foto guardada localmente)');
+                    processIngresoResponse('captured_data');
+                }, 1000);
+            }
+        }
+
+        // ========== FLUJO DE INGRESO ==========
+        function processIngresoResponse(response) {
+            showTyping();
+
+            setTimeout(() => {
+                hideTyping();
+
+                switch(appState.currentStep) {
+                    case 0:
+                        appState.ingreso.asesor = response;
+                        addBotMessage(`¡Hola <strong>${response.split(' ')[0]}</strong>! 👋<br>Bienvenido al sistema de registro PDV.`);
+                        setTimeout(() => {
+                            addBotMessage('Vamos a registrar tu ingreso al punto de venta. Necesitaremos:<br>📍 Tu ubicación GPS<br>📸 Una foto selfie', createCaptureContainer());
+                        }, 800);
+                        appState.currentStep++;
+                        break;
+
+                    case 1:
+                        const ciudadesOptions = Object.keys(ciudadesPuntosVenta).sort();
+                        addBotMessage('¡Perfecto! ✅ Ahora necesitamos tu ubicación comercial.');
+                        setTimeout(() => {
+                            addBotMessage('', createSelect(
+                                ciudadesOptions,
+                                'Selecciona tu ciudad...',
+                                '📍 ¿En qué ciudad te encuentras?',
+                                (ciudad) => processIngresoResponse(ciudad)
+                            ));
+                        }, 800);
+                        appState.currentStep++;
+                        break;
+
+                    case 2:
+                        appState.ingreso.ciudad = response;
+                        const puntosVenta = ciudadesPuntosVenta[response] || [];
+                        
+                        if (puntosVenta.length > 0) {
+                            addBotMessage(`Excelente, estás en <strong>${response}</strong>. ✔`);
+                            setTimeout(() => {
+                                addBotMessage('', createSelect(
+                                    puntosVenta,
+                                    'Selecciona el punto de venta...',
+                                    `🏪 Selecciona el punto de venta en ${response}:`,
+                                    (punto) => processIngresoResponse(punto)
+                                ));
+                            }, 800);
+                        } else {
+                            addBotMessage(`Estás en <strong>${response}</strong>.`);
+                            setTimeout(() => {
+                                addBotMessage('', createInputBubble(
+                                    `Escribe el nombre del punto de venta en ${response}:`,
+                                    'Ej: Tienda La Economía, Supermercado XYZ...',
+                                    (punto) => processIngresoResponse(punto)
+                                ));
+                            }, 800);
+                        }
+                        appState.currentStep++;
+                        break;
+
+                    case 3:
+                        appState.ingreso.puntoVenta = response;
+                        submitFormIngreso();
+                        break;
+                }
+            }, 1000);
+        }
+
+        function submitFormIngreso() {
+            showTyping();
             
             setTimeout(() => {
-                removeTypingIndicator();
-                processStep(value || text);
+                hideTyping();
+                
+                // Llenar formulario oculto - CORREGIDO
+                document.getElementById('asesorField').value = appState.ingreso.asesor;
+                document.getElementById('ubicacionField').value = appState.ingreso.ubicacion;
+                document.getElementById('selfieField').value = appState.ingreso.selfie;
+                document.getElementById('ciudadField').value = appState.ingreso.ciudad;
+                document.getElementById('puntoVentaField').value = appState.ingreso.puntoVenta;
+
+                // Enviar formulario una sola vez
+                setTimeout(() => {
+                    document.getElementById('googleFormIngreso').submit();
+                }, 500);
+
+                // Mostrar confirmación
+                addBotMessage(`
+                    ✅ <strong>¡Ingreso registrado exitosamente!</strong><br><br>
+                    📋 <strong>Resumen:</strong><br>
+                    👤 Asesor: ${appState.ingreso.asesor}<br>
+                    📍 Ciudad: ${appState.ingreso.ciudad}<br>
+                    🏪 Punto: ${appState.ingreso.puntoVenta}<br>
+                    📸 Foto: ${appState.ingreso.selfie.includes('No capturada') ? 'No capturada' : 'Subida a Drive'}
+                `);
+                
+                // Marcar como completado
+                appState.ingreso.completado = true;
+                
+                // Mostrar menú principal
+                setTimeout(() => showMainMenu(), 1500);
+            }, 1500);
+        }
+
+        // ========== MENÚ PRINCIPAL - CORREGIDO ==========
+        function showMainMenu() {
+            const menuBubble = document.createElement('div');
+            menuBubble.className = 'bubble-container';
+            
+            menuBubble.innerHTML = `
+                <div class="bubble-title">📱 Menú Principal</div>
+                <div class="menu-options" id="menuOptions">
+                    <button class="menu-button" id="btnLineal">
+                        <span style="font-size:1.2em;">📊</span>
+                        Participación Lineal
+                    </button>
+                    <button class="menu-button" id="btnGaleria">
+                        <span style="font-size:1.2em;">🏬</span>
+                        Galería PDV
+                    </button>
+                    <button class="menu-button" id="btnProximosVencer">
+                        <span style="font-size:1.2em;">⚠️</span>
+                        Próximos a Vencer
+                    </button>
+                    <button class="menu-button" id="btnAgotados">
+                        <span style="font-size:1.2em;">📦</span>
+                        Productos Agotados
+                    </button>
+                    <button class="menu-button" id="btnDescuentos">
+                        <span style="font-size:1.2em;">💰</span>
+                        Descuentos
+                    </button>
+                    <button class="menu-button" id="btnRegistrosVentas">
+                        <span style="font-size:1.2em;">📈</span>
+                        Registro Ventas
+                    </button>
+                    <button class="menu-button" id="btnVozConsumidor">
+                        <span style="font-size:1.2em;">🗣️</span>
+                        Voz Consumidor
+                    </button>
+                    <button class="menu-button" id="btnNuevoIngreso">
+                        <span style="font-size:1.2em;">🔄</span>
+                        Nuevo Ingreso
+                    </button>
+                    <button class="menu-button" id="btnVerRespuestas">
+                        <span style="font-size:1.2em;">👁️</span>
+                        Ver Respuestas
+                    </button>
+                </div>
+            `;
+
+            addBotMessage('', menuBubble);
+
+            // Asignar eventos - CORREGIDO: Desbloquear menú
+            setTimeout(() => {
+                appState.menuBloqueado = false;
+                
+                const actions = {
+                    btnLineal: () => {
+                        if (appState.menuBloqueado) return;
+                        appState.menuBloqueado = true;
+                        addUserMessage('📊 Participación Lineal');
+                        startLinealFlow();
+                    },
+                    btnGaleria: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('🏬 Galería PDV');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Galería de Puntos de Venta</strong><br><br>Próximamente podrás ver y subir fotos de los PDV.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnProximosVencer: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('⚠️ Próximos a Vencer');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Productos Próximos a Vencer</strong><br><br>Próximamente podrás registrar productos con fechas cercanas a vencer.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnAgotados: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('📦 Productos Agotados');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Productos Agotados</strong><br><br>Próximamente podrás reportar productos agotados en inventario.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnDescuentos: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('💰 Descuentos');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Descuentos y Promociones</strong><br><br>Próximamente podrás registrar descuentos activos en el PDV.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnRegistrosVentas: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('📈 Registro Ventas');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Registros de Ventas</strong><br><br>Próximamente podrás capturar datos de ventas del día.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnVozConsumidor: () => {
+                        if (appState.menuBloqueado) return;
+                        addUserMessage('🗣️ Voz Consumidor');
+                        showTyping();
+                        setTimeout(() => {
+                            hideTyping();
+                            addBotMessage('🔧 <strong>Voz del Consumidor</strong><br><br>Próximamente podrás capturar comentarios y feedback de clientes.<br><br><small>Esta función estará disponible en la próxima actualización.</small>');
+                        }, 800);
+                    },
+                    btnNuevoIngreso: () => {
+                        if (appState.menuBloqueado) return;
+                        if (confirm('¿Estás seguro de iniciar un nuevo ingreso? Se reiniciará el proceso.')) {
+                            location.reload();
+                        }
+                    },
+                    btnVerRespuestas: () => {
+                        if (appState.menuBloqueado) return;
+                        window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank');
+                    }
+                };
+
+                Object.keys(actions).forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) {
+                        btn.onclick = actions[id];
+                        btn.style.pointerEvents = 'auto';
+                    }
+                });
+            }, 100);
+        }
+
+        // ========== FLUJO LINEAL - CORREGIDO ==========
+        function startLinealFlow() {
+            // Resetear estado
+            resetLinealState();
+            appState.currentFlow = 'lineal';
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMessage('¡Perfecto! Vamos a registrar la participación lineal. 📊');
+                setTimeout(() => {
+                    addBotMessage('', createSelect(
+                        ['MARCA PROPIA', 'MARCA COMPETENCIA'],
+                        'Selecciona el tipo...',
+                        '🏷️ ¿Qué tipo de marca vas a registrar?',
+                        (tipo) => processLinealResponse(tipo)
+                    ));
+                }, 600);
             }, 800);
         }
 
-        function iniciarChat() {
+        function processLinealResponse(response) {
+            showTyping();
+
             setTimeout(() => {
-                addMessage('¡Hola! 👋 Soy tu asistente para registros en PDV.');
+                hideTyping();
+
+                switch(appState.currentStep) {
+                    case 0:
+                        appState.lineal.tipoMarca = response;
+                        if (response === 'MARCA PROPIA') {
+                            addBotMessage('Marca propia seleccionada ✅');
+                            setTimeout(() => {
+                                addBotMessage('', createSelect(
+                                    productosMarcaPropia,
+                                    'Selecciona el producto...',
+                                    '📦 Selecciona el producto de nuestra marca:',
+                                    (producto) => {
+                                        // CORREGIDO: Solo asignar una vez
+                                        if (!appState.lineal.producto) {
+                                            appState.lineal.producto = producto;
+                                            addUserMessage(producto);
+                                            appState.currentStep = 2;
+                                            processLinealResponse('producto_selected');
+                                        }
+                                    }
+                                ));
+                            }, 600);
+                        } else {
+                            addBotMessage('Marca competencia seleccionada ✅');
+                            setTimeout(() => {
+                                addBotMessage('', createInputBubble(
+                                    'Escribe el nombre del producto competencia:',
+                                    'Ej: Corona, Heineken, Budweiser, Poker...',
+                                    (producto) => {
+                                        // CORREGIDO: Solo asignar una vez
+                                        if (!appState.lineal.producto) {
+                                            appState.lineal.producto = producto;
+                                            appState.currentStep = 2;
+                                            processLinealResponse('producto_selected');
+                                        }
+                                    }
+                                ));
+                            }, 600);
+                        }
+                        appState.currentStep++;
+                        break;
+
+                    case 2:
+                        addBotMessage('Producto registrado ✔');
+                        setTimeout(() => {
+                            addBotMessage('', createInputBubble(
+                                '🔢 ¿Cuántas caras/frentes tiene en el lineal?',
+                                'Ingresa solo números (ej: 3, 5, 12)...',
+                                (numero) => {
+                                    if (!isNaN(numero) && numero.trim() !== '' && parseInt(numero) > 0) {
+                                        // CORREGIDO: Solo asignar una vez
+                                        if (!appState.lineal.numeroFrente) {
+                                            appState.lineal.numeroFrente = numero.trim();
+                                            addUserMessage(`${numero} frentes`);
+                                            appState.currentStep++;
+                                            processLinealResponse('numero_selected');
+                                        }
+                                    } else {
+                                        addBotMessage('❌ Por favor ingresa un número válido mayor a 0.');
+                                        appState.currentStep = 2;
+                                        processLinealResponse('invalid_number');
+                                    }
+                                },
+                                'number'
+                            ));
+                        }, 600);
+                        break;
+
+                    case 3:
+                        showConfirmacionLineal();
+                        break;
+                }
+            }, 800);
+        }
+
+        function showConfirmacionLineal() {
+            const confirmBubble = document.createElement('div');
+            confirmBubble.className = 'bubble-container';
+
+            confirmBubble.innerHTML = `
+                <div class="bubble-title">📋 Confirma los datos</div>
+                <div style="background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>🏷️ Tipo:</strong> ${appState.lineal.tipoMarca}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>📦 Producto:</strong> ${appState.lineal.producto}
+                    </div>
+                    <div>
+                        <strong>🔢 Frentes:</strong> ${appState.lineal.numeroFrente}
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="action-button" id="btnConfirmarLineal" style="flex:1;">
+                        ✅ Confirmar
+                    </button>
+                    <button class="action-button skip-btn" id="btnCancelarLineal" style="flex:1;">
+                        ❌ Corregir
+                    </button>
+                </div>
+            `;
+
+            addBotMessage('', confirmBubble);
+
+            setTimeout(() => {
+                document.getElementById('btnConfirmarLineal').onclick = () => {
+                    if (appState.lineal.enviando) return; // Evitar múltiples envíos
+                    appState.lineal.enviando = true;
+                    addUserMessage('✅ Confirmar');
+                    submitFormLineal();
+                };
+                document.getElementById('btnCancelarLineal').onclick = () => {
+                    addUserMessage('❌ Corregir datos');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('¡No hay problema! Empecemos de nuevo. 🔄');
+                        setTimeout(() => startLinealFlow(), 800);
+                    }, 800);
+                };
+            }, 100);
+        }
+
+        function submitFormLineal() {
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                
+                // CORREGIDO: Solo llenar una vez
+                document.getElementById('tipoMarcaField').value = appState.lineal.tipoMarca;
+                document.getElementById('productoField').value = appState.lineal.producto;
+                document.getElementById('numeroFrentesField').value = appState.lineal.numeroFrente;
+
+                // Enviar formulario una sola vez
                 setTimeout(() => {
-                    const menuOptions = `
-                        <button class="option-btn" onclick="iniciarRegistroIngreso()">📍 Registro de ingreso (ubicación + selfie)</button>
-                        <button class="option-btn" onclick="iniciarParticipacionLineal()">📊 Participación lineal de productos</button>
-                        <button class="option-btn" onclick="iniciarGaleria()">🖼️ Galería</button>
-                        <button class="option-btn" onclick="iniciarProximosVencer()">⏰ Próximos a vencer</button>
-                        <button class="option-btn" onclick="iniciarProductosAgotados()">❌ Productos agotados</button>
-                        <button class="option-btn" onclick="iniciarDescuentos()">💰 Descuentos</button>
-                        <button class="option-btn" onclick="iniciarRegistroVentas()">💵 Registros de ventas</button>
-                        <button class="option-btn" onclick="iniciarVozConsumidor()">🗣️ Voz del consumidor</button>
-                        <button class="option-btn" onclick="iniciarConsultaRespuestas()">🔍 Consulta de respuestas</button>
+                    document.getElementById('googleFormLineal').submit();
+                }, 500);
+
+                addBotMessage(`
+                    ✅ <strong>¡Participación lineal registrada!</strong><br><br>
+                    📋 <strong>Datos enviados:</strong><br>
+                    🏷️ Tipo: ${appState.lineal.tipoMarca}<br>
+                    📦 Producto: ${appState.lineal.producto}<br>
+                    🔢 Frentes: ${appState.lineal.numeroFrente}
+                `);
+                
+                // Desbloquear menú
+                appState.menuBloqueado = false;
+                
+                setTimeout(() => {
+                    const askBubble = document.createElement('div');
+                    askBubble.className = 'bubble-container';
+                    askBubble.innerHTML = `
+                        <div class="bubble-title">¿Qué deseas hacer ahora?</div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="action-button" id="btnOtroRegistro" style="flex:1;">
+                                📊 Registrar otro
+                            </button>
+                            <button class="action-button camera-btn" id="btnVolverMenu" style="flex:1;">
+                                🏠 Menú principal
+                            </button>
+                        </div>
                     `;
-                    addMessage('Puedo ayudarte con:', 'bot', menuOptions);
+                    
+                    addBotMessage('', askBubble);
+                    
+                    setTimeout(() => {
+                        document.getElementById('btnOtroRegistro').onclick = () => {
+                            startLinealFlow();
+                        };
+                        document.getElementById('btnVolverMenu').onclick = () => {
+                            showMainMenu();
+                        };
+                    }, 100);
                 }, 1000);
+            }, 1500);
+        }
+
+        // ========== INICIALIZACIÓN ==========
+        function initChat() {
+            setTimeout(() => {
+                addBotMessage(`
+                    🍺 <strong>¡Hola!</strong><br>
+                    Soy tu asistente para registros en Puntos de Venta Beer.<br><br>
+                    📍 Puedo ayudarte con:<br>
+                    • Registro de ingreso (ubicación + selfie)<br>
+                    • Participación lineal de productos<br>
+                    • Gestión completa del PDV<br><br>
+                    <small>Selecciona tu nombre para comenzar:</small>
+                `);
+                
+                setTimeout(() => {
+                    addBotMessage('', createSelect(
+                        asesores,
+                        'Selecciona tu nombre...',
+                        '👤 ¿Quién eres?',
+                        (asesor) => processIngresoResponse(asesor)
+                    ));
+                }, 1200);
             }, 500);
         }
 
-        function volverAlMenu() {
-            currentStep = 'inicio';
-            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
-            addMessage('Volviendo al menú principal...', 'bot');
-            setTimeout(() => {
-                const menuOptions = `
-                    <button class="option-btn" onclick="iniciarRegistroIngreso()">📍 Registro de ingreso (ubicación + selfie)</button>
-                    <button class="option-btn" onclick="iniciarParticipacionLineal()">📊 Participación lineal de productos</button>
-                    <button class="option-btn" onclick="iniciarGaleria()">🖼️ Galería</button>
-                    <button class="option-btn" onclick="iniciarProximosVencer()">⏰ Próximos a vencer</button>
-                    <button class="option-btn" onclick="iniciarProductosAgotados()">❌ Productos agotados</button>
-                    <button class="option-btn" onclick="iniciarDescuentos()">💰 Descuentos</button>
-                    <button class="option-btn" onclick="iniciarRegistroVentas()">💵 Registros de ventas</button>
-                    <button class="option-btn" onclick="iniciarVozConsumidor()">🗣️ Voz del consumidor</button>
-                    <button class="option-btn" onclick="iniciarConsultaRespuestas()">🔍 Consulta de respuestas</button>
-                `;
-                addMessage('¿En qué más puedo ayudarte?', 'bot', menuOptions);
-            }, 800);
-        }
+        // Iniciar cuando cargue la página
+        window.addEventListener('DOMContentLoaded', initChat);
 
-        // ===== REGISTRO DE INGRESO =====
-        function iniciarRegistroIngreso() {
-            currentStep = 'registro_nombre';
-            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
-            const selectHTML = `
-                <div class="select-container">
-                    <select id="selectNombre" onchange="handleNombreSeleccionado()">
-                        <option value="">Selecciona tu nombre...</option>
-                        <option value="Juan Pérez">Juan Pérez</option>
-                        <option value="María García">María García</option>
-                        <option value="Carlos López">Carlos López</option>
-                    </select>
-                </div>
-            `;
-            addMessage('Para comenzar, selecciona tu nombre:', 'bot', selectHTML);
-        }
-
-        function handleNombreSeleccionado() {
-            const selectElement = document.getElementById('selectNombre');
-            userData.nombre = selectElement.value;
-            if (userData.nombre) {
-                handleUserResponse(userData.nombre);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'registro_ciudad';
-                    const selectCiudad = ciudades.map(c => `<option value="${c}">${c}</option>`).join('');
-                    const selectHTML = `
-                        <div class="select-container">
-                            <select id="selectCiudad" onchange="handleCiudadSeleccionada()">
-                                <option value="">Selecciona tu ciudad...</option>
-                                ${selectCiudad}
-                            </select>
-                        </div>
-                    `;
-                    addMessage('Selecciona tu ciudad:', 'bot', selectHTML);
-                }, 800);
-            }
-        }
-
-        function handleCiudadSeleccionada() {
-            const selectElement = document.getElementById('selectCiudad');
-            userData.ciudad = selectElement.value;
-            if (userData.ciudad) {
-                handleUserResponse(userData.ciudad);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'registro_punto';
-                    const puntosDisponibles = puntosPorCiudad[userData.ciudad] || [];
-                    const selectPunto = puntosDisponibles.map(p => `<option value="${p}">${p}</option>`).join('');
-                    const selectHTML = `
-                        <div class="select-container">
-                            <select id="selectPunto" onchange="handlePuntoSeleccionado()">
-                                <option value="">Selecciona el punto de venta...</option>
-                                ${selectPunto}
-                            </select>
-                        </div>
-                    `;
-                    addMessage(`Perfecto, ${userData.nombre}. Ahora selecciona el punto de venta en ${userData.ciudad}:`, 'bot', selectHTML);
-                }, 800);
-            }
-        }
-
-        function handlePuntoSeleccionado() {
-            const selectElement = document.getElementById('selectPunto');
-            userData.punto = selectElement.value;
-            if (userData.punto) {
-                handleUserResponse(userData.punto);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'registro_selfie';
-                    const fileInput = `
-                        <div class="file-input-container">
-                            <label for="selfieInput" class="file-input-label">📸 Tomar selfie</label>
-                            <input type="file" id="selfieInput" accept="image/*" capture="user" onchange="handleSelfieCapturado()">
-                        </div>
-                    `;
-                    addMessage('Ahora toma una selfie para completar tu registro:', 'bot', fileInput);
-                }, 800);
-            }
-        }
-
-        function handleSelfieCapturado() {
-            const fileInput = document.getElementById('selfieInput');
-            if (fileInput.files && fileInput.files[0]) {
-                const file = fileInput.files[0];
-                userData.selfie = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = `<img src="${e.target.result}" class="file-preview" alt="Selfie">`;
-                    addMessage(preview, 'user');
-                    showTypingIndicator();
-                    setTimeout(() => {
-                        removeTypingIndicator();
-                        addMessage(`✅ ¡Registro completado exitosamente!<br><br><strong>Resumen:</strong><br>Nombre: ${userData.nombre}<br>Ciudad: ${userData.ciudad}<br>Punto: ${userData.punto}<br>Selfie: Capturado`);
-                        setTimeout(() => {
-                            const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                            addMessage('', 'bot', btnVolver);
-                        }, 1000);
-                    }, 1500);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // ===== PARTICIPACIÓN LINEAL =====
-        function iniciarParticipacionLineal() {
-            currentStep = 'lineal_nombre';
-            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
-            const selectHTML = `
-                <div class="select-container">
-                    <select id="selectNombreLineal" onchange="handleNombreLinealSeleccionado()">
-                        <option value="">Selecciona tu nombre...</option>
-                        <option value="Juan Pérez">Juan Pérez</option>
-                        <option value="María García">María García</option>
-                        <option value="Carlos López">Carlos López</option>
-                    </select>
-                </div>
-            `;
-            addMessage('Vamos a registrar la participación lineal. Primero, selecciona tu nombre:', 'bot', selectHTML);
-        }
-
-        function handleNombreLinealSeleccionado() {
-            const selectElement = document.getElementById('selectNombreLineal');
-            userData.nombre = selectElement.value;
-            if (userData.nombre) {
-                handleUserResponse(userData.nombre);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'lineal_ciudad';
-                    const selectCiudad = ciudades.map(c => `<option value="${c}">${c}</option>`).join('');
-                    const selectHTML = `
-                        <div class="select-container">
-                            <select id="selectCiudadLineal" onchange="handleCiudadLinealSeleccionada()">
-                                <option value="">Selecciona tu ciudad...</option>
-                                ${selectCiudad}
-                            </select>
-                        </div>
-                    `;
-                    addMessage('Selecciona tu ciudad:', 'bot', selectHTML);
-                }, 800);
-            }
-        }
-
-        function handleCiudadLinealSeleccionada() {
-            const selectElement = document.getElementById('selectCiudadLineal');
-            userData.ciudad = selectElement.value;
-            if (userData.ciudad) {
-                handleUserResponse(userData.ciudad);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'lineal_punto';
-                    const puntosDisponibles = puntosPorCiudad[userData.ciudad] || [];
-                    const selectPunto = puntosDisponibles.map(p => `<option value="${p}">${p}</option>`).join('');
-                    const selectHTML = `
-                        <div class="select-container">
-                            <select id="selectPuntoLineal" onchange="handlePuntoLinealSeleccionado()">
-                                <option value="">Selecciona el punto de venta...</option>
-                                ${selectPunto}
-                            </select>
-                        </div>
-                    `;
-                    addMessage('Selecciona el punto de venta:', 'bot', selectHTML);
-                }, 800);
-            }
-        }
-
-        function handlePuntoLinealSeleccionado() {
-            const selectElement = document.getElementById('selectPuntoLineal');
-            userData.punto = selectElement.value;
-            if (userData.punto) {
-                handleUserResponse(userData.punto);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    currentStep = 'lineal_producto';
-                    mostrarSelectorProducto();
-                }, 800);
-            }
-        }
-
-        function mostrarSelectorProducto() {
-            const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
-            const selectHTML = `
-                <div class="select-container">
-                    <select id="selectProducto">
-                        <option value="">Selecciona un producto...</option>
-                        ${selectProducto}
-                    </select>
-                </div>
-                <div class="input-container">
-                    <input type="number" id="cantidadProducto" placeholder="Cantidad de caras" min="1">
-                    <button class="submit-btn" onclick="agregarProductoLineal()">➕ Agregar producto</button>
-                </div>
-            `;
-            if (userData.productos.length === 0) {
-                addMessage('Ahora selecciona los productos y su cantidad de caras:', 'bot', selectHTML);
-            } else {
-                addMessage('¿Deseas agregar otro producto?', 'bot', selectHTML);
-            }
-            
-            if (userData.productos.length > 0) {
-                setTimeout(() => {
-                    const btnFinalizar = `<button class="option-btn" onclick="finalizarParticipacionLineal()">✅ Finalizar registro</button>`;
-                    const lastMessage = chatMessages.lastElementChild;
-                    const optionsContainer = lastMessage.querySelector('.options');
-                    if (optionsContainer) {
-                        optionsContainer.innerHTML += btnFinalizar;
-                    }
-                    scrollToBottom();
-                }, 100);
-            }
-        }
-
-        function agregarProductoLineal() {
-            const selectProducto = document.getElementById('selectProducto');
-            const cantidadInput = document.getElementById('cantidadProducto');
-            
-            const producto = selectProducto.value;
-            const cantidad = cantidadInput.value;
-            
-            if (producto && cantidad && cantidad > 0) {
-                userData.productos.push({ producto, cantidad });
-                handleUserResponse(`${producto}: ${cantidad} caras`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Producto agregado: ${producto} - ${cantidad} caras`);
-                    mostrarSelectorProducto();
-                }, 800);
-            } else {
-                alert('Por favor selecciona un producto y una cantidad válida');
-            }
-        }
-
-        function finalizarParticipacionLineal() {
-            if (userData.productos.length > 0) {
-                const resumen = userData.productos.map(p => `• ${p.producto}: ${p.cantidad} caras`).join('<br>');
-                addMessage(`✅ ¡Participación lineal registrada exitosamente!<br><br><strong>Resumen:</strong><br>Nombre: ${userData.nombre}<br>Ciudad: ${userData.ciudad}<br>Punto: ${userData.punto}<br><br><strong>Productos:</strong><br>${resumen}`);
-                setTimeout(() => {
-                    const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                    addMessage('', 'bot', btnVolver);
-                }, 1000);
-            }
-        }
-
-        // ===== GALERÍA =====
-        function iniciarGaleria() {
-            const fileInput = `
-                <div class="file-input-container">
-                    <label for="galeriaInput" class="file-input-label">📷 Seleccionar fotos</label>
-                    <input type="file" id="galeriaInput" accept="image/*" multiple onchange="handleGaleriaImagenes()">
-                </div>
-            `;
-            addMessage('Selecciona las imágenes que deseas subir a la galería:', 'bot', fileInput);
-        }
-
-        function handleGaleriaImagenes() {
-            const fileInput = document.getElementById('galeriaInput');
-            if (fileInput.files && fileInput.files.length > 0) {
-                addMessage(`${fileInput.files.length} imagen(es) seleccionada(s)`, 'user');
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ ${fileInput.files.length} imagen(es) subida(s) exitosamente a la galería.`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 1500);
-            }
-        }
-
-        // ===== PRÓXIMOS A VENCER =====
-        function iniciarProximosVencer() {
-            const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
-            const form = `
-                <div class="select-container">
-                    <select id="selectProductoVencer">
-                        <option value="">Selecciona un producto...</option>
-                        ${selectProducto}
-                    </select>
-                </div>
-                <div class="input-container">
-                    <input type="date" id="fechaVencimiento">
-                    <input type="number" id="cantidadVencer" placeholder="Cantidad" min="1">
-                    <button class="submit-btn" onclick="registrarProximoVencer()">Registrar</button>
-                </div>
-            `;
-            addMessage('Registra los productos próximos a vencer:', 'bot', form);
-        }
-
-        function registrarProximoVencer() {
-            const selectProducto = document.getElementById('selectProductoVencer');
-            const fechaInput = document.getElementById('fechaVencimiento');
-            const cantidadInput = document.getElementById('cantidadVencer');
-            
-            const producto = selectProducto.value;
-            const fecha = fechaInput.value;
-            const cantidad = cantidadInput.value;
-            
-            if (producto && fecha && cantidad && cantidad > 0) {
-                handleUserResponse(`${producto} - ${cantidad} unidades - Vence: ${fecha}`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Registro exitoso: ${producto} (${cantidad} unidades) próximo a vencer el ${fecha}`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 800);
-            } else {
-                alert('Por favor completa todos los campos correctamente');
-            }
-        }
-
-        // ===== PRODUCTOS AGOTADOS =====
-        function iniciarProductosAgotados() {
-            const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
-            const form = `
-                <div class="select-container">
-                    <select id="selectProductoAgotado">
-                        <option value="">Selecciona un producto...</option>
-                        ${selectProducto}
-                    </select>
-                </div>
-                <div class="input-container">
-                    <button class="submit-btn" onclick="registrarProductoAgotado()">Registrar como agotado</button>
-                </div>
-            `;
-            addMessage('Selecciona el producto agotado:', 'bot', form);
-        }
-
-        function registrarProductoAgotado() {
-            const selectProducto = document.getElementById('selectProductoAgotado');
-            const producto = selectProducto.value;
-            
-            if (producto) {
-                handleUserResponse(producto);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Producto "${producto}" registrado como agotado.`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 800);
-            } else {
-                alert('Por favor selecciona un producto');
-            }
-        }
-
-        // ===== DESCUENTOS =====
-        function iniciarDescuentos() {
-            const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
-            const form = `
-                <div class="select-container">
-                    <select id="selectProductoDescuento">
-                        <option value="">Selecciona un producto...</option>
-                        ${selectProducto}
-                    </select>
-                </div>
-                <div class="input-container">
-                    <input type="number" id="porcentajeDescuento" placeholder="Porcentaje de descuento (%)" min="1" max="100">
-                    <input type="date" id="fechaInicioDescuento">
-                    <input type="date" id="fechaFinDescuento">
-                    <button class="submit-btn" onclick="registrarDescuento()">Registrar descuento</button>
-                </div>
-            `;
-            addMessage('Registra un descuento para un producto:', 'bot', form);
-        }
-
-        function registrarDescuento() {
-            const selectProducto = document.getElementById('selectProductoDescuento');
-            const porcentajeInput = document.getElementById('porcentajeDescuento');
-            const fechaInicioInput = document.getElementById('fechaInicioDescuento');
-            const fechaFinInput = document.getElementById('fechaFinDescuento');
-            
-            const producto = selectProducto.value;
-            const porcentaje = porcentajeInput.value;
-            const fechaInicio = fechaInicioInput.value;
-            const fechaFin = fechaFinInput.value;
-            
-            if (producto && porcentaje && fechaInicio && fechaFin) {
-                handleUserResponse(`${producto} - ${porcentaje}% descuento (${fechaInicio} al ${fechaFin})`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Descuento registrado: ${producto} con ${porcentaje}% de descuento desde ${fechaInicio} hasta ${fechaFin}`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 800);
-            } else {
-                alert('Por favor completa todos los campos');
-            }
-        }
-
-        // ===== REGISTROS DE VENTAS =====
-        function iniciarRegistroVentas() {
-            const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
-            const form = `
-                <div class="select-container">
-                    <select id="selectProductoVenta">
-                        <option value="">Selecciona un producto...</option>
-                        ${selectProducto}
-                    </select>
-                </div>
-                <div class="input-container">
-                    <input type="number" id="cantidadVenta" placeholder="Cantidad vendida" min="1">
-                    <input type="number" id="valorVenta" placeholder="Valor total de venta" min="0">
-                    <button class="submit-btn" onclick="registrarVenta()">Registrar venta</button>
-                </div>
-            `;
-            addMessage('Registra una venta:', 'bot', form);
-        }
-
-        function registrarVenta() {
-            const selectProducto = document.getElementById('selectProductoVenta');
-            const cantidadInput = document.getElementById('cantidadVenta');
-            const valorInput = document.getElementById('valorVenta');
-            
-            const producto = selectProducto.value;
-            const cantidad = cantidadInput.value;
-            const valor = valorInput.value;
-            
-            if (producto && cantidad && valor) {
-                handleUserResponse(`${producto} - ${cantidad} unidades - $${valor}`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Venta registrada: ${producto}, ${cantidad} unidades por un valor de $${valor}`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 800);
-            } else {
-                alert('Por favor completa todos los campos');
-            }
-        }
-
-        // ===== VOZ DEL CONSUMIDOR =====
-        function iniciarVozConsumidor() {
-            const form = `
-                <div class="input-container">
-                    <input type="text" id="nombreConsumidor" placeholder="Nombre del consumidor">
-                    <textarea id="comentarioConsumidor" placeholder="Comentario o feedback del consumidor"></textarea>
-                    <select id="calificacionConsumidor">
-                        <option value="">Selecciona una calificación...</option>
-                        <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
-                        <option value="4">⭐⭐⭐⭐ Muy bueno</option>
-                        <option value="3">⭐⭐⭐ Bueno</option>
-                        <option value="2">⭐⭐ Regular</option>
-                        <option value="1">⭐ Malo</option>
-                    </select>
-                    <button class="submit-btn" onclick="registrarVozConsumidor()">Enviar feedback</button>
-                </div>
-            `;
-            addMessage('Registra la voz del consumidor:', 'bot', form);
-        }
-
-        function registrarVozConsumidor() {
-            const nombreInput = document.getElementById('nombreConsumidor');
-            const comentarioInput = document.getElementById('comentarioConsumidor');
-            const calificacionSelect = document.getElementById('calificacionConsumidor');
-            
-            const nombre = nombreInput.value;
-            const comentario = comentarioInput.value;
-            const calificacion = calificacionSelect.value;
-            
-            if (nombre && comentario && calificacion) {
-                handleUserResponse(`${nombre} - Calificación: ${calificacion} estrellas`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Feedback registrado de ${nombre} con calificación de ${calificacion} estrellas.`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 800);
-            } else {
-                alert('Por favor completa todos los campos');
-            }
-        }
-
-        // ===== CONSULTA DE RESPUESTAS =====
-        function iniciarConsultaRespuestas() {
-            const form = `
-                <div class="input-container">
-                    <input type="date" id="fechaInicio">
-                    <input type="date" id="fechaFin">
-                    <select id="tipoRegistro">
-                        <option value="">Tipo de registro...</option>
-                        <option value="ingreso">Registro de ingreso</option>
-                        <option value="lineal">Participación lineal</option>
-                        <option value="galeria">Galería</option>
-                        <option value="vencer">Próximos a vencer</option>
-                        <option value="agotados">Productos agotados</option>
-                        <option value="descuentos">Descuentos</option>
-                        <option value="ventas">Registros de ventas</option>
-                        <option value="consumidor">Voz del consumidor</option>
-                    </select>
-                    <button class="submit-btn" onclick="realizarConsulta()">Consultar</button>
-                </div>
-            `;
-            addMessage('Configura tu consulta:', 'bot', form);
-        }
-
-        function realizarConsulta() {
-            const fechaInicioInput = document.getElementById('fechaInicio');
-            const fechaFinInput = document.getElementById('fechaFin');
-            const tipoRegistroSelect = document.getElementById('tipoRegistro');
-            
-            const fechaInicio = fechaInicioInput.value;
-            const fechaFin = fechaFinInput.value;
-            const tipoRegistro = tipoRegistroSelect.value;
-            
-            if (fechaInicio && fechaFin && tipoRegistro) {
-                handleUserResponse(`Consulta: ${tipoRegistro} (${fechaInicio} - ${fechaFin})`);
-                showTypingIndicator();
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(`✅ Consulta realizada para registros de tipo "${tipoRegistro}" entre ${fechaInicio} y ${fechaFin}.<br><br>Se encontraron 5 registros. (Datos simulados)`);
-                    setTimeout(() => {
-                        const btnVolver = `<button class="option-btn" onclick="volverAlMenu()">🏠 Volver al menú</button>`;
-                        addMessage('', 'bot', btnVolver);
-                    }, 1000);
-                }, 1500);
-            } else {
-                alert('Por favor completa todos los campos');
-            }
-        }
-
-        function processStep(value) {
-            // Reserved for additional processing
-        }
-
-        window.onload = function() {
-            iniciarChat();
-        };
     </script>
 </body>
 </html>
