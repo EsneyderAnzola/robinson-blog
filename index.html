@@ -173,7 +173,7 @@
             max-width: 85%;
         }
 
-        input[type="text"], input[type="number"], textarea {
+        input[type="text"], input[type="number"], input[type="date"], textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #0d5c47;
@@ -181,9 +181,10 @@
             font-size: 14px;
             font-family: inherit;
             transition: all 0.3s;
+            margin-bottom: 8px;
         }
 
-        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+        input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, textarea:focus {
             outline: none;
             border-color: #0f6e54;
             box-shadow: 0 0 0 3px rgba(13, 92, 71, 0.1);
@@ -205,11 +206,12 @@
             font-size: 14px;
             font-weight: 600;
             transition: all 0.3s;
+            width: 100%;
         }
 
         .submit-btn:hover {
             background: #0f6e54;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .emoji {
@@ -232,11 +234,13 @@
             font-size: 14px;
             font-weight: 600;
             transition: all 0.3s;
+            width: 100%;
+            text-align: center;
         }
 
         .file-input-label:hover {
             background: #0f6e54;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         input[type="file"] {
@@ -309,7 +313,6 @@
             productos: []
         };
 
-        // Datos simulados
         const ciudades = ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena'];
         const puntosPorCiudad = {
             'Bogotá': ['Tienda El Dorado', 'Supermercado Centro', 'Licorería Norte'],
@@ -370,7 +373,7 @@
         function scrollToBottom() {
             setTimeout(() => {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 100);
+            }, 150);
         }
 
         function handleUserResponse(text, value = null) {
@@ -405,13 +408,7 @@
 
         function volverAlMenu() {
             currentStep = 'inicio';
-            userData = {
-                nombre: '',
-                ciudad: '',
-                punto: '',
-                selfie: null,
-                productos: []
-            };
+            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
             addMessage('Volviendo al menú principal...', 'bot');
             setTimeout(() => {
                 const menuOptions = `
@@ -429,10 +426,10 @@
             }, 800);
         }
 
-        // REGISTRO DE INGRESO
+        // ===== REGISTRO DE INGRESO =====
         function iniciarRegistroIngreso() {
             currentStep = 'registro_nombre';
-            const selectOptions = ciudades.map(c => `<option value="${c}">${c}</option>`).join('');
+            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
             const select = `
                 <div class="select-container">
                     <select id="selectNombre" onchange="handleNombreSeleccionado()">
@@ -524,9 +521,10 @@
             }
         }
 
-        // PARTICIPACIÓN LINEAL
+        // ===== PARTICIPACIÓN LINEAL =====
         function iniciarParticipacionLineal() {
             currentStep = 'lineal_nombre';
+            userData = { nombre: '', ciudad: '', punto: '', selfie: null, productos: [] };
             const select = `
                 <div class="select-container">
                     <select id="selectNombreLineal" onchange="handleNombreLinealSeleccionado()">
@@ -584,7 +582,6 @@
             userData.punto = select.value;
             if (userData.punto) {
                 handleUserResponse(userData.punto);
-                userData.productos = [];
                 currentStep = 'lineal_producto';
                 mostrarSelectorProducto();
             }
@@ -601,7 +598,7 @@
                 </div>
                 <div class="input-container">
                     <input type="number" id="cantidadProducto" placeholder="Cantidad de caras" min="1">
-                    <button class="submit-btn" onclick="agregarProductoLineal()">Agregar producto</button>
+                    <button class="submit-btn" onclick="agregarProductoLineal()">➕ Agregar producto</button>
                 </div>
             `;
             if (userData.productos.length === 0) {
@@ -611,8 +608,8 @@
             }
             
             if (userData.productos.length > 0) {
-                const btnFinalizar = `<button class="option-btn" onclick="finalizarParticipacionLineal()">✅ Finalizar registro</button>`;
                 setTimeout(() => {
+                    const btnFinalizar = `<button class="option-btn" onclick="finalizarParticipacionLineal()">✅ Finalizar registro</button>`;
                     const lastMessage = chatMessages.lastElementChild;
                     const optionsContainer = lastMessage.querySelector('.options');
                     if (optionsContainer) {
@@ -633,7 +630,6 @@
             if (producto && cantidad && cantidad > 0) {
                 userData.productos.push({ producto, cantidad });
                 handleUserResponse(`${producto}: ${cantidad} caras`);
-                cantidadInput.value = '';
                 showTypingIndicator();
                 setTimeout(() => {
                     removeTypingIndicator();
@@ -656,9 +652,8 @@
             }
         }
 
-        // GALERÍA
+        // ===== GALERÍA =====
         function iniciarGaleria() {
-            currentStep = 'galeria';
             const fileInput = `
                 <div class="file-input-container">
                     <label for="galeriaInput" class="file-input-label">📷 Seleccionar fotos</label>
@@ -684,9 +679,8 @@
             }
         }
 
-        // PRÓXIMOS A VENCER
+        // ===== PRÓXIMOS A VENCER =====
         function iniciarProximosVencer() {
-            currentStep = 'proximos_vencer';
             const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
             const form = `
                 <div class="select-container">
@@ -696,7 +690,7 @@
                     </select>
                 </div>
                 <div class="input-container">
-                    <input type="date" id="fechaVencimiento" placeholder="Fecha de vencimiento">
+                    <input type="date" id="fechaVencimiento">
                     <input type="number" id="cantidadVencer" placeholder="Cantidad" min="1">
                     <button class="submit-btn" onclick="registrarProximoVencer()">Registrar</button>
                 </div>
@@ -729,9 +723,8 @@
             }
         }
 
-        // PRODUCTOS AGOTADOS
+        // ===== PRODUCTOS AGOTADOS =====
         function iniciarProductosAgotados() {
-            currentStep = 'productos_agotados';
             const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
             const form = `
                 <div class="select-container">
@@ -767,9 +760,8 @@
             }
         }
 
-        // DESCUENTOS
+        // ===== DESCUENTOS =====
         function iniciarDescuentos() {
-            currentStep = 'descuentos';
             const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
             const form = `
                 <div class="select-container">
@@ -780,8 +772,8 @@
                 </div>
                 <div class="input-container">
                     <input type="number" id="porcentajeDescuento" placeholder="Porcentaje de descuento (%)" min="1" max="100">
-                    <input type="date" id="fechaInicioDescuento" placeholder="Fecha inicio">
-                    <input type="date" id="fechaFinDescuento" placeholder="Fecha fin">
+                    <input type="date" id="fechaInicioDescuento">
+                    <input type="date" id="fechaFinDescuento">
                     <button class="submit-btn" onclick="registrarDescuento()">Registrar descuento</button>
                 </div>
             `;
@@ -815,9 +807,8 @@
             }
         }
 
-        // REGISTROS DE VENTAS
+        // ===== REGISTROS DE VENTAS =====
         function iniciarRegistroVentas() {
-            currentStep = 'registro_ventas';
             const selectProducto = productos.map(p => `<option value="${p}">${p}</option>`).join('');
             const form = `
                 <div class="select-container">
@@ -860,9 +851,8 @@
             }
         }
 
-        // VOZ DEL CONSUMIDOR
+        // ===== VOZ DEL CONSUMIDOR =====
         function iniciarVozConsumidor() {
-            currentStep = 'voz_consumidor';
             const form = `
                 <div class="input-container">
                     <input type="text" id="nombreConsumidor" placeholder="Nombre del consumidor">
@@ -906,13 +896,12 @@
             }
         }
 
-        // CONSULTA DE RESPUESTAS
+        // ===== CONSULTA DE RESPUESTAS =====
         function iniciarConsultaRespuestas() {
-            currentStep = 'consulta';
             const form = `
                 <div class="input-container">
-                    <input type="date" id="fechaInicio" placeholder="Fecha inicio">
-                    <input type="date" id="fechaFin" placeholder="Fecha fin">
+                    <input type="date" id="fechaInicio">
+                    <input type="date" id="fechaFin">
                     <select id="tipoRegistro">
                         <option value="">Tipo de registro...</option>
                         <option value="ingreso">Registro de ingreso</option>
@@ -956,15 +945,15 @@
         }
 
         function processStep(value) {
-            // Esta función se puede usar para manejar pasos adicionales si es necesario
+            // Reserved for additional processing
         }
 
-        // Iniciar el chat al cargar la página
         window.onload = function() {
             iniciarChat();
         };
     </script>
 </body>
 </html>
+
 
 
