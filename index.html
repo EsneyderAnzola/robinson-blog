@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Asistente PDV | Chatbot</title>
+    <title>PDV - Ingreso | Chatbot</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,6 @@
             justify-content: center;
             align-items: center;
             padding: 0;
-            position: relative;
             overflow: hidden;
         }
 
@@ -31,7 +30,6 @@
             right: 0;
             bottom: 0;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 20 Q10 10 20 20 T40 20" stroke="%23d9d9d9" stroke-width="0.5" fill="none" opacity="0.4"/></pattern></defs><rect width="400" height="400" fill="%23e5ddd5"/><rect width="400" height="400" fill="url(%23pattern)"/></svg>');
-            opacity: 1;
         }
 
         .chat-container {
@@ -60,12 +58,12 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #f39c12 100%);
+            background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            flex-shrink: 0;
         }
 
         .header-info {
@@ -81,40 +79,18 @@
         .header-status {
             font-size: 0.75em;
             color: rgba(255,255,255,0.8);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .online-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #25d366;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .chat-messages {
             flex: 1;
-            padding: 12px 8px 80px 8px;
+            padding: 12px 8px 80px;
             overflow-y: auto;
-            overflow-x: hidden;
             background: #e5ddd5;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 20 Q10 10 20 20 T40 20" stroke="%23d9d9d9" stroke-width="0.5" fill="none" opacity="0.4"/></pattern></defs><rect width="400" height="400" fill="%23e5ddd5"/><rect width="400" height="400" fill="url(%23pattern)"/></svg>');
-            scroll-behavior: smooth;
         }
 
         .chat-messages::-webkit-scrollbar {
             width: 6px;
-        }
-
-        .chat-messages::-webkit-scrollbar-track {
-            background: transparent;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
@@ -131,14 +107,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message-content {
@@ -176,20 +146,17 @@
             color: #667781;
             text-align: right;
             margin-top: 4px;
-            padding-right: 4px;
         }
 
+        /* Selector con glassmorphism */
         .select-bubble {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(30px) saturate(200%) contrast(120%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%) contrast(120%);
-            padding: 8px 12px 12px 12px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            padding: 10px 12px 12px;
             border-radius: 0 8px 8px 8px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.6),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
             border: 1.5px solid rgba(255, 255, 255, 0.5);
-            color: #303030;
             max-width: 85%;
             margin-top: 8px;
         }
@@ -199,11 +166,6 @@
             font-size: 0.95em;
             color: #303030;
             font-weight: 500;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-        }
-
-        .select-container {
-            width: 100%;
         }
 
         .custom-select {
@@ -215,8 +177,8 @@
             width: 100%;
             padding: 12px 14px;
             background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(35px) saturate(200%) contrast(115%);
-            -webkit-backdrop-filter: blur(35px) saturate(200%) contrast(115%);
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
             border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 10px;
             color: #303030;
@@ -225,31 +187,20 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            transition: all 0.3s;
         }
 
-        .select-button:hover {
-            background: rgba(255, 255, 255, 0.5);
-            border-color: rgba(37, 211, 102, 0.5);
-            backdrop-filter: blur(40px) saturate(220%);
-            -webkit-backdrop-filter: blur(40px) saturate(220%);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.15);
-            transform: translateY(-1px);
+        .select-button:active {
+            transform: scale(0.98);
         }
 
         .select-button.active {
             border-color: rgba(37, 211, 102, 0.7);
             background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(45px) saturate(250%);
-            -webkit-backdrop-filter: blur(45px) saturate(250%);
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.25),
-                        inset 0 0 20px rgba(37, 211, 102, 0.1);
         }
 
         .select-arrow {
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
             font-size: 0.8em;
             color: #667781;
         }
@@ -264,16 +215,14 @@
             left: 0;
             right: 0;
             background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(50px) saturate(220%) contrast(125%);
-            -webkit-backdrop-filter: blur(50px) saturate(220%) contrast(125%);
+            backdrop-filter: blur(50px);
+            -webkit-backdrop-filter: blur(50px);
             border: 2px solid rgba(255, 255, 255, 0.5);
             border-radius: 14px;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2),
-                        inset 0 2px 0 rgba(255, 255, 255, 0.6),
-                        inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.4s;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
             z-index: 1000;
         }
 
@@ -287,19 +236,9 @@
             width: 5px;
         }
 
-        .select-dropdown::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
         .select-dropdown::-webkit-scrollbar-thumb {
             background: rgba(37, 211, 102, 0.4);
             border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
-
-        .select-dropdown::-webkit-scrollbar-thumb:hover {
-            background: rgba(37, 211, 102, 0.6);
         }
 
         .select-search {
@@ -307,44 +246,26 @@
             top: 0;
             padding: 8px;
             background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            backdrop-filter: blur(25px);
             z-index: 10;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
             border-radius: 10px 10px 0 0;
-            margin: -2px -2px 8px -2px;
+            margin: -2px -2px 8px;
         }
 
         .select-search input {
             width: 100%;
             padding: 10px 12px;
             background: rgba(240, 240, 240, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             border: 1.5px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
             color: #303030;
             font-size: 0.9em;
             outline: none;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
-        }
-
-        .select-search input::placeholder {
-            color: #667781;
         }
 
         .select-search input:focus {
-            background: rgba(240, 240, 240, 0.6);
             border-color: rgba(37, 211, 102, 0.6);
-            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1),
-                        inset 0 2px 4px rgba(0, 0, 0, 0.06);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-        }
-
-        .select-options {
-            padding: 4px 0;
         }
 
         .select-option {
@@ -353,30 +274,40 @@
             cursor: pointer;
             border-radius: 9px;
             margin: 3px 0;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s;
             font-size: 0.9em;
             background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px) saturate(150%);
-            -webkit-backdrop-filter: blur(15px) saturate(150%);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         .select-option:hover {
             background: rgba(37, 211, 102, 0.18);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
             border-color: rgba(37, 211, 102, 0.4);
-            transform: translateX(3px) scale(1.01);
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transform: translateX(3px);
         }
 
         .select-option:active {
-            background: rgba(37, 211, 102, 0.3);
             transform: scale(0.97);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Captura de ubicación y foto */
+        .capture-container {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            padding: 12px;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            max-width: 85%;
+            margin-top: 8px;
+        }
+
+        .capture-title {
+            font-size: 0.95em;
+            color: #303030;
+            font-weight: 500;
+            margin-bottom: 10px;
         }
 
         .action-button {
@@ -393,132 +324,44 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-        }
-
-        .action-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+            margin-bottom: 8px;
         }
 
         .action-button:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
 
         .action-button:disabled {
             background: linear-gradient(135deg, #b0b0b0 0%, #999999 100%);
             cursor: not-allowed;
-            opacity: 0.6;
         }
 
         .action-button.camera-btn {
             background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
         }
 
-        .action-button.camera-btn:hover {
-            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
-        }
-
-        /* MODAL PARA EL IFRAME DEL SCRIPT */
-        .camera-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
+        video {
+            width: 100%;
+            border-radius: 10px;
+            margin: 8px 0;
+            transform: scaleX(-1);
             display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 10px;
-            animation: fadeInModal 0.3s ease;
         }
 
-        @keyframes fadeInModal {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .camera-modal.active {
-            display: flex;
-        }
-
-        .camera-modal-content {
-            background: white;
-            border-radius: 16px;
+        .captured-photo {
             width: 100%;
-            max-width: 500px;
-            height: 90vh;
-            max-height: 700px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-            animation: slideUpModal 0.4s ease;
+            border-radius: 10px;
+            margin-top: 8px;
+            display: none;
         }
 
-        @keyframes slideUpModal {
-            from {
-                transform: translateY(100%);
-            }
-            to {
-                transform: translateY(0);
-            }
-        }
-
-        .camera-modal-header {
-            background: linear-gradient(135deg, #075e54 0%, #128c7e 100%);
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .camera-modal-header h3 {
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-
-        .camera-modal-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            transition: all 0.3s;
-        }
-
-        .camera-modal-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
-
-        .camera-modal-iframe {
-            width: 100%;
-            height: calc(100% - 60px);
-            border: none;
-        }
-
-        .success-icon {
-            display: inline-block;
-            animation: bounce 0.6s ease;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        .info-text {
+            font-size: 0.85em;
+            color: #667781;
+            margin-top: 8px;
+            text-align: center;
         }
 
         .chat-input-area {
@@ -537,7 +380,6 @@
             display: flex;
             align-items: center;
             padding: 8px 15px;
-            min-height: 42px;
         }
 
         #userInput {
@@ -545,15 +387,8 @@
             border: none;
             outline: none;
             font-size: 0.95em;
-            font-family: inherit;
             background: transparent;
             color: #303030;
-            resize: none;
-            max-height: 100px;
-        }
-
-        #userInput::placeholder {
-            color: #667781;
         }
 
         #sendBtn {
@@ -569,27 +404,19 @@
             justify-content: center;
             font-size: 1.2em;
             transition: all 0.2s;
-            flex-shrink: 0;
         }
 
-        #sendBtn:hover:not(:disabled) {
-            background: #20ba5a;
-            transform: scale(1.05);
-        }
-
-        #sendBtn:active:not(:disabled) {
+        #sendBtn:active {
             transform: scale(0.95);
         }
 
         #sendBtn:disabled {
             background: #b0b0b0;
-            cursor: not-allowed;
         }
 
         .typing-indicator {
             display: flex;
             gap: 4px;
-            padding: 4px 0;
         }
 
         .typing-dot {
@@ -600,82 +427,32 @@
             animation: typing 1.4s infinite;
         }
 
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-8px);
-            }
-        }
-
-        .summary-box {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
-            color: #303030;
-            padding: 14px;
-            border-radius: 10px;
-            margin-top: 8px;
-            line-height: 1.6;
-            font-size: 0.9em;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .summary-box strong {
-            color: #075e54;
-        }
-
-        .summary-item {
-            margin: 6px 0;
-            padding: 6px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .summary-item:last-child {
-            border-bottom: none;
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
         }
 
         .menu-options {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .menu-button {
             padding: 12px;
             background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            backdrop-filter: blur(25px);
             border: 1.5px solid rgba(255, 255, 255, 0.4);
             border-radius: 10px;
             color: #303030;
             cursor: pointer;
             font-size: 0.9em;
             font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .menu-button:hover {
-            background: rgba(37, 211, 102, 0.2);
-            backdrop-filter: blur(30px) saturate(220%);
-            -webkit-backdrop-filter: blur(30px) saturate(220%);
-            border-color: rgba(37, 211, 102, 0.5);
-            transform: translateY(-1px);
-            box-shadow: 0 5px 14px rgba(37, 211, 102, 0.2);
+            transition: all 0.3s;
         }
 
         .menu-button:active {
@@ -683,10 +460,6 @@
         }
 
         @media (min-width: 768px) {
-            body {
-                padding: 20px;
-            }
-
             .chat-container {
                 max-width: 500px;
                 height: 700px;
@@ -696,24 +469,6 @@
 
             .chat-header {
                 border-radius: 12px 12px 0 0;
-            }
-
-            .message-content {
-                max-width: 75%;
-            }
-
-            .select-bubble {
-                max-width: 75%;
-            }
-
-            .camera-modal-content {
-                max-width: 450px;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .select-dropdown.active {
-                max-height: 200px;
             }
         }
     </style>
@@ -725,13 +480,12 @@
             <div class="header-avatar">🍺</div>
             <div class="header-info">
                 <div class="header-name">Asistente PDV Beer</div>
-                <div class="header-status">
-                    <span class="online-dot"></span>
-                    <span>en línea</span>
-                </div>
+                <div class="header-status">en línea</div>
             </div>
         </div>
+
         <div class="chat-messages" id="chatMessages"></div>
+
         <div class="chat-input-area">
             <div class="input-wrapper">
                 <input type="text" id="userInput" placeholder="Mensaje" disabled>
@@ -740,18 +494,10 @@
         </div>
     </div>
 
-    <!-- MODAL PARA CÁMARA -->
-    <div class="camera-modal" id="cameraModal">
-        <div class="camera-modal-content">
-            <div class="camera-modal-header">
-                <h3>📍📸 Ubicación y Selfie</h3>
-                <button class="camera-modal-close" onclick="closeCameraModal()">✕</button>
-            </div>
-            <iframe id="cameraIframe" class="camera-modal-iframe"></iframe>
-        </div>
-    </div>
+    <video id="videoStream" autoplay playsinline></video>
+    <canvas id="photoCanvas" style="display:none;"></canvas>
 
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
     <form id="googleForm" 
           action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
           target="hidden_iframe" 
@@ -766,8 +512,8 @@
     </form>
 
     <script>
-        // URL DE TU GOOGLE APPS SCRIPT
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzbtsvCZ_S8qB58t8RflN9Af9S4h1H5zPzBbkHyQVpQHj07_Oa-HDbekdx8Dz8hF_qC/exec';
+        // URL de tu Google Apps Script
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCvuZE34DkSCMy7Z_dr7DEaye3a2K2nArlePMG8QuFnxBSjduy4OK8pB1eUR9Nb4PI/exec';
 
         const formData = {
             asesor: '',
@@ -778,99 +524,106 @@
         };
 
         const asesores = [
-            'Juan David Benavides González',
-            'Robinson Esneyder Zapata Anzola',
-            'Sheyla Carolina Gómez Patiño',
-            'Harlinton Roisel Ortega Nieves',
-            'Maria Paula Contreras',
-            'Leidy Jhoanna Restrepo Zapata',
-            'Daniela Andrea Calvo Corena',
-            'Yadina Villanueva Sibaja',
-            'Sandra Viviana Zapata Viafara',
-            'Stefany Bernal Tique',
-            'Angie Vanessa Valenciano Romero',
-            'Sara Florez Velez',
-            'Sara Posso Quintero',
-            'Juliet Lasso Ramirez',
-            'Jenny Marcela Jaramillo Mejia',
-            'David Lopez Cardenas',
-            'Ashly Valentina Montoya Rincon',
-            'Jaime Andres Castro Diaz',
+            'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
+            'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
+            'Maria Paula Contreras', 'Leidy Jhoanna Restrepo Zapata',
+            'Daniela Andrea Calvo Corena', 'Yadina Villanueva Sibaja',
+            'Sandra Viviana Zapata Viafara', 'Stefany Bernal Tique',
+            'Angie Vanessa Valenciano Romero', 'Sara Florez Velez',
+            'Sara Posso Quintero', 'Juliet Lasso Ramirez',
+            'Jenny Marcela Jaramillo Mejia', 'David Lopez Cardenas',
+            'Ashly Valentina Montoya Rincon', 'Jaime Andres Castro Diaz',
             'Sergio Alejandro Murillo Gonzales'
         ];
 
         const ciudades = [
-            'Arjona', 'Armenia', 'Barranquilla', 'Cali', 'Cartagena', 'Fusagasugá', 
-            'Girardot', 'Guadalajara De Buga', 'Jamundi', 'La Mesa', 'Malambo', 
-            'Manizales', 'Melgar', 'Neiva', 'Palmira', 'Pereira', 'Pereira- Dosquebradas', 
-            'Popayan', 'Soledad', 'Tulua', 'Tunja', 'Turbaco', 'Villavicencio', 
+            'Arjona', 'Armenia', 'Barranquilla', 'Cali', 'Cartagena', 'Fusagasugá',
+            'Girardot', 'Guadalajara De Buga', 'Jamundi', 'La Mesa', 'Malambo',
+            'Manizales', 'Melgar', 'Neiva', 'Palmira', 'Pereira', 'Pereira- Dosquebradas',
+            'Popayan', 'Soledad', 'Tulua', 'Tunja', 'Turbaco', 'Villavicencio',
             'Yumbo', 'Ibagué'
         ];
 
         const puntosVenta = [
-            'STO 116 ARJONA',
-            'Ex 065 Exito Unicentro Armenia',
-            'Carulla Feria De Los Platanos',
-            'Sa 358 Portal Del Quindio',
-            'Sa 366 San Diego',
-            'Si 4235 Super Inter Las Americas',
-            'Ex 628 Exito Armenia',
-            'Si 4239 Super Inter Armenia Plaza',
-            'Oxxo Esquina Laureles',
-            'St 355 Armenia Norte'
-        ];
-
-        const reportesOpciones = [
-            'Galería de Ejecución',
-            'Participación de Lineal',
-            'Próximos a Vencer',
-            'Productos Agotados',
-            'Descuentos',
-            'Registro de Ventas',
-            'Salida'
+            'STO 116 ARJONA', 'Ex 065 Exito Unicentro Armenia',
+            'Carulla Feria De Los Platanos', 'Sa 358 Portal Del Quindio',
+            'Sa 366 San Diego', 'Si 4235 Super Inter Las Americas',
+            'Ex 628 Exito Armenia', 'Si 4239 Super Inter Armenia Plaza',
+            'Oxxo Esquina Laureles', 'St 355 Armenia Norte'
         ];
 
         let currentStep = 0;
-        let isWaitingForResponse = false;
-        let currentSelectId = null;
+        let videoStream = null;
+        let photoBase64 = null;
 
         const chatMessages = document.getElementById('chatMessages');
         const userInput = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
-        const cameraModal = document.getElementById('cameraModal');
-        const cameraIframe = document.getElementById('cameraIframe');
 
         function getTime() {
             const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + 
-                   now.getMinutes().toString().padStart(2, '0');
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         }
 
-        function scrollToBottom(smooth = true) {
-            setTimeout(() => {
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, smooth ? 100 : 0);
+        function scrollToBottom() {
+            setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 100);
         }
 
-        function createCustomSelect(options, placeholder = 'Seleccionar...', labelText = '') {
-            const selectId = 'select-' + Date.now();
-            currentSelectId = selectId;
+        function addBotMessage(text, customElement = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message bot-message';
 
+            if (!customElement) {
+                const bubble = document.createElement('div');
+                bubble.className = 'message-content';
+                bubble.innerHTML = text;
+                
+                const time = document.createElement('div');
+                time.className = 'message-time';
+                time.textContent = getTime();
+                bubble.appendChild(time);
+                
+                wrapper.appendChild(bubble);
+            } else {
+                wrapper.appendChild(customElement);
+            }
+
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function addUserMessage(text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message user-message';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-content';
+            bubble.textContent = text;
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = getTime();
+            bubble.appendChild(time);
+
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function createSelect(options, placeholder, label) {
             const bubble = document.createElement('div');
             bubble.className = 'select-bubble';
 
-            if (labelText) {
-                const label = document.createElement('div');
-                label.className = 'select-bubble-text';
-                label.textContent = labelText;
-                bubble.appendChild(label);
-            }
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'select-bubble-text';
+            titleDiv.textContent = label;
+            bubble.appendChild(titleDiv);
 
+            const selectId = 'select-' + Date.now();
             const container = document.createElement('div');
-            container.className = 'select-container';
             container.innerHTML = `
                 <div class="custom-select">
-                    <div class="select-button" id="${selectId}-button">
+                    <div class="select-button" id="${selectId}-btn">
                         <span id="${selectId}-text">${placeholder}</span>
                         <span class="select-arrow">▼</span>
                     </div>
@@ -882,49 +635,47 @@
                     </div>
                 </div>
             `;
-
             bubble.appendChild(container);
 
             setTimeout(() => {
-                const button = document.getElementById(`${selectId}-button`);
+                const btn = document.getElementById(`${selectId}-btn`);
                 const dropdown = document.getElementById(`${selectId}-dropdown`);
-                const searchInput = document.getElementById(`${selectId}-search`);
+                const search = document.getElementById(`${selectId}-search`);
                 const optionsContainer = document.getElementById(`${selectId}-options`);
                 const textSpan = document.getElementById(`${selectId}-text`);
 
-                options.forEach(option => {
-                    const optionDiv = document.createElement('div');
-                    optionDiv.className = 'select-option';
-                    optionDiv.textContent = option;
-                    optionDiv.dataset.value = option;
-                    optionDiv.onclick = () => selectOption(option, selectId, textSpan, button, dropdown);
-                    optionsContainer.appendChild(optionDiv);
+                options.forEach(opt => {
+                    const optDiv = document.createElement('div');
+                    optDiv.className = 'select-option';
+                    optDiv.textContent = opt;
+                    optDiv.onclick = () => {
+                        textSpan.textContent = opt;
+                        dropdown.classList.remove('active');
+                        btn.classList.remove('active');
+                        btn.style.pointerEvents = 'none';
+                        btn.style.opacity = '0.6';
+                        addUserMessage(opt);
+                        processResponse(opt);
+                    };
+                    optionsContainer.appendChild(optDiv);
                 });
 
-                button.onclick = (e) => {
+                btn.onclick = (e) => {
                     e.stopPropagation();
-                    const isActive = dropdown.classList.contains('active');
-
-                    document.querySelectorAll('.select-dropdown.active').forEach(d => {
-                        d.classList.remove('active');
-                        d.previousElementSibling.classList.remove('active');
-                    });
-
-                    if (!isActive) {
+                    const isOpen = dropdown.classList.contains('active');
+                    document.querySelectorAll('.select-dropdown').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.select-button').forEach(b => b.classList.remove('active'));
+                    if (!isOpen) {
                         dropdown.classList.add('active');
-                        button.classList.add('active');
-                        searchInput.focus();
-                        // Scroll automático cuando se abre la lista
-                        scrollToBottom(true);
+                        btn.classList.add('active');
+                        search.focus();
                     }
                 };
 
-                searchInput.addEventListener('input', (e) => {
-                    const term = e.target.value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-                    const allOptions = optionsContainer.querySelectorAll('.select-option');
-
-                    allOptions.forEach(opt => {
-                        const text = opt.textContent.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+                search.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    optionsContainer.querySelectorAll('.select-option').forEach(opt => {
+                        const text = opt.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                         opt.style.display = text.includes(term) ? 'block' : 'none';
                     });
                 });
@@ -932,120 +683,173 @@
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select')) {
                         dropdown.classList.remove('active');
-                        button.classList.remove('active');
+                        btn.classList.remove('active');
                     }
                 });
-
             }, 100);
 
             return bubble;
         }
 
-        function selectOption(value, selectId, textSpan, button, dropdown) {
-            textSpan.textContent = value;
-            dropdown.classList.remove('active');
-            button.classList.remove('active');
-
-            addMessage(value, true);
-            processResponse(value);
-
-            button.onclick = null;
-            button.style.opacity = '0.6';
-            button.style.cursor = 'not-allowed';
-        }
-
-        function addMessage(text, isUser = false, customElement = null) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-
-            if (!customElement) {
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-
-                const textDiv = document.createElement('div');
-                textDiv.innerHTML = text;
-                contentDiv.appendChild(textDiv);
-
-                const timeDiv = document.createElement('div');
-                timeDiv.className = 'message-time';
-                timeDiv.textContent = getTime();
-                contentDiv.appendChild(timeDiv);
-
-                messageDiv.appendChild(contentDiv);
-            } else {
-                messageDiv.appendChild(customElement);
-            }
-
-            chatMessages.appendChild(messageDiv);
-            scrollToBottom(true);
-        }
-
-        function addCameraButton() {
-            const bubble = document.createElement('div');
-            bubble.className = 'select-bubble';
-
-            const label = document.createElement('div');
-            label.className = 'select-bubble-text';
-            label.textContent = 'Ahora registra tu ubicación y selfie:';
-            bubble.appendChild(label);
-
+        function createCaptureContainer() {
             const container = document.createElement('div');
-            container.style.marginTop = '10px';
+            container.className = 'capture-container';
+            container.id = 'captureContainer';
 
-            const btn = document.createElement('button');
-            btn.className = 'action-button camera-btn';
-            btn.innerHTML = '📍📸 Abrir captura';
-            btn.onclick = openCameraModal;
-            container.appendChild(btn);
+            container.innerHTML = `
+                <div class="capture-title">Captura de ubicación y foto:</div>
+                <button class="action-button" id="locationBtn">📍 Capturar ubicación</button>
+                <button class="action-button camera-btn" id="cameraBtn" style="display:none;">📸 Abrir cámara</button>
+                <video id="videoPreview" autoplay playsinline></video>
+                <button class="action-button" id="capturePhotoBtn" style="display:none;">✓ Capturar foto</button>
+                <img id="capturedPhoto" class="captured-photo">
+                <div class="info-text" id="infoText"></div>
+            `;
 
-            bubble.appendChild(container);
+            setTimeout(() => {
+                document.getElementById('locationBtn').onclick = captureLocation;
+                document.getElementById('cameraBtn').onclick = openCamera;
+                document.getElementById('capturePhotoBtn').onclick = takePhoto;
+            }, 100);
 
-            return bubble;
+            return container;
         }
 
-        function openCameraModal() {
-            // Cargar iframe con parámetro del asesor
-            const url = `${GOOGLE_SCRIPT_URL}?asesor=${encodeURIComponent(formData.asesor)}`;
-            cameraIframe.src = url;
-            cameraModal.classList.add('active');
-        }
+        function captureLocation() {
+            const btn = document.getElementById('locationBtn');
+            const infoText = document.getElementById('infoText');
+            
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Obteniendo ubicación...';
+            infoText.textContent = 'Obteniendo tu ubicación GPS...';
 
-        function closeCameraModal() {
-            cameraModal.classList.remove('active');
-            cameraIframe.src = '';
-        }
-
-        // Escuchar mensajes del iframe (postMessage)
-        window.addEventListener('message', (event) => {
-            // Validar origen si es necesario
-            if (event.data && event.data.type === 'PDV_DATA_CAPTURED') {
-                const { ubicacion, fotoUrl, fileName } = event.data;
-
-                // Cerrar modal
-                closeCameraModal();
-
-                // Guardar datos
-                formData.ubicacion = ubicacion;
-                formData.selfie = fotoUrl;
-
-                // Mostrar confirmación
-                addMessage(`<span class="success-icon">✅</span> Datos capturados exitosamente`, true);
-
-                setTimeout(() => {
-                    addMessage(`📍 Ubicación: ${ubicacion}<br>📸 Foto: ${fileName}`);
-
-                    setTimeout(() => {
-                        processResponse('ubicacion_y_foto_capturadas');
-                    }, 600);
-                }, 500);
+            if (!navigator.geolocation) {
+                infoText.textContent = '❌ Tu dispositivo no soporta geolocalización';
+                btn.disabled = false;
+                btn.innerHTML = '📍 Capturar ubicación';
+                return;
             }
-        });
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const coords = `${position.coords.latitude.toFixed(7)},${position.coords.longitude.toFixed(7)}`;
+                    formData.ubicacion = coords;
+                    
+                    btn.innerHTML = '✓ Ubicación capturada';
+                    btn.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
+                    infoText.textContent = `✓ Coordenadas: ${coords}`;
+                    
+                    setTimeout(() => {
+                        document.getElementById('cameraBtn').style.display = 'block';
+                    }, 500);
+                },
+                (error) => {
+                    infoText.textContent = '❌ No se pudo obtener la ubicación';
+                    btn.disabled = false;
+                    btn.innerHTML = '📍 Reintentar';
+                },
+                { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+            );
+        }
+
+        async function openCamera() {
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('videoPreview');
+            const infoText = document.getElementById('infoText');
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Iniciando cámara...';
+                infoText.textContent = 'Iniciando cámara frontal...';
+
+                videoStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false
+                });
+
+                video.srcObject = videoStream;
+                video.style.display = 'block';
+                
+                btn.style.display = 'none';
+                document.getElementById('capturePhotoBtn').style.display = 'block';
+                infoText.textContent = '✓ Cámara activa. Cuando estés listo, captura tu foto.';
+
+            } catch (error) {
+                infoText.textContent = '❌ Error al acceder a la cámara';
+                btn.disabled = false;
+                btn.innerHTML = '📸 Abrir cámara';
+            }
+        }
+
+        async function takePhoto() {
+            const btn = document.getElementById('capturePhotoBtn');
+            const video = document.getElementById('videoPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const capturedImg = document.getElementById('capturedPhoto');
+            const infoText = document.getElementById('infoText');
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '⏳ Capturando...';
+                infoText.textContent = '📸 Capturando foto...';
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.translate(canvas.width, 0);
+                context.scale(-1, 1);
+                context.drawImage(video, 0, 0);
+
+                photoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                capturedImg.src = photoBase64;
+                capturedImg.style.display = 'block';
+
+                if (videoStream) {
+                    videoStream.getTracks().forEach(track => track.stop());
+                }
+                video.style.display = 'none';
+                btn.style.display = 'none';
+
+                infoText.textContent = '⏳ Subiendo foto a Drive...';
+
+                // Subir a Drive
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        image: photoBase64,
+                        asesor: formData.asesor,
+                        ubicacion: formData.ubicacion
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    formData.selfie = result.publicUrl;
+                    infoText.textContent = `✓ Foto guardada: ${result.fileName}`;
+                    
+                    setTimeout(() => {
+                        addUserMessage('✓ Ubicación y foto capturadas');
+                        processResponse('captured_data');
+                    }, 1000);
+                } else {
+                    throw new Error(result.error || 'Error al guardar');
+                }
+
+            } catch (error) {
+                infoText.textContent = `❌ Error: ${error.message}`;
+                btn.disabled = false;
+                btn.innerHTML = '✓ Capturar foto';
+                btn.style.display = 'block';
+            }
+        }
 
         function showTyping() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message bot-message';
-            typingDiv.id = 'typing';
-            typingDiv.innerHTML = `
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message bot-message';
+            wrapper.id = 'typing';
+            wrapper.innerHTML = `
                 <div class="message-content">
                     <div class="typing-indicator">
                         <div class="typing-dot"></div>
@@ -1054,8 +858,8 @@
                     </div>
                 </div>
             `;
-            chatMessages.appendChild(typingDiv);
-            scrollToBottom(true);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
         }
 
         function hideTyping() {
@@ -1063,190 +867,50 @@
             if (typing) typing.remove();
         }
 
-        function enableInput() {
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.focus();
-            isWaitingForResponse = true;
-        }
-
-        function disableInput() {
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            isWaitingForResponse = false;
-        }
-
         function processResponse(response) {
-            disableInput();
-            userInput.value = '';
-
             showTyping();
 
             setTimeout(() => {
                 hideTyping();
 
                 switch(currentStep) {
-                    case 0: // Inicio - Registrar ingreso
-                        if (response.toLowerCase().includes('ingreso') || response === 'start_ingreso') {
-                            addMessage('Perfecto, vamos a registrar tu ingreso. 📝');
-                            setTimeout(() => {
-                                const bubble = createCustomSelect(asesores, 'Selecciona tu nombre...', 'Primero, identifícate:');
-                                addMessage('', false, bubble);
-                                currentStep = 1;
-                            }, 600);
-                        } else {
-                            addMessage('Por el momento solo puedo ayudarte con el <strong>registro de ingreso</strong>. Las demás opciones estarán disponibles pronto. 😊');
-                            setTimeout(() => showWelcomeMenu(), 800);
-                        }
-                        break;
-
-                    case 1: // Asesor seleccionado
+                    case 0:
                         formData.asesor = response;
-                        addMessage('¡Hola ' + response.split(' ')[0] + '! 👋');
+                        addBotMessage(`¡Hola ${response.split(' ')[0]}! 👋`);
                         setTimeout(() => {
-                            const bubble = addCameraButton();
-                            addMessage('', false, bubble);
+                            addBotMessage('', createCaptureContainer());
                         }, 600);
                         currentStep++;
                         break;
 
-                    case 2: // Ubicación y foto capturadas
-                        addMessage('¡Excelente! 🎉');
+                    case 1:
+                        addBotMessage('¡Perfecto! ✅');
                         setTimeout(() => {
-                            const bubble = createCustomSelect(ciudades, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:');
-                            addMessage('', false, bubble);
+                            addBotMessage('', createSelect(ciudades, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:'));
                         }, 600);
                         currentStep++;
                         break;
 
-                    case 3: // Ciudad seleccionada
+                    case 2:
                         formData.ciudad = response;
-                        addMessage('Perfecto, ' + response + ' ✅');
+                        addBotMessage('Excelente ✓');
                         setTimeout(() => {
-                            const bubble = createCustomSelect(puntosVenta, 'Selecciona el punto de venta...', 'Por último, tu punto de venta:');
-                            addMessage('', false, bubble);
+                            addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', 'Por último, tu punto de venta:'));
                         }, 600);
                         currentStep++;
                         break;
 
-                    case 4: // Punto de venta seleccionado
+                    case 3:
                         formData.puntoVenta = response;
                         currentStep++;
-                        showVerificationMenu();
-                        break;
-
-                    case 5: // Verificación
-                        if (response === 'confirmar_datos') {
-                            submitForm();
-                        } else if (response === 'corregir_datos') {
-                            addMessage('Entendido, vamos a corregir los datos. 🔄');
-                            resetForm();
-                        }
-                        break;
-
-                    case 6: // Menú de reportes
-                        if (response === 'Salida') {
-                            addMessage('¡Hasta pronto! Que tengas un excelente día. 👋');
-                        } else {
-                            addMessage(`Seleccionaste: <strong>${response}</strong>`);
-                            setTimeout(() => {
-                                addMessage('Esta funcionalidad está en desarrollo. 🚧 Por ahora solo está disponible el registro de ingreso.');
-                                setTimeout(() => showReportesMenu(), 800);
-                            }, 600);
-                        }
+                        submitForm();
                         break;
                 }
             }, 800);
         }
 
-        function showWelcomeMenu() {
-            const menuBubble = document.createElement('div');
-            menuBubble.className = 'select-bubble';
-
-            const menuLabel = document.createElement('div');
-            menuLabel.className = 'select-bubble-text';
-            menuLabel.textContent = '¿Qué deseas hacer?';
-            menuBubble.appendChild(menuLabel);
-
-            const menuContainer = document.createElement('div');
-            menuContainer.className = 'menu-options';
-
-            const ingresoBtn = document.createElement('button');
-            ingresoBtn.className = 'menu-button';
-            ingresoBtn.innerHTML = '📝 Registrar mi ingreso al PDV';
-            ingresoBtn.onclick = () => {
-                addMessage('Registrar mi ingreso al PDV', true);
-                processResponse('start_ingreso');
-            };
-            menuContainer.appendChild(ingresoBtn);
-
-            menuBubble.appendChild(menuContainer);
-            addMessage('', false, menuBubble);
-        }
-
-        function showVerificationMenu() {
-            setTimeout(() => {
-                const summaryBubble = document.createElement('div');
-                summaryBubble.className = 'select-bubble';
-
-                const summaryDiv = document.createElement('div');
-                summaryDiv.className = 'summary-box';
-
-                const photoStatus = formData.selfie.includes('ERROR')
-                    ? '⚠️ Sin foto' 
-                    : '✅ Guardada';
-
-                summaryDiv.innerHTML = `
-                    <div style="font-weight: 600; margin-bottom: 10px; color: #075e54;">📋 Resumen de tu ingreso:</div>
-                    <div class="summary-item"><strong>Asesor:</strong> ${formData.asesor}</div>
-                    <div class="summary-item"><strong>Ubicación:</strong> ${formData.ubicacion}</div>
-                    <div class="summary-item"><strong>Foto:</strong> ${photoStatus}</div>
-                    <div class="summary-item"><strong>Ciudad:</strong> ${formData.ciudad}</div>
-                    <div class="summary-item"><strong>Punto de Venta:</strong> ${formData.puntoVenta}</div>
-                `;
-                summaryBubble.appendChild(summaryDiv);
-
-                addMessage('', false, summaryBubble);
-
-                setTimeout(() => {
-                    const menuBubble = document.createElement('div');
-                    menuBubble.className = 'select-bubble';
-
-                    const menuLabel = document.createElement('div');
-                    menuLabel.className = 'select-bubble-text';
-                    menuLabel.textContent = '¿Todo correcto?';
-                    menuBubble.appendChild(menuLabel);
-
-                    const menuContainer = document.createElement('div');
-                    menuContainer.className = 'menu-options';
-
-                    const confirmarBtn = document.createElement('button');
-                    confirmarBtn.className = 'menu-button';
-                    confirmarBtn.innerHTML = '✅ Sí, enviar mi ingreso';
-                    confirmarBtn.onclick = () => {
-                        addMessage('Sí, enviar mi ingreso', true);
-                        processResponse('confirmar_datos');
-                    };
-                    menuContainer.appendChild(confirmarBtn);
-
-                    const corregirBtn = document.createElement('button');
-                    corregirBtn.className = 'menu-button';
-                    corregirBtn.innerHTML = '✏️ No, corregir datos';
-                    corregirBtn.onclick = () => {
-                        addMessage('No, corregir datos', true);
-                        processResponse('corregir_datos');
-                    };
-                    menuContainer.appendChild(corregirBtn);
-
-                    menuBubble.appendChild(menuContainer);
-                    addMessage('', false, menuBubble);
-                }, 600);
-
-            }, 600);
-        }
-
         function submitForm() {
-            addMessage('Enviando tu ingreso... ⏳');
+            addBotMessage('Enviando tu ingreso... ⏳');
 
             document.getElementById('asesorField').value = formData.asesor;
             document.getElementById('ubicacionField').value = formData.ubicacion;
@@ -1258,91 +922,36 @@
                 document.getElementById('googleForm').submit();
 
                 setTimeout(() => {
-                    addMessage('✅ ¡Ingreso registrado exitosamente!');
-                    currentStep++;
-                    setTimeout(() => showReportesMenu(), 800);
+                    addBotMessage('✅ ¡Ingreso registrado exitosamente!');
+                    
+                    setTimeout(() => {
+                        const menuBubble = document.createElement('div');
+                        menuBubble.className = 'select-bubble';
+
+                        menuBubble.innerHTML = `
+                            <div class="select-bubble-text">¿Deseas realizar otro registro?</div>
+                            <div class="menu-options">
+                                <button class="menu-button" onclick="location.reload()">
+                                    🔄 Nuevo ingreso
+                                </button>
+                                <button class="menu-button" onclick="window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank')">
+                                    📊 Ver respuestas
+                                </button>
+                            </div>
+                        `;
+
+                        addBotMessage('', menuBubble);
+                    }, 800);
                 }, 1000);
             }, 500);
         }
 
-        function showReportesMenu() {
-            const menuBubble = document.createElement('div');
-            menuBubble.className = 'select-bubble';
-
-            const menuLabel = document.createElement('div');
-            menuLabel.className = 'select-bubble-text';
-            menuLabel.textContent = '¿Qué más necesitas reportar?';
-            menuBubble.appendChild(menuLabel);
-
-            const selectBubble = createCustomSelect(reportesOpciones, 'Selecciona una opción...', '');
-            menuBubble.appendChild(selectBubble.querySelector('.select-container'));
-
-            addMessage('', false, menuBubble);
-        }
-
-        function resetForm() {
-            formData.asesor = '';
-            formData.ubicacion = '';
-            formData.selfie = '';
-            formData.ciudad = '';
-            formData.puntoVenta = '';
-            currentStep = 0;
-
-            setTimeout(() => {
-                addMessage('¡Vale! Empecemos de nuevo. 📝');
-                setTimeout(() => showWelcomeMenu(), 600);
-            }, 500);
-        }
-
-        sendBtn.addEventListener('click', () => {
-            const response = userInput.value.trim();
-            if (response && isWaitingForResponse) {
-                addMessage(response, true);
-                processResponse(response);
-            }
-        });
-
-        userInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendBtn.click();
-            }
-        });
-
-        // INICIO DEL CHATBOT CON BIENVENIDA
+        // Iniciar chatbot
         setTimeout(() => {
-            addMessage('¡Hola! 👋 Soy tu asistente virtual de Beer.');
+            addBotMessage('¡Hola! 👋 Bienvenido al registro de ingreso al PDV.');
             setTimeout(() => {
-                addMessage('Estoy aquí para ayudarte con:');
-                setTimeout(() => {
-                    const features = document.createElement('div');
-                    features.innerHTML = `
-                        • 📝 <strong>Registro de ingreso</strong> al PDV<br>
-                        • 📸 <strong>Galería de ejecución</strong><br>
-                        • 📊 <strong>Participación de lineal</strong><br>
-                        • ⏰ <strong>Productos próximos a vencer</strong><br>
-                        • 📦 <strong>Productos agotados</strong><br>
-                        • 💰 <strong>Descuentos</strong><br>
-                        • 🧾 <strong>Registro de ventas</strong>
-                    `;
-                    const featuresMsg = document.createElement('div');
-                    featuresMsg.className = 'message bot-message';
-                    const content = document.createElement('div');
-                    content.className = 'message-content';
-                    content.appendChild(features);
-                    const time = document.createElement('div');
-                    time.className = 'message-time';
-                    time.textContent = getTime();
-                    content.appendChild(time);
-                    featuresMsg.appendChild(content);
-                    chatMessages.appendChild(featuresMsg);
-                    scrollToBottom(true);
-
-                    setTimeout(() => {
-                        showWelcomeMenu();
-                    }, 1000);
-                }, 800);
-            }, 600);
+                addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:'));
+            }, 800);
         }, 500);
     </script>
 </body>
