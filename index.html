@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Contenedor principal del chat - TODO DENTRO */
+        /* Contenedor principal del chat */
         .chat-container {
             width: 100%;
             height: 100vh;
@@ -89,7 +89,7 @@
             50% { opacity: 0.5; }
         }
 
-        /* Área de mensajes - TODO DENTRO DEL CHAT */
+        /* Área de mensajes */
         .chat-messages {
             flex: 1;
             padding: 15px 12px 80px;
@@ -162,7 +162,7 @@
             text-align: right;
         }
 
-        /* Burbujas especiales - TODO DENTRO */
+        /* Burbujas especiales */
         .bubble-container {
             background: white;
             padding: 16px;
@@ -182,7 +182,7 @@
             gap: 8px;
         }
 
-        /* Selects mejorados para móvil - TODO DENTRO */
+        /* Selects mejorados para móvil */
         .custom-select {
             position: relative;
             margin-bottom: 10px;
@@ -213,9 +213,9 @@
         }
 
         .select-dropdown {
-            position: absolute;
-            left: 0;
-            right: 0;
+            position: fixed;
+            left: 20px;
+            right: 20px;
             background: white;
             border-radius: 16px;
             max-height: 0;
@@ -223,8 +223,8 @@
             transition: all 0.3s;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             z-index: 1000;
+            top: 30%;
             opacity: 0;
-            margin-top: 5px;
         }
 
         .select-dropdown.active {
@@ -268,7 +268,23 @@
             transform: translateX(5px);
         }
 
-        /* Botones */
+        /* Contenedor de captura */
+        .capture-container {
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 8px;
+        }
+
+        .capture-title {
+            font-size: 0.95em;
+            color: #111;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
         .action-button {
             width: 100%;
             padding: 16px;
@@ -304,7 +320,7 @@
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
         }
 
-        /* Menú principal - TODO DENTRO */
+        /* Menú principal */
         .menu-options {
             display: grid;
             grid-template-columns: 1fr;
@@ -360,7 +376,7 @@
             30% { transform: translateY(-8px); }
         }
 
-        /* Input bubble - TODO DENTRO */
+        /* Input bubble */
         .input-bubble {
             background: white;
             padding: 16px;
@@ -408,22 +424,6 @@
             transform: scale(0.98);
         }
 
-        /* Info text */
-        .info-text {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 10px;
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        /* Prevenir zoom en inputs */
-        input, select, textarea {
-            font-size: 16px !important;
-        }
-
         @media (min-width: 768px) {
             body {
                 padding: 20px;
@@ -440,7 +440,6 @@
     </style>
 </head>
 <body>
-    <!-- TODO ESTÁ DENTRO DEL CHAT - NO HAY REDIRECCIONES -->
     <div class="chat-container">
         <div class="chat-header">
             <div class="header-avatar">🍺</div>
@@ -456,7 +455,7 @@
         <div class="chat-messages" id="chatMessages"></div>
     </div>
 
-    <!-- Formularios ocultos - SIN REDIRECCIONES -->
+    <!-- Formularios ocultos - CORREGIDOS -->
     <iframe name="hidden_iframe_ingreso" id="hiddenIframeIngreso" style="display:none;"></iframe>
     <form id="googleFormIngreso" 
           action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
@@ -484,7 +483,7 @@
     </form>
 
     <script>
-        // ========== VARIABLES GLOBALES ==========
+        // Variables globales - NUEVO SISTEMA DE ESTADO CORREGIDO
         let appState = {
             ingreso: {
                 asesor: '',
@@ -498,14 +497,16 @@
                 tipoMarca: '',
                 producto: '',
                 numeroFrente: '',
-                enviando: false
+                enviando: false,
+                flujoActivo: false // Para controlar si el flujo está activo
             },
+            currentFlow: '',
             currentStep: 0,
             isProcessingPhoto: false,
             menuBloqueado: false
         };
 
-        // ========== DATOS ==========
+        // Base de datos
         const asesores = [
             'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
             'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
@@ -566,8 +567,7 @@
         // ========== FUNCIONES BÁSICAS ==========
         function getTime() {
             const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + 
-                   now.getMinutes().toString().padStart(2, '0');
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
         }
 
         function scrollToBottom() {
@@ -683,7 +683,6 @@
                         textSpan.textContent = opt;
                         dropdown.classList.remove('active');
                         btn.classList.remove('active');
-                        addUserMessage(opt);
                         if (onSelect) onSelect(opt);
                     };
                     optionsContainer.appendChild(optDiv);
@@ -693,17 +692,13 @@
                     e.stopPropagation();
                     const isOpen = dropdown.classList.contains('active');
                     
-                    // Cerrar otros dropdowns
-                    document.querySelectorAll('.select-dropdown').forEach(d => {
-                        if (d !== dropdown) d.classList.remove('active');
-                    });
-                    document.querySelectorAll('.select-button').forEach(b => {
-                        if (b !== btn) b.classList.remove('active');
-                    });
+                    document.querySelectorAll('.select-dropdown').forEach(d => d.classList.remove('active'));
+                    document.querySelectorAll('.select-button').forEach(b => b.classList.remove('active'));
                     
                     if (!isOpen) {
                         dropdown.classList.add('active');
                         btn.classList.add('active');
+                        
                         setTimeout(() => search.focus(), 100);
                     }
                 };
@@ -716,7 +711,6 @@
                     });
                 });
 
-                // Cerrar al hacer clic fuera - PERO DENTRO DEL CHAT
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select')) {
                         dropdown.classList.remove('active');
@@ -748,7 +742,6 @@
                     if (value) {
                         input.disabled = true;
                         btn.disabled = true;
-                        addUserMessage(value);
                         if (onSubmit) onSubmit(value);
                     }
                 };
@@ -764,31 +757,24 @@
             return bubble;
         }
 
-        // ========== FLUJO DE INGRESO - SIMPLIFICADO ==========
+        // ========== FLUJO DE INGRESO ==========
         function startIngresoFlow() {
+            appState.currentFlow = 'ingreso';
             appState.currentStep = 0;
-            appState.ingreso = {
-                asesor: '',
-                ubicacion: '',
-                selfie: '',
-                ciudad: '',
-                puntoVenta: '',
-                completado: false
-            };
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
-                addBotMessage('Vamos a registrar tu ingreso al PDV.');
+                addBotMessage('Vamos a registrar tu ingreso al punto de venta. Necesitaremos:<br>📍 Tu ubicación GPS<br>📸 Una foto selfie');
                 
                 setTimeout(() => {
                     addBotMessage('', createSelect(
                         asesores,
                         'Selecciona tu nombre...',
-                        '👤 Selecciona tu nombre:',
+                        '👤 Primero, selecciona tu nombre:',
                         (asesor) => handleIngresoStep(asesor)
                     ));
-                }, 600);
+                }, 800);
             }, 800);
         }
 
@@ -801,21 +787,20 @@
                 switch(appState.currentStep) {
                     case 0:
                         appState.ingreso.asesor = response;
-                        addBotMessage(`¡Hola ${response.split(' ')[0]}! 👋`);
+                        addUserMessage(response);
+                        addBotMessage(`¡Hola <strong>${response.split(' ')[0]}</strong>! 👋`);
                         appState.currentStep++;
                         
-                        // Simulamos ubicación (en producción usarías geolocation)
-                        appState.ingreso.ubicacion = 'Ubicación simulada para prueba';
-                        appState.ingreso.selfie = 'Selfie simulada';
-                        
+                        // Aquí iría la captura de ubicación y foto
+                        // Por ahora, saltamos a ciudad
                         setTimeout(() => {
                             const ciudadesOptions = Object.keys(ciudadesPuntosVenta).sort();
-                            addBotMessage('Perfecto! Ahora tu ubicación comercial.');
+                            addBotMessage('Perfecto! Ahora necesitamos tu ubicación comercial.');
                             setTimeout(() => {
                                 addBotMessage('', createSelect(
                                     ciudadesOptions,
                                     'Selecciona tu ciudad...',
-                                    '📍 Selecciona tu ciudad:',
+                                    '📍 ¿En qué ciudad te encuentras?',
                                     (ciudad) => handleIngresoStep(ciudad)
                                 ));
                             }, 800);
@@ -824,15 +809,16 @@
                         
                     case 1:
                         appState.ingreso.ciudad = response;
+                        addUserMessage(response);
                         const puntosVenta = ciudadesPuntosVenta[response] || [];
                         
                         if (puntosVenta.length > 0) {
-                            addBotMessage(`Estás en <strong>${response}</strong>.`);
+                            addBotMessage(`Excelente, estás en <strong>${response}</strong>. ✔`);
                             setTimeout(() => {
                                 addBotMessage('', createSelect(
                                     puntosVenta,
-                                    'Selecciona el PDV...',
-                                    `🏪 Selecciona el punto de venta:`,
+                                    'Selecciona el punto de venta...',
+                                    `🏪 Selecciona el punto de venta en ${response}:`,
                                     (punto) => handleIngresoStep(punto)
                                 ));
                             }, 800);
@@ -840,8 +826,8 @@
                             addBotMessage(`Estás en <strong>${response}</strong>.`);
                             setTimeout(() => {
                                 addBotMessage('', createInputBubble(
-                                    `Escribe el nombre del PDV:`,
-                                    'Ej: Tienda La Economía...',
+                                    `Escribe el nombre del punto de venta en ${response}:`,
+                                    'Ej: Tienda La Economía, Supermercado XYZ...',
                                     (punto) => handleIngresoStep(punto)
                                 ));
                             }, 800);
@@ -851,6 +837,7 @@
                         
                     case 2:
                         appState.ingreso.puntoVenta = response;
+                        addUserMessage(response);
                         submitFormIngreso();
                         break;
                 }
@@ -865,21 +852,23 @@
                 
                 // Llenar formulario
                 document.getElementById('asesorField').value = appState.ingreso.asesor;
-                document.getElementById('ubicacionField').value = appState.ingreso.ubicacion;
-                document.getElementById('selfieField').value = appState.ingreso.selfie;
+                document.getElementById('ubicacionField').value = appState.ingreso.ubicacion || 'Ubicación simulada';
+                document.getElementById('selfieField').value = appState.ingreso.selfie || 'Foto simulada';
                 document.getElementById('ciudadField').value = appState.ingreso.ciudad;
                 document.getElementById('puntoVentaField').value = appState.ingreso.puntoVenta;
 
-                // Enviar formulario SILENCIOSAMENTE
-                document.getElementById('googleFormIngreso').submit();
+                // Enviar formulario
+                setTimeout(() => {
+                    document.getElementById('googleFormIngreso').submit();
+                }, 500);
 
-                // Mostrar confirmación SIN REDIRIGIR
+                // Mostrar confirmación
                 addBotMessage(`
-                    ✅ <strong>¡Ingreso registrado!</strong><br><br>
+                    ✅ <strong>¡Ingreso registrado exitosamente!</strong><br><br>
                     📋 <strong>Resumen:</strong><br>
                     👤 Asesor: ${appState.ingreso.asesor}<br>
                     📍 Ciudad: ${appState.ingreso.ciudad}<br>
-                    🏪 PDV: ${appState.ingreso.puntoVenta}
+                    🏪 Punto: ${appState.ingreso.puntoVenta}
                 `);
                 
                 appState.ingreso.completado = true;
@@ -889,28 +878,30 @@
             }, 1500);
         }
 
-        // ========== FLUJO LINEAL - CORREGIDO ==========
+        // ========== FLUJO LINEAL - COMPLETAMENTE CORREGIDO ==========
         function startLinealFlow() {
-            // Reset completo
+            // Resetear estado completamente
             appState.lineal = {
                 tipoMarca: '',
                 producto: '',
                 numeroFrente: '',
-                enviando: false
+                enviando: false,
+                flujoActivo: true
             };
             appState.currentStep = 0;
-            appState.menuBloqueado = true;
+            appState.currentFlow = 'lineal';
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
-                addBotMessage('📊 <strong>Registro de Participación Lineal</strong>');
+                addBotMessage('¡Perfecto! Vamos a registrar la participación lineal. 📊');
                 
+                // Paso 1: Seleccionar tipo de marca
                 setTimeout(() => {
                     addBotMessage('', createSelect(
                         ['MARCA PROPIA', 'MARCA COMPETENCIA'],
                         'Selecciona el tipo...',
-                        '🏷️ <strong>Paso 1:</strong> Tipo de marca:',
+                        '🏷️ <strong>Paso 1:</strong> Selecciona el tipo de marca:',
                         (tipo) => handleLinealStep1(tipo)
                     ));
                 }, 600);
@@ -919,29 +910,32 @@
 
         function handleLinealStep1(tipo) {
             appState.lineal.tipoMarca = tipo;
+            addUserMessage(tipo);
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
                 
                 if (tipo === 'MARCA PROPIA') {
-                    addBotMessage('✅ Marca propia seleccionada');
+                    addBotMessage('Marca propia seleccionada ✅');
                     
+                    // Paso 2: Seleccionar producto (solo para marca propia)
                     setTimeout(() => {
                         addBotMessage('', createSelect(
                             productosMarcaPropia,
                             'Selecciona la referencia...',
-                            '📦 <strong>Paso 2:</strong> Selecciona la referencia:',
+                            '📦 <strong>Paso 2:</strong> Selecciona la referencia de nuestra marca:',
                             (producto) => handleLinealStep2(producto)
                         ));
                     }, 600);
                 } else {
-                    addBotMessage('✅ Marca competencia seleccionada');
+                    addBotMessage('Marca competencia seleccionada ✅');
                     
+                    // Paso 2: Escribir producto competencia
                     setTimeout(() => {
                         addBotMessage('', createInputBubble(
-                            '📝 <strong>Paso 2:</strong> Escribe el producto competencia:',
-                            'Ej: Corona, Heineken...',
+                            '📝 <strong>Paso 2:</strong> Escribe el nombre del producto competencia:',
+                            'Ej: Corona, Heineken, Budweiser...',
                             (producto) => handleLinealStep2(producto)
                         ));
                     }, 600);
@@ -951,17 +945,19 @@
 
         function handleLinealStep2(producto) {
             appState.lineal.producto = producto;
+            addUserMessage(producto);
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
                 
-                addBotMessage('✅ Referencia registrada');
+                // Paso 3: Cantidad de caras/frentes
+                addBotMessage('Referencia registrada ✔');
                 
                 setTimeout(() => {
                     addBotMessage('', createInputBubble(
-                        '🔢 <strong>Paso 3:</strong> Cantidad de caras/frentes:',
-                        'Ingresa solo números...',
+                        '🔢 <strong>Paso 3:</strong> ¿Cuántas caras/frentes tiene en el lineal?',
+                        'Ingresa solo números (ej: 3, 5, 12)...',
                         (numero) => handleLinealStep3(numero),
                         'number'
                     ));
@@ -970,21 +966,26 @@
         }
 
         function handleLinealStep3(numero) {
+            // Validar número
             if (!isNaN(numero) && numero.trim() !== '' && parseInt(numero) > 0) {
                 appState.lineal.numeroFrente = numero.trim();
+                addUserMessage(`${numero} frentes`);
                 
                 showTyping();
                 setTimeout(() => {
                     hideTyping();
+                    
+                    // Mostrar confirmación
                     showConfirmacionLineal();
                 }, 800);
             } else {
-                addBotMessage('❌ Ingresa un número válido mayor a 0.');
+                addBotMessage('❌ Por favor ingresa un número válido mayor a 0.');
                 
+                // Volver a pedir el número
                 setTimeout(() => {
                     addBotMessage('', createInputBubble(
-                        '🔢 <strong>Paso 3:</strong> Cantidad de caras/frentes:',
-                        'Ingresa solo números...',
+                        '🔢 <strong>Paso 3:</strong> ¿Cuántas caras/frentes tiene en el lineal?',
+                        'Ingresa solo números (ej: 3, 5, 12)...',
                         (numero) => handleLinealStep3(numero),
                         'number'
                     ));
@@ -999,14 +1000,17 @@
             confirmBubble.innerHTML = `
                 <div class="bubble-title">📋 <strong>Paso 4:</strong> Confirma los datos</div>
                 <div style="background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(37, 211, 102, 0.2);">
-                    <div style="margin-bottom: 10px;">
-                        <strong>🏷️ Tipo:</strong> ${appState.lineal.tipoMarca}
+                    <div style="margin-bottom: 10px; display: flex; align-items: flex-start;">
+                        <strong style="min-width: 80px;">🏷️ Tipo:</strong>
+                        <span>${appState.lineal.tipoMarca}</span>
                     </div>
-                    <div style="margin-bottom: 10px;">
-                        <strong>📦 Producto:</strong> ${appState.lineal.producto}
+                    <div style="margin-bottom: 10px; display: flex; align-items: flex-start;">
+                        <strong style="min-width: 80px;">📦 Producto:</strong>
+                        <span>${appState.lineal.producto}</span>
                     </div>
-                    <div>
-                        <strong>🔢 Frentes:</strong> ${appState.lineal.numeroFrente}
+                    <div style="display: flex; align-items: flex-start;">
+                        <strong style="min-width: 80px;">🔢 Frentes:</strong>
+                        <span>${appState.lineal.numeroFrente}</span>
                     </div>
                 </div>
                 <div style="margin-bottom: 12px; font-size: 0.9em; color: #666;">
@@ -1014,7 +1018,7 @@
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button class="action-button" id="btnConfirmarLineal" style="flex:1;">
-                        ✅ Sí, enviar
+                        ✅ Sí, son correctos
                     </button>
                     <button class="action-button skip-btn" id="btnCorregirLineal" style="flex:1;">
                         ❌ No, corregir
@@ -1026,38 +1030,37 @@
 
             setTimeout(() => {
                 document.getElementById('btnConfirmarLineal').onclick = () => {
-                    if (appState.lineal.enviando) return;
-                    appState.lineal.enviando = true;
+                    addUserMessage('✅ Sí, son correctos');
                     submitFormLineal();
                 };
-                
                 document.getElementById('btnCorregirLineal').onclick = () => {
-                    // Eliminar mensajes del flujo lineal
-                    const messages = document.querySelectorAll('.message');
-                    const lastIndex = messages.length - 1;
+                    addUserMessage('❌ No, corregir');
                     
-                    // Eliminar confirmación y pasos anteriores
-                    for (let i = lastIndex; i >= 0; i--) {
-                        const msg = messages[i];
-                        if (msg.querySelector('.bubble-container') || 
-                            msg.textContent.includes('Paso') ||
-                            msg.textContent.includes('Tipo de marca') ||
-                            msg.textContent.includes('Selecciona') ||
-                            msg.textContent.includes('Referencia') ||
-                            msg.textContent.includes('Cantidad')) {
-                            msg.remove();
-                        } else {
-                            break;
-                        }
-                    }
-                    
-                    // Volver al inicio
-                    startLinealFlow();
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('¡No hay problema! Empecemos de nuevo desde el principio. 🔄');
+                        
+                        // Volver al inicio del flujo lineal
+                        setTimeout(() => {
+                            // Limpiar el chat de los pasos anteriores
+                            const lastMessages = document.querySelectorAll('.message');
+                            for (let i = lastMessages.length - 1; i >= lastMessages.length - 6; i--) {
+                                if (lastMessages[i]) lastMessages[i].remove();
+                            }
+                            
+                            // Reiniciar el flujo
+                            startLinealFlow();
+                        }, 800);
+                    }, 800);
                 };
             }, 100);
         }
 
         function submitFormLineal() {
+            if (appState.lineal.enviando) return;
+            appState.lineal.enviando = true;
+            
             showTyping();
             
             setTimeout(() => {
@@ -1068,21 +1071,24 @@
                 document.getElementById('productoField').value = appState.lineal.producto;
                 document.getElementById('numeroFrentesField').value = appState.lineal.numeroFrente;
 
-                // Enviar formulario SILENCIOSAMENTE
-                document.getElementById('googleFormLineal').submit();
+                // Enviar formulario UNA SOLA VEZ
+                setTimeout(() => {
+                    document.getElementById('googleFormLineal').submit();
+                }, 500);
 
                 addBotMessage(`
-                    ✅ <strong>¡Participación lineal registrada!</strong><br><br>
+                    ✅ <strong>¡Participación lineal registrada exitosamente!</strong><br><br>
                     📋 <strong>Datos enviados:</strong><br>
                     🏷️ Tipo: ${appState.lineal.tipoMarca}<br>
                     📦 Producto: ${appState.lineal.producto}<br>
                     🔢 Frentes: ${appState.lineal.numeroFrente}
                 `);
                 
-                // Desbloquear menú
+                // Desactivar flujo
+                appState.lineal.flujoActivo = false;
                 appState.menuBloqueado = false;
                 
-                // Preguntar qué hacer
+                // Preguntar qué hacer después
                 setTimeout(() => {
                     const askBubble = document.createElement('div');
                     askBubble.className = 'bubble-container';
@@ -1112,7 +1118,7 @@
             }, 1500);
         }
 
-        // ========== MENÚ PRINCIPAL - TODO DENTRO ==========
+        // ========== MENÚ PRINCIPAL ==========
         function showMainMenu() {
             appState.menuBloqueado = false;
             
@@ -1121,65 +1127,42 @@
             
             menuBubble.innerHTML = `
                 <div class="bubble-title">📱 Menú Principal</div>
-                <div class="info-text" style="margin-bottom: 15px;">
-                    Selecciona una opción:
-                </div>
                 <div class="menu-options" id="menuOptions">
                     <button class="menu-button" id="btnLineal">
                         <span style="font-size:1.2em;">📊</span>
-                        <div>
-                            <strong>Participación Lineal</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Registro de marcas en lineal</small>
-                        </div>
+                        Participación Lineal
                     </button>
                     <button class="menu-button" id="btnGaleria">
                         <span style="font-size:1.2em;">🏬</span>
-                        <div>
-                            <strong>Galería PDV</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Fotos de puntos de venta</small>
-                        </div>
+                        Galería PDV
                     </button>
                     <button class="menu-button" id="btnProximosVencer">
                         <span style="font-size:1.2em;">⚠️</span>
-                        <div>
-                            <strong>Próximos a Vencer</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Productos cercanos a vencimiento</small>
-                        </div>
+                        Próximos a Vencer
                     </button>
                     <button class="menu-button" id="btnAgotados">
                         <span style="font-size:1.2em;">📦</span>
-                        <div>
-                            <strong>Productos Agotados</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Inventario agotado</small>
-                        </div>
+                        Productos Agotados
                     </button>
                     <button class="menu-button" id="btnDescuentos">
                         <span style="font-size:1.2em;">💰</span>
-                        <div>
-                            <strong>Descuentos</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Promociones activas</small>
-                        </div>
+                        Descuentos
                     </button>
                     <button class="menu-button" id="btnRegistrosVentas">
                         <span style="font-size:1.2em;">📈</span>
-                        <div>
-                            <strong>Registro Ventas</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Captura de ventas diarias</small>
-                        </div>
+                        Registro Ventas
                     </button>
                     <button class="menu-button" id="btnVozConsumidor">
                         <span style="font-size:1.2em;">🗣️</span>
-                        <div>
-                            <strong>Voz Consumidor</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Feedback de clientes</small>
-                        </div>
+                        Voz Consumidor
                     </button>
                     <button class="menu-button" id="btnNuevoIngreso">
                         <span style="font-size:1.2em;">🔄</span>
-                        <div>
-                            <strong>Nuevo Ingreso</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Registrar nuevo ingreso PDV</small>
-                        </div>
+                        Nuevo Ingreso
+                    </button>
+                    <button class="menu-button" id="btnVerRespuestas">
+                        <span style="font-size:1.2em;">👁️</span>
+                        Ver Respuestas
                     </button>
                 </div>
             `;
@@ -1190,7 +1173,7 @@
                 const actions = {
                     btnLineal: () => {
                         if (appState.menuBloqueado) return;
-                        addUserMessage('📊 Participación Lineal');
+                        appState.menuBloqueado = true;
                         startLinealFlow();
                     },
                     btnGaleria: () => {
@@ -1198,7 +1181,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Galería PDV</strong><br><br>Próximamente podrás subir y ver fotos de puntos de venta.');
+                            addBotMessage('🔧 <strong>Galería de Puntos de Venta</strong><br><br>Próximamente podrás ver y subir fotos de los PDV.');
                         }, 800);
                     },
                     btnProximosVencer: () => {
@@ -1206,7 +1189,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Próximos a Vencer</strong><br><br>Próximamente podrás registrar productos con fechas cercanas.');
+                            addBotMessage('🔧 <strong>Productos Próximos a Vencer</strong><br><br>Próximamente podrás registrar productos con fechas cercanas a vencer.');
                         }, 800);
                     },
                     btnAgotados: () => {
@@ -1214,7 +1197,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Productos Agotados</strong><br><br>Próximamente podrás reportar inventario agotado.');
+                            addBotMessage('🔧 <strong>Productos Agotados</strong><br><br>Próximamente podrás reportar productos agotados en inventario.');
                         }, 800);
                     },
                     btnDescuentos: () => {
@@ -1222,7 +1205,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Descuentos</strong><br><br>Próximamente podrás registrar promociones activas.');
+                            addBotMessage('🔧 <strong>Descuentos y Promociones</strong><br><br>Próximamente podrás registrar descuentos activos en el PDV.');
                         }, 800);
                     },
                     btnRegistrosVentas: () => {
@@ -1230,7 +1213,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Registro de Ventas</strong><br><br>Próximamente podrás capturar ventas diarias.');
+                            addBotMessage('🔧 <strong>Registros de Ventas</strong><br><br>Próximamente podrás capturar datos de ventas del día.');
                         }, 800);
                     },
                     btnVozConsumidor: () => {
@@ -1238,13 +1221,16 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Voz del Consumidor</strong><br><br>Próximamente podrás capturar feedback de clientes.');
+                            addBotMessage('🔧 <strong>Voz del Consumidor</strong><br><br>Próximamente podrás capturar comentarios y feedback de clientes.');
                         }, 800);
                     },
                     btnNuevoIngreso: () => {
-                        if (confirm('¿Iniciar nuevo registro de ingreso al PDV?')) {
-                            startIngresoFlow();
+                        if (confirm('¿Iniciar nuevo registro de ingreso?')) {
+                            location.reload();
                         }
+                    },
+                    btnVerRespuestas: () => {
+                        window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank');
                     }
                 };
 
@@ -1261,22 +1247,23 @@
                 addBotMessage(`
                     🍺 <strong>¡Hola!</strong><br>
                     Soy tu asistente para registros en Puntos de Venta Beer.<br><br>
-                    <em>Toda la interacción es dentro del chat. No hay redirecciones.</em>
+                    📍 Puedo ayudarte con:<br>
+                    • Registro de ingreso (ubicación + selfie)<br>
+                    • Participación lineal de productos<br>
+                    • Gestión completa del PDV<br><br>
+                    <small>Selecciona tu nombre para comenzar:</small>
                 `);
                 
-                // Iniciar directamente con ingreso
-                startIngresoFlow();
+                setTimeout(() => {
+                    addBotMessage('', createSelect(
+                        asesores,
+                        'Selecciona tu nombre...',
+                        '👤 ¿Quién eres?',
+                        (asesor) => handleIngresoStep(asesor)
+                    ));
+                }, 1200);
             }, 500);
         }
-
-        // Prevenir redirecciones
-        window.addEventListener('beforeunload', (e) => {
-            // Solo prevenir si estamos en medio de un proceso
-            if (appState.menuBloqueado || appState.lineal.enviando) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
 
         // Iniciar cuando cargue la página
         window.addEventListener('DOMContentLoaded', initChat);
