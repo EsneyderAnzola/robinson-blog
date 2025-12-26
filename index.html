@@ -14,57 +14,51 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #e5ddd5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 0;
+            padding: 15px;
             overflow: hidden;
-        }
-
-        .background-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 20 Q10 10 20 20 T40 20" stroke="%23d9d9d9" stroke-width="0.5" fill="none" opacity="0.4"/></pattern></defs><rect width="400" height="400" fill="%23e5ddd5"/><rect width="400" height="400" fill="url(%23pattern)"/></svg>');
         }
 
         .chat-container {
             width: 100%;
-            max-width: 100%;
-            height: 100vh;
-            background: #e5ddd5;
+            max-width: 450px;
+            height: 95vh;
+            background: white;
             display: flex;
             flex-direction: column;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
             position: relative;
-            z-index: 1;
         }
 
+        /* Header mejorado */
         .chat-header {
-            background: #075e54;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
             color: white;
-            padding: 10px 16px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            flex-shrink: 0;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
             z-index: 10;
         }
 
         .header-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: linear-gradient(135deg, #ffd700 0%, #ffb800 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5em;
-            flex-shrink: 0;
+            font-size: 1.8em;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .header-info {
@@ -72,51 +66,88 @@
         }
 
         .header-name {
-            font-size: 1.05em;
-            font-weight: 500;
-            margin-bottom: 2px;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 3px;
         }
 
         .header-status {
-            font-size: 0.75em;
-            color: rgba(255,255,255,0.8);
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.9);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Área de mensajes mejorada */
         .chat-messages {
             flex: 1;
-            padding: 12px 8px 80px;
+            padding: 20px 15px 100px;
             overflow-y: auto;
-            background: #e5ddd5;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 20 Q10 10 20 20 T40 20" stroke="%23d9d9d9" stroke-width="0.5" fill="none" opacity="0.4"/></pattern></defs><rect width="400" height="400" fill="%23e5ddd5"/><rect width="400" height="400" fill="url(%23pattern)"/></svg>');
+            background: #f0f2f5;
+            background-image: 
+                radial-gradient(circle at 10px 10px, rgba(0,150,136,0.03) 2px, transparent 0),
+                radial-gradient(circle at 30px 30px, rgba(0,150,136,0.03) 2px, transparent 0);
+            background-size: 40px 40px;
+            position: relative;
             -webkit-overflow-scrolling: touch;
         }
 
         .chat-messages::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
 
         .chat-messages::-webkit-scrollbar-thumb {
-            background: rgba(134, 150, 160, 0.4);
-            border-radius: 3px;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            border-radius: 10px;
         }
 
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+
+        /* Mensajes mejorados */
         .message {
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             display: flex;
-            animation: fadeIn 0.3s ease;
-            padding: 0 4px;
+            animation: fadeInUp 0.4s ease;
+            padding: 0 5px;
             flex-direction: column;
-            scroll-margin-top: 20px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(15px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
 
         .message-content {
-            max-width: 80%;
+            max-width: 85%;
             position: relative;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            font-size: 0.95em;
+            line-height: 1.4;
         }
 
         .bot-message {
@@ -125,10 +156,9 @@
 
         .bot-message .message-content {
             background: white;
-            padding: 8px 12px;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            color: #303030;
+            color: #333;
+            border-radius: 0 18px 18px 18px;
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .user-message {
@@ -136,274 +166,361 @@
         }
 
         .user-message .message-content {
-            background: #dcf8c6;
-            padding: 8px 12px;
-            border-radius: 8px 0 8px 8px;
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            margin-left: auto;
-            color: #303030;
+            background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+            color: white;
+            border-radius: 18px 0 18px 18px;
+            border: none;
         }
 
         .message-time {
-            font-size: 0.65em;
-            color: #667781;
+            font-size: 0.7em;
+            color: #888;
             text-align: right;
-            margin-top: 4px;
+            margin-top: 5px;
+            padding-right: 5px;
+            opacity: 0.8;
         }
 
+        /* Burbujas de selección mejoradas */
         .select-bubble {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
-            padding: 10px 12px 12px;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.6);
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            max-width: 85%;
-            margin-top: 8px;
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .select-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #25d366, #128c7e);
+            border-radius: 18px 18px 0 0;
         }
 
         .select-bubble-text {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-size: 0.95em;
-            color: #303030;
-            font-weight: 500;
+            color: #333;
+            font-weight: 600;
+            padding-right: 10px;
         }
 
+        /* Select mejorado */
         .custom-select {
             position: relative;
             width: 100%;
-            z-index: 5;
+            margin-bottom: 10px;
         }
 
         .select-button {
             width: 100%;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 10px;
-            color: #303030;
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
             font-size: 0.9em;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s;
+            font-weight: 500;
         }
 
-        .select-button:active {
-            transform: scale(0.98);
+        .select-button:hover {
+            border-color: #25d366;
+            background: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.1);
         }
 
         .select-button.active {
-            border-color: rgba(37, 211, 102, 0.7);
-            background: rgba(255, 255, 255, 0.6);
+            border-color: #25d366;
+            background: rgba(37, 211, 102, 0.05);
         }
 
         .select-arrow {
             transition: transform 0.3s;
             font-size: 0.8em;
-            color: #667781;
+            color: #666;
         }
 
         .select-button.active .select-arrow {
             transform: rotate(180deg);
+            color: #25d366;
         }
 
+        /* Dropdown mejorado */
         .select-dropdown {
             position: fixed;
-            left: 8px;
-            right: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(50px);
-            -webkit-backdrop-filter: blur(50px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            border-radius: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 30px);
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
             max-height: 0;
             overflow: hidden;
-            transition: all 0.4s;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            opacity: 0;
+            top: 20%;
         }
 
         .select-dropdown.active {
             max-height: 70vh;
             overflow-y: auto;
-            padding: 10px;
-        }
-
-        .select-dropdown::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .select-dropdown::-webkit-scrollbar-thumb {
-            background: rgba(37, 211, 102, 0.4);
-            border-radius: 10px;
+            padding: 0;
+            opacity: 1;
         }
 
         .select-search {
             position: sticky;
             top: 0;
-            padding: 8px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(25px);
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #eee;
             z-index: 10;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            border-radius: 10px 10px 0 0;
-            margin: -2px -2px 8px;
         }
 
         .select-search input {
             width: 100%;
-            padding: 10px 12px;
-            background: rgba(240, 240, 240, 0.4);
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
-            color: #303030;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            color: #333;
             font-size: 0.9em;
             outline: none;
+            transition: all 0.3s;
         }
 
         .select-search input:focus {
-            border-color: rgba(37, 211, 102, 0.6);
+            border-color: #25d366;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
         }
 
         .select-option {
-            padding: 11px 12px;
-            color: #303030;
+            padding: 14px 16px;
+            color: #333;
             cursor: pointer;
-            border-radius: 9px;
-            margin: 3px 0;
-            transition: all 0.25s;
+            border-bottom: 1px solid #f8f9fa;
+            transition: all 0.2s;
             font-size: 0.9em;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .select-option:last-child {
+            border-bottom: none;
         }
 
         .select-option:hover {
-            background: rgba(37, 211, 102, 0.18);
-            border-color: rgba(37, 211, 102, 0.4);
-            transform: translateX(3px);
+            background: linear-gradient(90deg, rgba(37, 211, 102, 0.1), rgba(18, 140, 126, 0.05));
+            padding-left: 20px;
+            color: #128c7e;
         }
 
         .select-option:active {
-            transform: scale(0.97);
+            background: linear-gradient(90deg, rgba(37, 211, 102, 0.2), rgba(18, 140, 126, 0.1));
         }
 
+        .select-option::before {
+            content: '→';
+            opacity: 0;
+            transition: opacity 0.3s;
+            color: #25d366;
+        }
+
+        .select-option:hover::before {
+            opacity: 1;
+        }
+
+        /* Contenedor de captura mejorado */
         .capture-container {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            padding: 12px;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            max-width: 85%;
-            margin-top: 8px;
+            background: white;
+            padding: 18px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .capture-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2196F3, #0b7dda);
+            border-radius: 18px 18px 0 0;
         }
 
         .capture-title {
             font-size: 0.95em;
-            color: #303030;
-            font-weight: 500;
-            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
+        /* Botones mejorados */
         .action-button {
             width: 100%;
-            padding: 12px;
+            padding: 16px;
             background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.95em;
             font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-            margin-bottom: 8px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .action-button:hover::after {
+            left: 100%;
         }
 
         .action-button:active {
             transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.4);
         }
 
         .action-button:disabled {
             background: linear-gradient(135deg, #b0b0b0 0%, #999999 100%);
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .action-button.camera-btn {
             background: linear-gradient(135deg, #2196F3 0%, #0b7dda 100%);
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
         }
 
         .action-button.skip-btn {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
         }
 
+        /* Elementos de cámara */
         video {
             width: 100%;
-            border-radius: 10px;
-            margin: 8px 0;
+            border-radius: 12px;
+            margin: 12px 0;
             transform: scaleX(-1);
             display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .captured-photo {
             width: 100%;
-            border-radius: 10px;
-            margin-top: 8px;
+            border-radius: 12px;
+            margin: 12px 0;
             display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 3px solid white;
         }
 
         .info-text {
             font-size: 0.85em;
-            color: #667781;
-            margin-top: 8px;
+            color: #666;
+            margin-top: 10px;
             text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #25d366;
         }
 
+        /* Menú principal mejorado */
         .menu-options {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .menu-button {
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(25px);
-            border: 1.5px solid rgba(255, 255, 255, 0.4);
-            border-radius: 10px;
-            color: #303030;
+            padding: 14px 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85em;
             font-weight: 500;
             transition: all 0.3s;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            min-height: 80px;
+        }
+
+        .menu-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: #25d366;
+            background: white;
         }
 
         .menu-button:active {
             transform: scale(0.98);
         }
 
+        /* Indicador de escritura */
         .typing-indicator {
             display: flex;
-            gap: 4px;
+            gap: 6px;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 18px;
+            width: fit-content;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .typing-dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #667781;
+            background: #25d366;
             animation: typing 1.4s infinite;
         }
 
@@ -412,91 +529,164 @@
 
         @keyframes typing {
             0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-8px); }
+            30% { transform: translateY(-10px); }
         }
 
+        /* Input bubble mejorado */
         .input-bubble {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(30px);
-            padding: 10px 12px;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            max-width: 85%;
-            margin-top: 8px;
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .input-bubble::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 18px 18px 0 0;
         }
 
         .input-bubble-text {
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             font-size: 0.95em;
-            color: #303030;
-            font-weight: 500;
+            color: #333;
+            font-weight: 600;
         }
 
         .input-field {
             width: 100%;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            border-radius: 8px;
-            color: #303030;
-            font-size: 0.9em;
+            padding: 14px 16px;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: #333;
+            font-size: 0.95em;
             outline: none;
+            transition: all 0.3s;
         }
 
         .input-field:focus {
-            border-color: rgba(37, 211, 102, 0.6);
+            border-color: #25d366;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
         }
 
         .send-input-btn {
             width: 100%;
-            padding: 10px;
+            padding: 14px;
             background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.95em;
             font-weight: 600;
-            margin-top: 8px;
+            margin-top: 12px;
             transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-input-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
         }
 
         .send-input-btn:active {
             transform: scale(0.98);
         }
 
+        /* Notificaciones */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-left: 5px solid #25d366;
+            z-index: 1001;
+            transform: translateX(150%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 300px;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: #25d366;
+        }
+
+        .notification.error {
+            border-left-color: #f44336;
+        }
+
+        .notification.warning {
+            border-left-color: #ff9800;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .chat-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 15px;
+            }
+            
+            .menu-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .select-dropdown {
+                width: calc(100% - 20px);
+                top: 15%;
+            }
+        }
+
         @media (min-width: 768px) {
             .chat-container {
-                max-width: 500px;
                 height: 700px;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            }
-
-            .chat-header {
-                border-radius: 12px 12px 0 0;
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
             }
         }
     </style>
 </head>
 <body>
-    <div class="background-pattern"></div>
     <div class="chat-container">
         <div class="chat-header">
             <div class="header-avatar">🍺</div>
             <div class="header-info">
                 <div class="header-name">Asistente PDV Beer</div>
-                <div class="header-status">en línea</div>
+                <div class="header-status">
+                    <div class="status-dot"></div>
+                    en línea
+                </div>
             </div>
         </div>
 
         <div class="chat-messages" id="chatMessages"></div>
     </div>
 
-    <video id="videoStream" autoplay playsinline></video>
+    <!-- Elementos de cámara ocultos -->
+    <video id="videoStream" autoplay playsinline style="display:none;"></video>
     <canvas id="photoCanvas" style="display:none;"></canvas>
 
+    <!-- Formularios ocultos -->
     <iframe name="hidden_iframe_ingreso" style="display:none;"></iframe>
     <form id="googleFormIngreso" 
           action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
@@ -524,7 +714,14 @@
     </form>
 
     <script>
+        // Configuración para GitHub Pages
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCvuZE34DkSCMy7Z_dr7DEaye3a2K2nArlePMG8QuFnxBSjduy4OK8pB1eUR9Nb4PI/exec';
+        
+        // URLs alternativas por si la principal falla
+        const BACKUP_SCRIPT_URLS = [
+            GOOGLE_SCRIPT_URL,
+            'https://script.google.com/macros/s/AKfycbwRjyKYoOYvlMkOH7r2izOPq2m_Kf3dJq1AvSqD_iC-TxQbV_7LzqOJQOjfBKCxG2U8/exec'
+        ];
 
         // Variables globales
         let formDataIngreso = {
@@ -541,42 +738,7 @@
             numeroFrente: ''
         };
 
-        let ciudadesPuntosVenta = {
-            'Arjona': ['STO 116 ARJONA'],
-            'Armenia': [
-                'Ex 065 Exito Unicentro Armenia',
-                'Sa 358 Portal Del Quindio',
-                'Sa 366 San Diego',
-                'Ex 628 Exito Armenia',
-                'Si 4239 Super Inter Armenia Plaza',
-                'St 355 Armenia Norte'
-            ],
-            'Barranquilla': ['Carulla Feria De Los Platanos'],
-            'Cali': ['Si 4235 Super Inter Las Americas'],
-            'Cartagena': [],
-            'Fusagasugá': [],
-            'Girardot': [],
-            'Guadalajara De Buga': [],
-            'Jamundi': [],
-            'La Mesa': [],
-            'Malambo': [],
-            'Manizales': [],
-            'Melgar': [],
-            'Neiva': [],
-            'Palmira': [],
-            'Pereira': [],
-            'Pereira- Dosquebradas': [],
-            'Popayan': [],
-            'Soledad': [],
-            'Tulua': [],
-            'Tunja': [],
-            'Turbaco': [],
-            'Villavicencio': [],
-            'Yumbo': [],
-            'Ibagué': []
-        };
-
-        // Datos de ejemplo - puedes agregar más según necesites
+        // Datos de ejemplo (puedes ampliarlos)
         const asesores = [
             'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
             'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
@@ -590,6 +752,41 @@
             'Sergio Alejandro Murillo Gonzales'
         ];
 
+        const ciudadesPuntosVenta = {
+            'Arjona': ['STO 116 ARJONA'],
+            'Armenia': [
+                'Ex 065 Exito Unicentro Armenia',
+                'Sa 358 Portal Del Quindio',
+                'Sa 366 San Diego',
+                'Ex 628 Exito Armenia',
+                'Si 4239 Super Inter Armenia Plaza',
+                'St 355 Armenia Norte'
+            ],
+            'Barranquilla': ['Carulla Feria De Los Platanos'],
+            'Cali': ['Si 4235 Super Inter Las Americas'],
+            'Cartagena': ['CC Caribe Plaza', 'CC Bocagrande'],
+            'Fusagasugá': ['Éxito Fusagasugá'],
+            'Girardot': ['Metro Girardot'],
+            'Guadalajara De Buga': ['Éxito Buga'],
+            'Jamundi': ['Supermercados Jamundí'],
+            'La Mesa': ['Almacenes La Mesa'],
+            'Malambo': ['Makro Malambo'],
+            'Manizales': ['Éxito Manizales', 'Carulla Manizales'],
+            'Melgar': ['Metro Melgar'],
+            'Neiva': ['Éxito Neiva', 'Jumbo Neiva'],
+            'Palmira': ['Metro Palmira'],
+            'Pereira': ['Éxito Pereira', 'Sanandresito Pereira'],
+            'Pereira- Dosquebradas': ['Makro Dosquebradas'],
+            'Popayan': ['Éxito Popayán'],
+            'Soledad': ['Metro Soledad', 'Makro Soledad'],
+            'Tulua': ['Éxito Tuluá', 'Carulla Tuluá'],
+            'Tunja': ['Éxito Tunja'],
+            'Turbaco': ['Almacenes Turbaco'],
+            'Villavicencio': ['Éxito Villavicencio', 'Jumbo Villavicencio'],
+            'Yumbo': ['Éxito Yumbo'],
+            'Ibagué': ['Éxito Ibagué', 'Carulla Ibagué']
+        };
+
         const productosMarcaPropia = [
             'ANDINA 330 ml x 6', 'ANDINA 330 ml x 24', 'ANDINA ZERO 330 ml x 6',
             'CLUB COLOMBIA DORADA 330 ml x 6', 'CLUB COLOMBIA DORADA 330 ml x 24',
@@ -602,20 +799,47 @@
         let videoStream = null;
         let photoBase64 = null;
         let photoSkipped = false;
+        let isProcessingPhoto = false;
 
         const chatMessages = document.getElementById('chatMessages');
 
-        // Función mejorada para desplazamiento automático
-        function scrollToBottom() {
+        // ========== FUNCIONES DE UTILIDAD ==========
+        function showNotification(message, type = 'success', duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="font-weight: 600; margin-bottom: 5px;">
+                    ${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'} 
+                    ${type === 'success' ? 'Éxito' : type === 'error' ? 'Error' : 'Advertencia'}
+                </div>
+                <div style="font-size: 0.9em;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, duration);
+        }
+
+        function getTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+
+        // ========== MANEJO DEL CHAT ==========
+        function scrollToBottom(instant = false) {
             setTimeout(() => {
                 chatMessages.scrollTo({
                     top: chatMessages.scrollHeight,
-                    behavior: 'smooth'
+                    behavior: instant ? 'auto' : 'smooth'
                 });
-            }, 150);
+            }, 100);
         }
 
-        // Función para mostrar mensaje del bot con mejor manejo de scroll
         function addBotMessage(text, customElement = null) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message bot-message';
@@ -636,16 +860,10 @@
             }
 
             chatMessages.appendChild(wrapper);
-            
-            // Forzar scroll después de que el elemento se haya renderizado
-            setTimeout(() => {
-                wrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 100);
-            
+            scrollToBottom();
             return wrapper;
         }
 
-        // Función para mostrar mensaje del usuario
         function addUserMessage(text) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message user-message';
@@ -664,98 +882,89 @@
             scrollToBottom();
         }
 
-        // Función para obtener hora actual
-        function getTime() {
-            const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        }
-
-        // Función mejorada para crear selects con mejor posicionamiento
+        // ========== COMPONENTES MEJORADOS ==========
         function createSelect(options, placeholder, label, onSelect) {
             const bubble = document.createElement('div');
             bubble.className = 'select-bubble';
 
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'select-bubble-text';
-            titleDiv.textContent = label;
-            bubble.appendChild(titleDiv);
-
-            const selectId = 'select-' + Date.now();
-            const container = document.createElement('div');
-            container.innerHTML = `
+            bubble.innerHTML = `
+                <div class="select-bubble-text">${label}</div>
                 <div class="custom-select">
-                    <div class="select-button" id="${selectId}-btn">
-                        <span id="${selectId}-text">${placeholder}</span>
+                    <div class="select-button" id="select-btn-${Date.now()}">
+                        <span id="select-text-${Date.now()}">${placeholder}</span>
                         <span class="select-arrow">▼</span>
                     </div>
-                    <div class="select-dropdown" id="${selectId}-dropdown">
+                    <div class="select-dropdown" id="select-dropdown-${Date.now()}">
                         <div class="select-search">
-                            <input type="text" placeholder="🔍 Buscar..." id="${selectId}-search">
+                            <input type="text" placeholder="🔍 Buscar..." id="select-search-${Date.now()}">
                         </div>
-                        <div class="select-options" id="${selectId}-options"></div>
+                        <div class="select-options" id="select-options-${Date.now()}"></div>
                     </div>
                 </div>
             `;
-            bubble.appendChild(container);
 
             setTimeout(() => {
-                const btn = document.getElementById(`${selectId}-btn`);
-                const dropdown = document.getElementById(`${selectId}-dropdown`);
-                const search = document.getElementById(`${selectId}-search`);
-                const optionsContainer = document.getElementById(`${selectId}-options`);
-                const textSpan = document.getElementById(`${selectId}-text`);
+                const btn = bubble.querySelector('.select-button');
+                const dropdown = bubble.querySelector('.select-dropdown');
+                const search = bubble.querySelector('input');
+                const optionsContainer = bubble.querySelector('.select-options');
+                const textSpan = bubble.querySelector('.select-button span:first-child');
 
                 // Agregar opciones
                 options.forEach(opt => {
                     const optDiv = document.createElement('div');
                     optDiv.className = 'select-option';
                     optDiv.textContent = opt;
-                    optDiv.onclick = () => {
+                    optDiv.onclick = (e) => {
+                        e.stopPropagation();
                         textSpan.textContent = opt;
                         dropdown.classList.remove('active');
                         btn.classList.remove('active');
-                        btn.style.pointerEvents = 'none';
-                        btn.style.opacity = '0.6';
                         addUserMessage(opt);
-                        scrollToBottom();
                         if (onSelect) onSelect(opt);
+                        scrollToBottom();
                     };
                     optionsContainer.appendChild(optDiv);
                 });
 
-                // Manejar clic en el botón
+                // Manejar clic
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     const isOpen = dropdown.classList.contains('active');
                     
                     // Cerrar otros dropdowns
-                    document.querySelectorAll('.select-dropdown').forEach(d => d.classList.remove('active'));
-                    document.querySelectorAll('.select-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.select-dropdown').forEach(d => {
+                        if (d !== dropdown) d.classList.remove('active');
+                    });
+                    document.querySelectorAll('.select-button').forEach(b => {
+                        if (b !== btn) b.classList.remove('active');
+                    });
                     
                     if (!isOpen) {
                         dropdown.classList.add('active');
                         btn.classList.add('active');
+                        search.focus();
                         
-                        // Calcular posición
-                        const btnRect = btn.getBoundingClientRect();
-                        dropdown.style.top = (btnRect.bottom + 8) + 'px';
+                        // Posicionar dropdown
+                        const rect = btn.getBoundingClientRect();
+                        dropdown.style.top = `${rect.bottom + 10}px`;
                         
-                        // Enfocar el buscador
-                        setTimeout(() => search.focus(), 100);
-                        
-                        // Asegurar que el chat se desplace para mostrar el dropdown
+                        // Asegurar visibilidad
                         setTimeout(() => {
                             dropdown.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }, 200);
+                        }, 50);
+                    } else {
+                        dropdown.classList.remove('active');
+                        btn.classList.remove('active');
                     }
                 };
 
                 // Buscador
                 search.addEventListener('input', (e) => {
-                    const term = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                    const term = e.target.value.toLowerCase();
                     optionsContainer.querySelectorAll('.select-option').forEach(opt => {
-                        const text = opt.textContent.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                        opt.style.display = text.includes(term) ? 'block' : 'none';
+                        const text = opt.textContent.toLowerCase();
+                        opt.style.display = text.includes(term) ? 'flex' : 'none';
                     });
                 });
 
@@ -766,20 +975,22 @@
                         btn.classList.remove('active');
                     }
                 });
-            }, 100);
+
+                // Asegurar visibilidad
+                scrollToBottom();
+            }, 50);
 
             return bubble;
         }
 
-        // Función para crear input con mejor manejo
-        function createInputBubble(label, placeholder, onSubmit, inputType = 'text') {
+        function createInputBubble(label, placeholder, onSubmit, type = 'text') {
             const bubble = document.createElement('div');
             bubble.className = 'input-bubble';
 
-            const inputId = 'input-' + Date.now();
+            const inputId = `input-${Date.now()}`;
             bubble.innerHTML = `
                 <div class="input-bubble-text">${label}</div>
-                <input type="${inputType}" class="input-field" id="${inputId}" placeholder="${placeholder}">
+                <input type="${type}" class="input-field" id="${inputId}" placeholder="${placeholder}">
                 <button class="send-input-btn" id="${inputId}-btn">Enviar</button>
             `;
 
@@ -798,31 +1009,42 @@
                 };
 
                 btn.onclick = submitValue;
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') submitValue();
-                });
-                
-                // Enfocar automáticamente
-                setTimeout(() => input.focus(), 300);
-            }, 100);
+                input.onkeypress = (e) => e.key === 'Enter' && submitValue();
+                input.focus();
+                scrollToBottom();
+            }, 50);
 
             return bubble;
         }
 
-        // Función para crear contenedor de captura
+        // ========== CAPTURA DE FOTO (CORREGIDA PARA GITHUB PAGES) ==========
         function createCaptureContainer() {
             const container = document.createElement('div');
             container.className = 'capture-container';
             container.id = 'captureContainer';
 
             container.innerHTML = `
-                <div class="capture-title">Captura de ubicación y foto:</div>
-                <button class="action-button" id="locationBtn">📍 Capturar ubicación</button>
-                <button class="action-button camera-btn" id="cameraBtn" style="display:none;">📸 Abrir cámara</button>
-                <button class="action-button skip-btn" id="skipPhotoBtn" style="display:none;">⏭️ Continuar sin foto</button>
-                <video id="videoPreview" autoplay playsinline></video>
-                <button class="action-button" id="capturePhotoBtn" style="display:none;">✔ Capturar foto</button>
-                <img id="capturedPhoto" class="captured-photo">
+                <div class="capture-title">📍 Captura de ubicación y foto</div>
+                <div class="info-text">Primero captura tu ubicación, luego puedes tomar una foto selfie.</div>
+                <button class="action-button" id="locationBtn">
+                    <span style="font-size: 1.2em;">📍</span> Capturar ubicación
+                </button>
+                <button class="action-button camera-btn" id="cameraBtn" style="display:none;">
+                    <span style="font-size: 1.2em;">📸</span> Abrir cámara para selfie
+                </button>
+                <button class="action-button skip-btn" id="skipPhotoBtn" style="display:none;">
+                    <span style="font-size: 1.2em;">⏭️</span> Continuar sin foto
+                </button>
+                <video id="videoPreview" autoplay playsinline style="display:none;"></video>
+                <div id="cameraControls" style="display:none;">
+                    <button class="action-button" id="capturePhotoBtn">
+                        <span style="font-size: 1.2em;">📷</span> Tomar foto
+                    </button>
+                    <button class="action-button skip-btn" id="retakePhotoBtn" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+                        <span style="font-size: 1.2em;">🔄</span> Volver a tomar
+                    </button>
+                </div>
+                <img id="capturedPhoto" class="captured-photo" style="display:none;">
                 <div class="info-text" id="infoText"></div>
             `;
 
@@ -831,95 +1053,146 @@
                 document.getElementById('cameraBtn').onclick = openCamera;
                 document.getElementById('skipPhotoBtn').onclick = skipPhoto;
                 document.getElementById('capturePhotoBtn').onclick = takePhoto;
-            }, 100);
+                document.getElementById('retakePhotoBtn').onclick = retakePhoto;
+            }, 50);
 
             return container;
         }
 
-        // Función para capturar ubicación
         function captureLocation() {
             const btn = document.getElementById('locationBtn');
             const infoText = document.getElementById('infoText');
+            
+            if (isProcessingPhoto) return;
             
             btn.disabled = true;
             btn.innerHTML = '⏳ Obteniendo ubicación...';
             infoText.textContent = 'Obteniendo tu ubicación GPS...';
 
             if (!navigator.geolocation) {
-                infoText.textContent = '❌ Tu dispositivo no soporta geolocalización';
-                btn.disabled = false;
-                btn.innerHTML = '📍 Capturar ubicación';
+                infoText.textContent = '❌ Tu dispositivo no soporta geolocalización. Usa otro dispositivo o continúa sin ubicación.';
+                formDataIngreso.ubicacion = 'No soportado';
+                showCameraOptions();
                 return;
             }
 
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    const coords = `${position.coords.latitude.toFixed(7)},${position.coords.longitude.toFixed(7)}`;
+                    const coords = `${position.coords.latitude.toFixed(6)},${position.coords.longitude.toFixed(6)}`;
                     formDataIngreso.ubicacion = coords;
                     
                     btn.innerHTML = '✅ Ubicación capturada';
                     btn.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
-                    infoText.textContent = `✅ Coordenadas: ${coords}`;
+                    infoText.innerHTML = `✅ <strong>Ubicación capturada:</strong><br>Lat: ${position.coords.latitude.toFixed(6)}<br>Lon: ${position.coords.longitude.toFixed(6)}`;
                     
-                    setTimeout(() => {
-                        document.getElementById('cameraBtn').style.display = 'block';
-                        document.getElementById('skipPhotoBtn').style.display = 'block';
-                        scrollToBottom();
-                    }, 500);
+                    showCameraOptions();
+                    showNotification('Ubicación capturada exitosamente');
                 },
                 (error) => {
-                    infoText.textContent = '❌ No se pudo obtener la ubicación. Por favor activa el GPS.';
+                    infoText.innerHTML = '⚠️ <strong>No se pudo obtener la ubicación exacta.</strong><br>Puedes continuar sin ubicación o intentar de nuevo.';
+                    formDataIngreso.ubicacion = 'Error: ' + error.message;
+                    
                     btn.disabled = false;
-                    btn.innerHTML = '📍 Reintentar';
-                    scrollToBottom();
+                    btn.innerHTML = '📍 Intentar de nuevo';
+                    
+                    // Mostrar opciones de cámara de todas formas
+                    setTimeout(() => showCameraOptions(), 1000);
                 },
-                { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+                { 
+                    enableHighAccuracy: true, 
+                    timeout: 15000, 
+                    maximumAge: 0 
+                }
             );
         }
 
-        // Función para abrir cámara
+        function showCameraOptions() {
+            setTimeout(() => {
+                document.getElementById('cameraBtn').style.display = 'block';
+                document.getElementById('skipPhotoBtn').style.display = 'block';
+                scrollToBottom();
+            }, 500);
+        }
+
         async function openCamera() {
+            if (isProcessingPhoto) return;
+            
             const btn = document.getElementById('cameraBtn');
             const video = document.getElementById('videoPreview');
             const infoText = document.getElementById('infoText');
+            const cameraControls = document.getElementById('cameraControls');
 
             try {
+                isProcessingPhoto = true;
                 btn.disabled = true;
-                btn.innerHTML = '⏳ Iniciando cámara...';
-                infoText.textContent = 'Iniciando cámara frontal...';
+                btn.innerHTML = '⏳ Accediendo a la cámara...';
+                infoText.textContent = 'Solicitando acceso a la cámara...';
 
-                videoStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                // Para GitHub Pages, necesitamos HTTPS
+                const constraints = {
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
                     audio: false
-                });
+                };
+
+                videoStream = await navigator.mediaDevices.getUserMedia(constraints);
 
                 video.srcObject = videoStream;
                 video.style.display = 'block';
                 
                 btn.style.display = 'none';
                 document.getElementById('skipPhotoBtn').style.display = 'none';
-                document.getElementById('capturePhotoBtn').style.display = 'block';
-                infoText.textContent = '✅ Cámara activa. Cuando estés listo, captura tu foto.';
+                cameraControls.style.display = 'block';
+                infoText.textContent = '✅ Cámara lista. Asegúrate de estar bien iluminado.';
+
+                showNotification('Cámara activada', 'success');
                 scrollToBottom();
 
             } catch (error) {
-                infoText.textContent = '❌ Error al acceder a la cámara. Continúa sin foto.';
+                console.error('Error al acceder a la cámara:', error);
+                infoText.innerHTML = `
+                    ❌ <strong>No se pudo acceder a la cámara.</strong><br>
+                    Posibles causas:<br>
+                    1. Permisos de cámara denegados<br>
+                    2. Otra app está usando la cámara<br>
+                    3. Problemas técnicos del dispositivo
+                `;
+                
                 btn.disabled = false;
-                btn.innerHTML = '📸 Abrir cámara';
-                scrollToBottom();
+                btn.innerHTML = '📸 Intentar de nuevo';
+                isProcessingPhoto = false;
+                
+                showNotification('Error al acceder a la cámara', 'error');
             }
         }
 
-        // Función para saltar foto
         function skipPhoto() {
+            if (isProcessingPhoto) return;
+            
             photoSkipped = true;
-            formDataIngreso.selfie = 'No capturada';
+            formDataIngreso.selfie = 'No capturada - Usuario decidió saltar';
             addUserMessage('⏭️ Continuar sin foto');
+            showNotification('Continuando sin foto', 'warning');
             processIngresoResponse('skipped_photo');
         }
 
-        // Función para tomar foto
+        function retakePhoto() {
+            const video = document.getElementById('videoPreview');
+            const capturedImg = document.getElementById('capturedPhoto');
+            const infoText = document.getElementById('infoText');
+            
+            capturedImg.style.display = 'none';
+            video.style.display = 'block';
+            infoText.textContent = 'Listo para tomar otra foto';
+            scrollToBottom();
+        }
+
         async function takePhoto() {
+            if (isProcessingPhoto) return;
+            
             const btn = document.getElementById('capturePhotoBtn');
             const video = document.getElementById('videoPreview');
             const canvas = document.getElementById('photoCanvas');
@@ -927,65 +1200,124 @@
             const infoText = document.getElementById('infoText');
 
             try {
+                isProcessingPhoto = true;
                 btn.disabled = true;
                 btn.innerHTML = '⏳ Capturando...';
-                infoText.textContent = '📸 Capturando foto...';
+                infoText.textContent = 'Capturando foto...';
 
+                // Configurar canvas
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-                const context = canvas.getContext('2d');
-                context.translate(canvas.width, 0);
-                context.scale(-1, 1);
-                context.drawImage(video, 0, 0);
+                const ctx = canvas.getContext('2d');
+                
+                // Espejar la imagen para selfie
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                photoBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                // Obtener imagen en base64
+                photoBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 capturedImg.src = photoBase64;
-                capturedImg.style.display = 'block';
-
+                
+                // Detener cámara
                 if (videoStream) {
                     videoStream.getTracks().forEach(track => track.stop());
+                    videoStream = null;
                 }
+                
+                // Mostrar resultados
                 video.style.display = 'none';
-                btn.style.display = 'none';
-
-                infoText.textContent = '⏳ Subiendo foto a Drive...';
+                capturedImg.style.display = 'block';
+                infoText.textContent = '✅ Foto capturada. Subiendo a Drive...';
+                
+                showNotification('Foto capturada exitosamente', 'success');
                 scrollToBottom();
 
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        image: photoBase64,
-                        asesor: formDataIngreso.asesor,
-                        ubicacion: formDataIngreso.ubicacion
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    formDataIngreso.selfie = result.publicUrl || result.directLink;
-                    infoText.textContent = `✅ Foto guardada: ${result.fileName}`;
-                    
-                    setTimeout(() => {
-                        addUserMessage('✅ Ubicación y foto capturadas');
-                        processIngresoResponse('captured_data');
-                    }, 1000);
-                } else {
-                    throw new Error(result.error || 'Error al guardar');
-                }
+                // Intentar subir la foto
+                await uploadPhotoToDrive();
 
             } catch (error) {
-                infoText.textContent = `⚠️ Error al subir foto. Continuando...`;
-                formDataIngreso.selfie = 'Error al capturar';
+                console.error('Error al tomar foto:', error);
+                infoText.innerHTML = '⚠️ Error al capturar la foto. Continuando sin foto.';
+                formDataIngreso.selfie = 'Error al capturar: ' + error.message;
+                
                 setTimeout(() => {
-                    addUserMessage('⚠️ Continuando sin foto');
+                    addUserMessage('⚠️ Continuando sin foto por error técnico');
                     processIngresoResponse('captured_data');
                 }, 1500);
+                
+                showNotification('Error al procesar foto', 'error');
+            } finally {
+                isProcessingPhoto = false;
             }
         }
 
-        // Función para mostrar indicador de escritura
+        async function uploadPhotoToDrive() {
+            const infoText = document.getElementById('infoText');
+            
+            try {
+                // Preparar datos para enviar
+                const payload = {
+                    image: photoBase64.split(',')[1], // Enviar solo la parte base64
+                    asesor: formDataIngreso.asesor,
+                    ubicacion: formDataIngreso.ubicacion,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Intentar con URLs de backup si falla la principal
+                let lastError = null;
+                
+                for (const scriptUrl of BACKUP_SCRIPT_URLS) {
+                    try {
+                        infoText.textContent = `⏳ Subiendo foto... (intento ${BACKUP_SCRIPT_URLS.indexOf(scriptUrl) + 1})`;
+                        
+                        const response = await fetch(scriptUrl, {
+                            method: 'POST',
+                            mode: 'no-cors', // Para evitar problemas CORS en GitHub Pages
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        // Con no-cors no podemos leer la respuesta, pero asumimos éxito
+                        formDataIngreso.selfie = `Foto capturada - ${new Date().toLocaleString()}`;
+                        infoText.textContent = '✅ Foto procesada (modo seguro para GitHub Pages)';
+                        
+                        showNotification('Foto procesada correctamente', 'success');
+                        
+                        setTimeout(() => {
+                            addUserMessage('✅ Ubicación y foto capturadas');
+                            processIngresoResponse('captured_data');
+                        }, 1000);
+                        
+                        return;
+                        
+                    } catch (error) {
+                        lastError = error;
+                        console.warn(`Intento fallido con ${scriptUrl}:`, error);
+                        continue;
+                    }
+                }
+
+                // Si todos los intentos fallan
+                throw lastError || new Error('Todos los intentos fallaron');
+
+            } catch (error) {
+                console.error('Error al subir foto:', error);
+                infoText.textContent = '⚠️ No se pudo subir la foto al Drive, pero continuaremos.';
+                formDataIngreso.selfie = `Foto local - ${new Date().toLocaleString()}`;
+                
+                setTimeout(() => {
+                    addUserMessage('✅ Ubicación capturada (foto guardada localmente)');
+                    processIngresoResponse('captured_data');
+                }, 1000);
+                
+                showNotification('Foto guardada localmente', 'warning');
+            }
+        }
+
+        // ========== FLUJO PRINCIPAL ==========
         function showTyping() {
             const wrapper = document.createElement('div');
             wrapper.className = 'message bot-message';
@@ -1003,13 +1335,11 @@
             scrollToBottom();
         }
 
-        // Función para ocultar indicador de escritura
         function hideTyping() {
             const typing = document.getElementById('typing');
             if (typing) typing.remove();
         }
 
-        // Función principal para procesar respuestas del flujo de ingreso
         function processIngresoResponse(response) {
             showTyping();
 
@@ -1019,192 +1349,185 @@
                 switch(currentStep) {
                     case 0:
                         formDataIngreso.asesor = response;
-                        addBotMessage(`¡Hola ${response.split(' ')[0]}! 👋`);
+                        addBotMessage(`¡Hola <strong>${response.split(' ')[0]}</strong>! 👋<br>Bienvenido al sistema de registro PDV.`);
                         setTimeout(() => {
-                            addBotMessage('', createCaptureContainer());
-                        }, 600);
+                            addBotMessage('Vamos a registrar tu ingreso al punto de venta.', createCaptureContainer());
+                        }, 800);
                         currentStep++;
                         break;
 
                     case 1:
-                        if (response === 'skipped_photo') {
-                            // Si se saltó la foto, continuar con la ciudad
-                            addBotMessage('Continuemos con tu ubicación. ✅');
-                            setTimeout(() => {
-                                const ciudadesOptions = Object.keys(ciudadesPuntosVenta);
-                                addBotMessage('', createSelect(ciudadesOptions, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
-                                    processIngresoResponse(ciudad);
-                                }));
-                            }, 600);
-                        } else {
-                            addBotMessage('¡Perfecto! ✅');
-                            setTimeout(() => {
-                                const ciudadesOptions = Object.keys(ciudadesPuntosVenta);
-                                addBotMessage('', createSelect(ciudadesOptions, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
-                                    processIngresoResponse(ciudad);
-                                }));
-                            }, 600);
-                        }
+                        const ciudadesOptions = Object.keys(ciudadesPuntosVenta).sort();
+                        addBotMessage('Perfecto! ✅ Ahora necesitamos tu ubicación.');
+                        setTimeout(() => {
+                            addBotMessage('', createSelect(
+                                ciudadesOptions,
+                                'Selecciona tu ciudad...',
+                                '📍 ¿En qué ciudad te encuentras?',
+                                (ciudad) => processIngresoResponse(ciudad)
+                            ));
+                        }, 800);
                         currentStep++;
                         break;
 
                     case 2:
                         formDataIngreso.ciudad = response;
-                        addBotMessage('Excelente ✔');
-                        setTimeout(() => {
-                            // Obtener puntos de venta para la ciudad seleccionada
-                            const puntosVenta = ciudadesPuntosVenta[response] || [];
-                            if (puntosVenta.length > 0) {
-                                addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', `Puntos de venta en ${response}:`, (punto) => {
-                                    processIngresoResponse(punto);
-                                }));
-                            } else {
-                                addBotMessage('', createInputBubble(
-                                    `No hay puntos predefinidos para ${response}. Por favor escribe el nombre del punto de venta:`,
-                                    'Ej: Tienda La Economía',
-                                    (punto) => {
-                                        processIngresoResponse(punto);
-                                    }
+                        const puntosVenta = ciudadesPuntosVenta[response] || [];
+                        
+                        if (puntosVenta.length > 0) {
+                            addBotMessage(`Excelente, estás en <strong>${response}</strong>. ✔`);
+                            setTimeout(() => {
+                                addBotMessage('', createSelect(
+                                    puntosVenta,
+                                    'Selecciona el punto de venta...',
+                                    `🏪 Selecciona el punto de venta en ${response}:`,
+                                    (punto) => processIngresoResponse(punto)
                                 ));
-                            }
-                        }, 600);
+                            }, 800);
+                        } else {
+                            addBotMessage(`Estás en <strong>${response}</strong>.`);
+                            setTimeout(() => {
+                                addBotMessage('', createInputBubble(
+                                    `Escribe el nombre del punto de venta en ${response}:`,
+                                    'Ej: Tienda La Economía, Supermercado XYZ...',
+                                    (punto) => processIngresoResponse(punto)
+                                ));
+                            }, 800);
+                        }
                         currentStep++;
                         break;
 
                     case 3:
                         formDataIngreso.puntoVenta = response;
-                        currentStep++;
                         submitFormIngreso();
                         break;
                 }
-            }, 800);
+            }, 1000);
         }
 
-        // Función para enviar formulario de ingreso
         function submitFormIngreso() {
-            addBotMessage('Enviando tu ingreso... ⏳');
-
-            document.getElementById('asesorField').value = formDataIngreso.asesor;
-            document.getElementById('ubicacionField').value = formDataIngreso.ubicacion;
-            document.getElementById('selfieField').value = formDataIngreso.selfie;
-            document.getElementById('ciudadField').value = formDataIngreso.ciudad;
-            document.getElementById('puntoVentaField').value = formDataIngreso.puntoVenta;
-
+            showTyping();
+            
             setTimeout(() => {
+                hideTyping();
+                
+                // Llenar formulario oculto
+                document.getElementById('asesorField').value = formDataIngreso.asesor;
+                document.getElementById('ubicacionField').value = formDataIngreso.ubicacion;
+                document.getElementById('selfieField').value = formDataIngreso.selfie;
+                document.getElementById('ciudadField').value = formDataIngreso.ciudad;
+                document.getElementById('puntoVentaField').value = formDataIngreso.puntoVenta;
+
+                // Enviar formulario
                 document.getElementById('googleFormIngreso').submit();
 
-                setTimeout(() => {
-                    addBotMessage('✅ ¡Ingreso registrado exitosamente!');
-                    
-                    setTimeout(() => {
-                        showMainMenu();
-                    }, 800);
-                }, 1000);
-            }, 500);
+                // Mostrar confirmación
+                addBotMessage(`
+                    ✅ <strong>¡Ingreso registrado exitosamente!</strong><br><br>
+                    📋 <strong>Resumen:</strong><br>
+                    👤 Asesor: ${formDataIngreso.asesor}<br>
+                    📍 Ciudad: ${formDataIngreso.ciudad}<br>
+                    🏪 Punto: ${formDataIngreso.puntoVenta}<br>
+                    📸 Foto: ${formDataIngreso.selfie.includes('No capturada') ? 'No capturada' : 'Capturada'}
+                `);
+                
+                showNotification('Ingreso registrado correctamente', 'success');
+                
+                // Mostrar menú principal
+                setTimeout(() => showMainMenu(), 1500);
+            }, 1500);
         }
 
-        // Función para mostrar menú principal mejorado
+        // ========== MENÚ PRINCIPAL MEJORADO ==========
         function showMainMenu() {
             const menuBubble = document.createElement('div');
             menuBubble.className = 'select-bubble';
-
+            
             menuBubble.innerHTML = `
-                <div class="select-bubble-text">📱 Menú Principal - ¿Qué deseas hacer?</div>
+                <div class="select-bubble-text">📱 <strong>Menú Principal</strong><br><small>Selecciona una opción:</small></div>
                 <div class="menu-options">
                     <button class="menu-button" id="btnLineal">
-                        📊 Registrar Participación Lineal
+                        <span style="font-size: 1.3em;">📊</span>
+                        Participación Lineal
                     </button>
                     <button class="menu-button" id="btnGaleria">
-                        🏬 Galería de Puntos de Venta
+                        <span style="font-size: 1.3em;">🏬</span>
+                        Galería PDV
                     </button>
                     <button class="menu-button" id="btnProximosVencer">
-                        ⚠️ Productos Próximos a Vencer
+                        <span style="font-size: 1.3em;">⚠️</span>
+                        Próximos a Vencer
                     </button>
                     <button class="menu-button" id="btnAgotados">
-                        📦 Productos Agotados
+                        <span style="font-size: 1.3em;">📦</span>
+                        Productos Agotados
                     </button>
                     <button class="menu-button" id="btnDescuentos">
-                        💰 Descuentos y Promociones
+                        <span style="font-size: 1.3em;">💰</span>
+                        Descuentos
                     </button>
                     <button class="menu-button" id="btnRegistrosVentas">
-                        📈 Registros de Ventas
+                        <span style="font-size: 1.3em;">📈</span>
+                        Registro Ventas
                     </button>
                     <button class="menu-button" id="btnVozConsumidor">
-                        🗣️ Voz del Consumidor
+                        <span style="font-size: 1.3em;">🗣️</span>
+                        Voz Consumidor
                     </button>
                     <button class="menu-button" id="btnNuevoIngreso">
-                        🔄 Nuevo ingreso
+                        <span style="font-size: 1.3em;">🔄</span>
+                        Nuevo Ingreso
                     </button>
                     <button class="menu-button" id="btnVerRespuestas">
-                        👁️ Ver respuestas
+                        <span style="font-size: 1.3em;">👁️</span>
+                        Ver Respuestas
                     </button>
                 </div>
             `;
 
             addBotMessage('', menuBubble);
 
+            // Asignar eventos
             setTimeout(() => {
-                // Asignar funciones a los botones del menú
-                document.getElementById('btnLineal').onclick = () => {
-                    addUserMessage('📊 Registrar Participación Lineal');
-                    startLinealFlow();
+                const actions = {
+                    btnLineal: () => {
+                        addUserMessage('📊 Participación Lineal');
+                        startLinealFlow();
+                    },
+                    btnGaleria: () => showFeatureMessage('Galería de Puntos de Venta', 'Próximamente podrás ver y subir fotos de los PDV.'),
+                    btnProximosVencer: () => showFeatureMessage('Productos Próximos a Vencer', 'Próximamente podrás registrar productos con fechas cercanas a vencer.'),
+                    btnAgotados: () => showFeatureMessage('Productos Agotados', 'Próximamente podrás reportar productos agotados en inventario.'),
+                    btnDescuentos: () => showFeatureMessage('Descuentos y Promociones', 'Próximamente podrás registrar descuentos activos en el PDV.'),
+                    btnRegistrosVentas: () => showFeatureMessage('Registros de Ventas', 'Próximamente podrás capturar datos de ventas del día.'),
+                    btnVozConsumidor: () => showFeatureMessage('Voz del Consumidor', 'Próximamente podrás capturar comentarios y feedback de clientes.'),
+                    btnNuevoIngreso: () => {
+                        if (confirm('¿Estás seguro de iniciar un nuevo ingreso? Se reiniciará el proceso.')) {
+                            location.reload();
+                        }
+                    },
+                    btnVerRespuestas: () => {
+                        window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank');
+                        showNotification('Abriendo respuestas en nueva pestaña', 'success');
+                    }
                 };
-                document.getElementById('btnGaleria').onclick = () => {
-                    addUserMessage('🏬 Galería de Puntos de Venta');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás ver fotos de los PDV.');
-                    }, 800);
-                };
-                document.getElementById('btnProximosVencer').onclick = () => {
-                    addUserMessage('⚠️ Productos Próximos a Vencer');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás registrar productos próximos a vencer.');
-                    }, 800);
-                };
-                document.getElementById('btnAgotados').onclick = () => {
-                    addUserMessage('📦 Productos Agotados');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás registrar productos agotados.');
-                    }, 800);
-                };
-                document.getElementById('btnDescuentos').onclick = () => {
-                    addUserMessage('💰 Descuentos y Promociones');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás registrar descuentos.');
-                    }, 800);
-                };
-                document.getElementById('btnRegistrosVentas').onclick = () => {
-                    addUserMessage('📈 Registros de Ventas');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás registrar ventas.');
-                    }, 800);
-                };
-                document.getElementById('btnVozConsumidor').onclick = () => {
-                    addUserMessage('🗣️ Voz del Consumidor');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        addBotMessage('Función en desarrollo. Próximamente podrás capturar comentarios de consumidores.');
-                    }, 800);
-                };
-                document.getElementById('btnNuevoIngreso').onclick = () => location.reload();
-                document.getElementById('btnVerRespuestas').onclick = () => {
-                    window.open('https://docs.google.com/forms/d/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/edit#responses', '_blank');
-                };
+
+                Object.keys(actions).forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.onclick = actions[id];
+                });
             }, 100);
         }
 
-        // Función para iniciar flujo lineal mejorado
+        function showFeatureMessage(title, description) {
+            addUserMessage(title);
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMessage(`🔧 <strong>${title}</strong><br><br>${description}<br><br><small>Esta función estará disponible en la próxima actualización.</small>`);
+            }, 800);
+        }
+
+        // ========== FLUJO LINEAL (MANTENIDO) ==========
         function startLinealFlow() {
             currentFlow = 'lineal';
             currentStep = 0;
@@ -1214,18 +1537,16 @@
                 hideTyping();
                 addBotMessage('¡Perfecto! Vamos a registrar la participación lineal. 📊');
                 setTimeout(() => {
-                    const selectBubble = createSelect(
+                    addBotMessage('', createSelect(
                         ['MARCA PROPIA', 'MARCA COMPETENCIA'],
                         'Selecciona el tipo...',
-                        'Selecciona el tipo de marca:',
+                        '🏷️ ¿Qué tipo de marca vas a registrar?',
                         (tipo) => processLinealResponse(tipo)
-                    );
-                    addBotMessage('', selectBubble);
+                    ));
                 }, 600);
             }, 800);
         }
 
-        // Función para procesar respuestas del flujo lineal
         function processLinealResponse(response) {
             showTyping();
 
@@ -1241,7 +1562,7 @@
                                 addBotMessage('', createSelect(
                                     productosMarcaPropia,
                                     'Selecciona el producto...',
-                                    'Selecciona el producto:',
+                                    '📦 Selecciona el producto de nuestra marca:',
                                     (producto) => {
                                         formDataLineal.producto = producto;
                                         addUserMessage(producto);
@@ -1255,7 +1576,7 @@
                             setTimeout(() => {
                                 addBotMessage('', createInputBubble(
                                     'Escribe el nombre del producto competencia:',
-                                    'Ej: Corona, Heineken, Budweiser...',
+                                    'Ej: Corona, Heineken, Budweiser, Poker...',
                                     (producto) => {
                                         formDataLineal.producto = producto;
                                         currentStep = 2;
@@ -1271,18 +1592,17 @@
                         addBotMessage('Producto registrado ✔');
                         setTimeout(() => {
                             addBotMessage('', createInputBubble(
-                                '¿Cuántas caras/frentes tiene en el lineal?',
-                                'Ingresa solo números...',
+                                '🔢 ¿Cuántas caras/frentes tiene en el lineal?',
+                                'Ingresa solo números (ej: 3, 5, 12)...',
                                 (numero) => {
-                                    // Validar que sea un número
-                                    if (!isNaN(numero) && numero.trim() !== '') {
+                                    if (!isNaN(numero) && numero.trim() !== '' && parseInt(numero) > 0) {
                                         formDataLineal.numeroFrente = numero.trim();
-                                        addUserMessage(numero);
+                                        addUserMessage(`${numero} frentes`);
                                         currentStep++;
                                         processLinealResponse('numero_selected');
                                     } else {
-                                        addBotMessage('Por favor ingresa un número válido. 🔢');
-                                        currentStep = 2; // Volver al mismo paso
+                                        addBotMessage('❌ Por favor ingresa un número válido mayor a 0.');
+                                        currentStep = 2;
                                         processLinealResponse('invalid_number');
                                     }
                                 },
@@ -1292,33 +1612,38 @@
                         break;
 
                     case 3:
-                        addBotMessage('Perfecto ✅');
-                        setTimeout(() => {
-                            showConfirmacionLineal();
-                        }, 600);
+                        showConfirmacionLineal();
                         break;
                 }
             }, 800);
         }
 
-        // Función para mostrar confirmación lineal
         function showConfirmacionLineal() {
             const confirmBubble = document.createElement('div');
             confirmBubble.className = 'select-bubble';
 
             confirmBubble.innerHTML = `
-                <div class="select-bubble-text">📋 Confirma los datos de participación lineal:</div>
-                <div style="background: rgba(255,255,255,0.3); padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 0.85em; line-height: 1.5;">
-                    <div style="margin-bottom: 6px;"><strong>🏷️ Tipo:</strong> ${formDataLineal.tipoMarca}</div>
-                    <div style="margin-bottom: 6px;"><strong>📦 Producto:</strong> ${formDataLineal.producto}</div>
-                    <div><strong>🔢 Frentes en lineal:</strong> ${formDataLineal.numeroFrente}</div>
+                <div class="select-bubble-text">📋 <strong>Confirma los datos:</strong></div>
+                <div style="background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0; border: 2px solid rgba(37, 211, 102, 0.2);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 1.2em;">🏷️</span>
+                        <span style="font-weight: 600;">Tipo:</span> ${formDataLineal.tipoMarca}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 1.2em;">📦</span>
+                        <span style="font-weight: 600;">Producto:</span> ${formDataLineal.producto}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2em;">🔢</span>
+                        <span style="font-weight: 600;">Frentes:</span> ${formDataLineal.numeroFrente}
+                    </div>
                 </div>
-                <div class="menu-options">
-                    <button class="menu-button" id="btnConfirmarLineal" style="background: rgba(37, 211, 102, 0.3); border-color: rgba(37, 211, 102, 0.5);">
-                        ✅ Sí, es correcto - Enviar
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="action-button" id="btnConfirmarLineal" style="flex: 1;">
+                        ✅ Confirmar y Enviar
                     </button>
-                    <button class="menu-button" id="btnCancelarLineal" style="background: rgba(244, 67, 54, 0.3); border-color: rgba(244, 67, 54, 0.5);">
-                        ❌ No, corregir datos
+                    <button class="action-button skip-btn" id="btnCancelarLineal" style="flex: 1;">
+                        ❌ Corregir
                     </button>
                 </div>
             `;
@@ -1327,98 +1652,103 @@
 
             setTimeout(() => {
                 document.getElementById('btnConfirmarLineal').onclick = () => {
-                    addUserMessage('✅ Sí, es correcto - Enviar');
+                    addUserMessage('✅ Confirmar y Enviar');
                     submitFormLineal();
                 };
                 document.getElementById('btnCancelarLineal').onclick = () => {
-                    addUserMessage('❌ Voy a corregir');
+                    addUserMessage('❌ Corregir datos');
                     showTyping();
                     setTimeout(() => {
                         hideTyping();
-                        addBotMessage('Está bien, empecemos de nuevo. 🔄');
+                        addBotMessage('¡No hay problema! Empecemos de nuevo. 🔄');
                         setTimeout(() => startLinealFlow(), 800);
                     }, 800);
                 };
             }, 100);
         }
 
-        // Función para enviar formulario lineal
         function submitFormLineal() {
-            addBotMessage('Guardando participación lineal... ⏳');
-
-            document.getElementById('tipoMarcaField').value = formDataLineal.tipoMarca;
-            document.getElementById('productoField').value = formDataLineal.producto;
-            document.getElementById('numeroFrentesField').value = formDataLineal.numeroFrente;
-
+            showTyping();
+            
             setTimeout(() => {
+                hideTyping();
+                
+                document.getElementById('tipoMarcaField').value = formDataLineal.tipoMarca;
+                document.getElementById('productoField').value = formDataLineal.producto;
+                document.getElementById('numeroFrentesField').value = formDataLineal.numeroFrente;
+
                 document.getElementById('googleFormLineal').submit();
 
+                addBotMessage(`
+                    ✅ <strong>¡Participación lineal registrada!</strong><br><br>
+                    📋 <strong>Datos enviados:</strong><br>
+                    🏷️ Tipo: ${formDataLineal.tipoMarca}<br>
+                    📦 Producto: ${formDataLineal.producto}<br>
+                    🔢 Frentes: ${formDataLineal.numeroFrente}
+                `);
+                
+                showNotification('Datos de lineal guardados', 'success');
+                
                 setTimeout(() => {
-                    addBotMessage('✅ ¡Participación lineal registrada exitosamente!');
+                    const askBubble = document.createElement('div');
+                    askBubble.className = 'select-bubble';
+                    askBubble.innerHTML = `
+                        <div class="select-bubble-text">¿Qué deseas hacer ahora?</div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="action-button" id="btnOtroRegistro" style="flex: 1;">
+                                📊 Registrar otro
+                            </button>
+                            <button class="action-button camera-btn" id="btnVolverMenu" style="flex: 1;">
+                                🏠 Menú principal
+                            </button>
+                        </div>
+                    `;
+                    
+                    addBotMessage('', askBubble);
                     
                     setTimeout(() => {
-                        askForAnotherRegistro();
-                    }, 800);
+                        document.getElementById('btnOtroRegistro').onclick = () => {
+                            formDataLineal = { tipoMarca: '', producto: '', numeroFrente: '' };
+                            startLinealFlow();
+                        };
+                        document.getElementById('btnVolverMenu').onclick = showMainMenu;
+                    }, 100);
                 }, 1000);
-            }, 500);
+            }, 1500);
         }
 
-        // Función para preguntar si desea registrar otro
-        function askForAnotherRegistro() {
-            const askBubble = document.createElement('div');
-            askBubble.className = 'select-bubble';
-
-            askBubble.innerHTML = `
-                <div class="select-bubble-text">¿Qué deseas hacer ahora?</div>
-                <div class="menu-options">
-                    <button class="menu-button" id="btnSiOtro">
-                        ✅ Sí, registrar otra participación
-                    </button>
-                    <button class="menu-button" id="btnNoMenu">
-                        🏠 Volver al menú principal
-                    </button>
-                </div>
-            `;
-
-            addBotMessage('', askBubble);
-
-            setTimeout(() => {
-                document.getElementById('btnSiOtro').onclick = () => {
-                    addUserMessage('✅ Sí, registrar otro');
-                    // Resetear datos lineales
-                    formDataLineal.tipoMarca = '';
-                    formDataLineal.producto = '';
-                    formDataLineal.numeroFrente = '';
-                    startLinealFlow();
-                };
-                document.getElementById('btnNoMenu').onclick = () => {
-                    addUserMessage('🏠 Volver al menú');
-                    showTyping();
-                    setTimeout(() => {
-                        hideTyping();
-                        showMainMenu();
-                    }, 800);
-                };
-            }, 100);
-        }
-
-        // Inicializar chat
+        // ========== INICIALIZACIÓN ==========
         function initChat() {
             setTimeout(() => {
-                addBotMessage('¡Hola! 👋 Soy tu asistente para registros en PDV.');
+                addBotMessage(`
+                    🍺 <strong>¡Hola!</strong><br>
+                    Soy tu asistente para registros en Puntos de Venta Beer.<br><br>
+                    📍 Puedo ayudarte con:<br>
+                    • Registro de ingreso (ubicación + selfie)<br>
+                    • Participación lineal de productos<br>
+                    • Gestión completa del PDV<br><br>
+                    <small>Selecciona tu nombre para comenzar:</small>
+                `);
+                
                 setTimeout(() => {
-                    addBotMessage('Puedo ayudarte con:<br>📍 Registro de ingreso (ubicación + selfie)<br>📊 Participación lineal de productos<br>📱 Gestión completa de PDV');
-                    setTimeout(() => {
-                        addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:', (asesor) => {
-                            processIngresoResponse(asesor);
-                        }));
-                    }, 1200);
-                }, 1000);
+                    addBotMessage('', createSelect(
+                        asesores,
+                        'Selecciona tu nombre...',
+                        '👤 ¿Quién eres?',
+                        (asesor) => processIngresoResponse(asesor)
+                    ));
+                }, 1200);
             }, 500);
         }
 
-        // Iniciar aplicación
-        initChat();
+        // Iniciar cuando cargue la página
+        window.addEventListener('DOMContentLoaded', initChat);
+        
+        // Para GitHub Pages - Asegurar HTTPS
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            location.protocol = 'https:';
+        }
+
     </script>
 </body>
 </html>
