@@ -52,6 +52,7 @@
             gap: 12px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
             flex-shrink: 0;
+            z-index: 10;
         }
 
         .header-avatar {
@@ -87,6 +88,7 @@
             overflow-y: auto;
             background: #e5ddd5;
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><defs><pattern id="pattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M0 20 Q10 10 20 20 T40 20" stroke="%23d9d9d9" stroke-width="0.5" fill="none" opacity="0.4"/></pattern></defs><rect width="400" height="400" fill="%23e5ddd5"/><rect width="400" height="400" fill="url(%23pattern)"/></svg>');
+            -webkit-overflow-scrolling: touch;
         }
 
         .chat-messages::-webkit-scrollbar {
@@ -104,6 +106,7 @@
             animation: fadeIn 0.3s ease;
             padding: 0 4px;
             flex-direction: column;
+            scroll-margin-top: 20px;
         }
 
         @keyframes fadeIn {
@@ -170,6 +173,7 @@
         .custom-select {
             position: relative;
             width: 100%;
+            z-index: 5;
         }
 
         .select-button {
@@ -383,6 +387,7 @@
             font-size: 0.9em;
             font-weight: 500;
             transition: all 0.3s;
+            text-align: left;
         }
 
         .menu-button:active {
@@ -521,7 +526,8 @@
     <script>
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCvuZE34DkSCMy7Z_dr7DEaye3a2K2nArlePMG8QuFnxBSjduy4OK8pB1eUR9Nb4PI/exec';
 
-        const formDataIngreso = {
+        // Variables globales
+        let formDataIngreso = {
             asesor: '',
             ubicacion: '',
             selfie: '',
@@ -529,12 +535,48 @@
             puntoVenta: ''
         };
 
-        const formDataLineal = {
+        let formDataLineal = {
             tipoMarca: '',
             producto: '',
             numeroFrente: ''
         };
 
+        let ciudadesPuntosVenta = {
+            'Arjona': ['STO 116 ARJONA'],
+            'Armenia': [
+                'Ex 065 Exito Unicentro Armenia',
+                'Sa 358 Portal Del Quindio',
+                'Sa 366 San Diego',
+                'Ex 628 Exito Armenia',
+                'Si 4239 Super Inter Armenia Plaza',
+                'St 355 Armenia Norte'
+            ],
+            'Barranquilla': ['Carulla Feria De Los Platanos'],
+            'Cali': ['Si 4235 Super Inter Las Americas'],
+            'Cartagena': [],
+            'Fusagasugá': [],
+            'Girardot': [],
+            'Guadalajara De Buga': [],
+            'Jamundi': [],
+            'La Mesa': [],
+            'Malambo': [],
+            'Manizales': [],
+            'Melgar': [],
+            'Neiva': [],
+            'Palmira': [],
+            'Pereira': [],
+            'Pereira- Dosquebradas': [],
+            'Popayan': [],
+            'Soledad': [],
+            'Tulua': [],
+            'Tunja': [],
+            'Turbaco': [],
+            'Villavicencio': [],
+            'Yumbo': [],
+            'Ibagué': []
+        };
+
+        // Datos de ejemplo - puedes agregar más según necesites
         const asesores = [
             'Juan David Benavides González', 'Robinson Esneyder Zapata Anzola',
             'Sheyla Carolina Gómez Patiño', 'Harlinton Roisel Ortega Nieves',
@@ -546,22 +588,6 @@
             'Jenny Marcela Jaramillo Mejia', 'David Lopez Cardenas',
             'Ashly Valentina Montoya Rincon', 'Jaime Andres Castro Diaz',
             'Sergio Alejandro Murillo Gonzales'
-        ];
-
-        const ciudades = [
-            'Arjona', 'Armenia', 'Barranquilla', 'Cali', 'Cartagena', 'Fusagasugá',
-            'Girardot', 'Guadalajara De Buga', 'Jamundi', 'La Mesa', 'Malambo',
-            'Manizales', 'Melgar', 'Neiva', 'Palmira', 'Pereira', 'Pereira- Dosquebradas',
-            'Popayan', 'Soledad', 'Tulua', 'Tunja', 'Turbaco', 'Villavicencio',
-            'Yumbo', 'Ibagué'
-        ];
-
-        const puntosVenta = [
-            'STO 116 ARJONA', 'Ex 065 Exito Unicentro Armenia',
-            'Carulla Feria De Los Platanos', 'Sa 358 Portal Del Quindio',
-            'Sa 366 San Diego', 'Si 4235 Super Inter Las Americas',
-            'Ex 628 Exito Armenia', 'Si 4239 Super Inter Armenia Plaza',
-            'Oxxo Esquina Laureles', 'St 355 Armenia Norte'
         ];
 
         const productosMarcaPropia = [
@@ -579,15 +605,17 @@
 
         const chatMessages = document.getElementById('chatMessages');
 
-        function getTime() {
-            const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-        }
-
+        // Función mejorada para desplazamiento automático
         function scrollToBottom() {
-            setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 100);
+            setTimeout(() => {
+                chatMessages.scrollTo({
+                    top: chatMessages.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 150);
         }
 
+        // Función para mostrar mensaje del bot con mejor manejo de scroll
         function addBotMessage(text, customElement = null) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message bot-message';
@@ -608,9 +636,16 @@
             }
 
             chatMessages.appendChild(wrapper);
-            scrollToBottom();
+            
+            // Forzar scroll después de que el elemento se haya renderizado
+            setTimeout(() => {
+                wrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
+            
+            return wrapper;
         }
 
+        // Función para mostrar mensaje del usuario
         function addUserMessage(text) {
             const wrapper = document.createElement('div');
             wrapper.className = 'message user-message';
@@ -629,6 +664,13 @@
             scrollToBottom();
         }
 
+        // Función para obtener hora actual
+        function getTime() {
+            const now = new Date();
+            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Función mejorada para crear selects con mejor posicionamiento
         function createSelect(options, placeholder, label, onSelect) {
             const bubble = document.createElement('div');
             bubble.className = 'select-bubble';
@@ -663,6 +705,7 @@
                 const optionsContainer = document.getElementById(`${selectId}-options`);
                 const textSpan = document.getElementById(`${selectId}-text`);
 
+                // Agregar opciones
                 options.forEach(opt => {
                     const optDiv = document.createElement('div');
                     optDiv.className = 'select-option';
@@ -674,27 +717,40 @@
                         btn.style.pointerEvents = 'none';
                         btn.style.opacity = '0.6';
                         addUserMessage(opt);
+                        scrollToBottom();
                         if (onSelect) onSelect(opt);
                     };
                     optionsContainer.appendChild(optDiv);
                 });
 
+                // Manejar clic en el botón
                 btn.onclick = (e) => {
                     e.stopPropagation();
                     const isOpen = dropdown.classList.contains('active');
+                    
+                    // Cerrar otros dropdowns
                     document.querySelectorAll('.select-dropdown').forEach(d => d.classList.remove('active'));
                     document.querySelectorAll('.select-button').forEach(b => b.classList.remove('active'));
+                    
                     if (!isOpen) {
                         dropdown.classList.add('active');
                         btn.classList.add('active');
                         
+                        // Calcular posición
                         const btnRect = btn.getBoundingClientRect();
                         dropdown.style.top = (btnRect.bottom + 8) + 'px';
                         
+                        // Enfocar el buscador
                         setTimeout(() => search.focus(), 100);
+                        
+                        // Asegurar que el chat se desplace para mostrar el dropdown
+                        setTimeout(() => {
+                            dropdown.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 200);
                     }
                 };
 
+                // Buscador
                 search.addEventListener('input', (e) => {
                     const term = e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
                     optionsContainer.querySelectorAll('.select-option').forEach(opt => {
@@ -703,6 +759,7 @@
                     });
                 });
 
+                // Cerrar al hacer clic fuera
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.custom-select')) {
                         dropdown.classList.remove('active');
@@ -714,14 +771,15 @@
             return bubble;
         }
 
-        function createInputBubble(label, placeholder, onSubmit) {
+        // Función para crear input con mejor manejo
+        function createInputBubble(label, placeholder, onSubmit, inputType = 'text') {
             const bubble = document.createElement('div');
             bubble.className = 'input-bubble';
 
             const inputId = 'input-' + Date.now();
             bubble.innerHTML = `
                 <div class="input-bubble-text">${label}</div>
-                <input type="text" class="input-field" id="${inputId}" placeholder="${placeholder}">
+                <input type="${inputType}" class="input-field" id="${inputId}" placeholder="${placeholder}">
                 <button class="send-input-btn" id="${inputId}-btn">Enviar</button>
             `;
 
@@ -743,11 +801,15 @@
                 input.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') submitValue();
                 });
+                
+                // Enfocar automáticamente
+                setTimeout(() => input.focus(), 300);
             }, 100);
 
             return bubble;
         }
 
+        // Función para crear contenedor de captura
         function createCaptureContainer() {
             const container = document.createElement('div');
             container.className = 'capture-container';
@@ -774,6 +836,7 @@
             return container;
         }
 
+        // Función para capturar ubicación
         function captureLocation() {
             const btn = document.getElementById('locationBtn');
             const infoText = document.getElementById('infoText');
@@ -801,17 +864,20 @@
                     setTimeout(() => {
                         document.getElementById('cameraBtn').style.display = 'block';
                         document.getElementById('skipPhotoBtn').style.display = 'block';
+                        scrollToBottom();
                     }, 500);
                 },
                 (error) => {
                     infoText.textContent = '❌ No se pudo obtener la ubicación. Por favor activa el GPS.';
                     btn.disabled = false;
                     btn.innerHTML = '📍 Reintentar';
+                    scrollToBottom();
                 },
                 { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
             );
         }
 
+        // Función para abrir cámara
         async function openCamera() {
             const btn = document.getElementById('cameraBtn');
             const video = document.getElementById('videoPreview');
@@ -834,14 +900,17 @@
                 document.getElementById('skipPhotoBtn').style.display = 'none';
                 document.getElementById('capturePhotoBtn').style.display = 'block';
                 infoText.textContent = '✅ Cámara activa. Cuando estés listo, captura tu foto.';
+                scrollToBottom();
 
             } catch (error) {
                 infoText.textContent = '❌ Error al acceder a la cámara. Continúa sin foto.';
                 btn.disabled = false;
                 btn.innerHTML = '📸 Abrir cámara';
+                scrollToBottom();
             }
         }
 
+        // Función para saltar foto
         function skipPhoto() {
             photoSkipped = true;
             formDataIngreso.selfie = 'No capturada';
@@ -849,6 +918,7 @@
             processIngresoResponse('skipped_photo');
         }
 
+        // Función para tomar foto
         async function takePhoto() {
             const btn = document.getElementById('capturePhotoBtn');
             const video = document.getElementById('videoPreview');
@@ -879,6 +949,7 @@
                 btn.style.display = 'none';
 
                 infoText.textContent = '⏳ Subiendo foto a Drive...';
+                scrollToBottom();
 
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -914,6 +985,7 @@
             }
         }
 
+        // Función para mostrar indicador de escritura
         function showTyping() {
             const wrapper = document.createElement('div');
             wrapper.className = 'message bot-message';
@@ -931,11 +1003,13 @@
             scrollToBottom();
         }
 
+        // Función para ocultar indicador de escritura
         function hideTyping() {
             const typing = document.getElementById('typing');
             if (typing) typing.remove();
         }
 
+        // Función principal para procesar respuestas del flujo de ingreso
         function processIngresoResponse(response) {
             showTyping();
 
@@ -953,12 +1027,24 @@
                         break;
 
                     case 1:
-                        addBotMessage('¡Perfecto! ✅');
-                        setTimeout(() => {
-                            addBotMessage('', createSelect(ciudades, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
-                                processIngresoResponse(ciudad);
-                            }));
-                        }, 600);
+                        if (response === 'skipped_photo') {
+                            // Si se saltó la foto, continuar con la ciudad
+                            addBotMessage('Continuemos con tu ubicación. ✅');
+                            setTimeout(() => {
+                                const ciudadesOptions = Object.keys(ciudadesPuntosVenta);
+                                addBotMessage('', createSelect(ciudadesOptions, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
+                                    processIngresoResponse(ciudad);
+                                }));
+                            }, 600);
+                        } else {
+                            addBotMessage('¡Perfecto! ✅');
+                            setTimeout(() => {
+                                const ciudadesOptions = Object.keys(ciudadesPuntosVenta);
+                                addBotMessage('', createSelect(ciudadesOptions, 'Selecciona tu ciudad...', 'Ahora dime tu ciudad:', (ciudad) => {
+                                    processIngresoResponse(ciudad);
+                                }));
+                            }, 600);
+                        }
                         currentStep++;
                         break;
 
@@ -966,9 +1052,21 @@
                         formDataIngreso.ciudad = response;
                         addBotMessage('Excelente ✔');
                         setTimeout(() => {
-                            addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', 'Por último, tu punto de venta:', (punto) => {
-                                processIngresoResponse(punto);
-                            }));
+                            // Obtener puntos de venta para la ciudad seleccionada
+                            const puntosVenta = ciudadesPuntosVenta[response] || [];
+                            if (puntosVenta.length > 0) {
+                                addBotMessage('', createSelect(puntosVenta, 'Selecciona el punto de venta...', `Puntos de venta en ${response}:`, (punto) => {
+                                    processIngresoResponse(punto);
+                                }));
+                            } else {
+                                addBotMessage('', createInputBubble(
+                                    `No hay puntos predefinidos para ${response}. Por favor escribe el nombre del punto de venta:`,
+                                    'Ej: Tienda La Economía',
+                                    (punto) => {
+                                        processIngresoResponse(punto);
+                                    }
+                                ));
+                            }
                         }, 600);
                         currentStep++;
                         break;
@@ -982,6 +1080,7 @@
             }, 800);
         }
 
+        // Función para enviar formulario de ingreso
         function submitFormIngreso() {
             addBotMessage('Enviando tu ingreso... ⏳');
 
@@ -1004,21 +1103,40 @@
             }, 500);
         }
 
+        // Función para mostrar menú principal mejorado
         function showMainMenu() {
             const menuBubble = document.createElement('div');
             menuBubble.className = 'select-bubble';
 
             menuBubble.innerHTML = `
-                <div class="select-bubble-text">¿Qué deseas hacer?</div>
+                <div class="select-bubble-text">📱 Menú Principal - ¿Qué deseas hacer?</div>
                 <div class="menu-options">
                     <button class="menu-button" id="btnLineal">
                         📊 Registrar Participación Lineal
+                    </button>
+                    <button class="menu-button" id="btnGaleria">
+                        🏬 Galería de Puntos de Venta
+                    </button>
+                    <button class="menu-button" id="btnProximosVencer">
+                        ⚠️ Productos Próximos a Vencer
+                    </button>
+                    <button class="menu-button" id="btnAgotados">
+                        📦 Productos Agotados
+                    </button>
+                    <button class="menu-button" id="btnDescuentos">
+                        💰 Descuentos y Promociones
+                    </button>
+                    <button class="menu-button" id="btnRegistrosVentas">
+                        📈 Registros de Ventas
+                    </button>
+                    <button class="menu-button" id="btnVozConsumidor">
+                        🗣️ Voz del Consumidor
                     </button>
                     <button class="menu-button" id="btnNuevoIngreso">
                         🔄 Nuevo ingreso
                     </button>
                     <button class="menu-button" id="btnVerRespuestas">
-                        📈 Ver respuestas
+                        👁️ Ver respuestas
                     </button>
                 </div>
             `;
@@ -1026,9 +1144,58 @@
             addBotMessage('', menuBubble);
 
             setTimeout(() => {
+                // Asignar funciones a los botones del menú
                 document.getElementById('btnLineal').onclick = () => {
                     addUserMessage('📊 Registrar Participación Lineal');
                     startLinealFlow();
+                };
+                document.getElementById('btnGaleria').onclick = () => {
+                    addUserMessage('🏬 Galería de Puntos de Venta');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás ver fotos de los PDV.');
+                    }, 800);
+                };
+                document.getElementById('btnProximosVencer').onclick = () => {
+                    addUserMessage('⚠️ Productos Próximos a Vencer');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás registrar productos próximos a vencer.');
+                    }, 800);
+                };
+                document.getElementById('btnAgotados').onclick = () => {
+                    addUserMessage('📦 Productos Agotados');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás registrar productos agotados.');
+                    }, 800);
+                };
+                document.getElementById('btnDescuentos').onclick = () => {
+                    addUserMessage('💰 Descuentos y Promociones');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás registrar descuentos.');
+                    }, 800);
+                };
+                document.getElementById('btnRegistrosVentas').onclick = () => {
+                    addUserMessage('📈 Registros de Ventas');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás registrar ventas.');
+                    }, 800);
+                };
+                document.getElementById('btnVozConsumidor').onclick = () => {
+                    addUserMessage('🗣️ Voz del Consumidor');
+                    showTyping();
+                    setTimeout(() => {
+                        hideTyping();
+                        addBotMessage('Función en desarrollo. Próximamente podrás capturar comentarios de consumidores.');
+                    }, 800);
                 };
                 document.getElementById('btnNuevoIngreso').onclick = () => location.reload();
                 document.getElementById('btnVerRespuestas').onclick = () => {
@@ -1037,6 +1204,7 @@
             }, 100);
         }
 
+        // Función para iniciar flujo lineal mejorado
         function startLinealFlow() {
             currentFlow = 'lineal';
             currentStep = 0;
@@ -1057,6 +1225,7 @@
             }, 800);
         }
 
+        // Función para procesar respuestas del flujo lineal
         function processLinealResponse(response) {
             showTyping();
 
@@ -1086,7 +1255,7 @@
                             setTimeout(() => {
                                 addBotMessage('', createInputBubble(
                                     'Escribe el nombre del producto competencia:',
-                                    'Ej: Corona, Heineken...',
+                                    'Ej: Corona, Heineken, Budweiser...',
                                     (producto) => {
                                         formDataLineal.producto = producto;
                                         currentStep = 2;
@@ -1103,13 +1272,21 @@
                         setTimeout(() => {
                             addBotMessage('', createInputBubble(
                                 '¿Cuántas caras/frentes tiene en el lineal?',
-                                'Ingresa un número...',
+                                'Ingresa solo números...',
                                 (numero) => {
-                                    formDataLineal.numeroFrente = numero;
-                                    addUserMessage(numero);
-                                    currentStep++;
-                                    processLinealResponse('numero_selected');
-                                }
+                                    // Validar que sea un número
+                                    if (!isNaN(numero) && numero.trim() !== '') {
+                                        formDataLineal.numeroFrente = numero.trim();
+                                        addUserMessage(numero);
+                                        currentStep++;
+                                        processLinealResponse('numero_selected');
+                                    } else {
+                                        addBotMessage('Por favor ingresa un número válido. 🔢');
+                                        currentStep = 2; // Volver al mismo paso
+                                        processLinealResponse('invalid_number');
+                                    }
+                                },
+                                'number'
                             ));
                         }, 600);
                         break;
@@ -1124,23 +1301,24 @@
             }, 800);
         }
 
+        // Función para mostrar confirmación lineal
         function showConfirmacionLineal() {
             const confirmBubble = document.createElement('div');
             confirmBubble.className = 'select-bubble';
 
             confirmBubble.innerHTML = `
-                <div class="select-bubble-text">Confirma los datos:</div>
-                <div style="background: rgba(255,255,255,0.3); padding: 10px; border-radius: 8px; margin: 10px 0; font-size: 0.85em;">
-                    <div style="margin-bottom: 5px;"><strong>Tipo:</strong> ${formDataLineal.tipoMarca}</div>
-                    <div style="margin-bottom: 5px;"><strong>Producto:</strong> ${formDataLineal.producto}</div>
-                    <div><strong>Frentes:</strong> ${formDataLineal.numeroFrente}</div>
+                <div class="select-bubble-text">📋 Confirma los datos de participación lineal:</div>
+                <div style="background: rgba(255,255,255,0.3); padding: 12px; border-radius: 8px; margin: 12px 0; font-size: 0.85em; line-height: 1.5;">
+                    <div style="margin-bottom: 6px;"><strong>🏷️ Tipo:</strong> ${formDataLineal.tipoMarca}</div>
+                    <div style="margin-bottom: 6px;"><strong>📦 Producto:</strong> ${formDataLineal.producto}</div>
+                    <div><strong>🔢 Frentes en lineal:</strong> ${formDataLineal.numeroFrente}</div>
                 </div>
                 <div class="menu-options">
                     <button class="menu-button" id="btnConfirmarLineal" style="background: rgba(37, 211, 102, 0.3); border-color: rgba(37, 211, 102, 0.5);">
-                        ✅ Sí, es correcto
+                        ✅ Sí, es correcto - Enviar
                     </button>
                     <button class="menu-button" id="btnCancelarLineal" style="background: rgba(244, 67, 54, 0.3); border-color: rgba(244, 67, 54, 0.5);">
-                        ❌ No, corregir
+                        ❌ No, corregir datos
                     </button>
                 </div>
             `;
@@ -1149,7 +1327,7 @@
 
             setTimeout(() => {
                 document.getElementById('btnConfirmarLineal').onclick = () => {
-                    addUserMessage('✅ Sí, es correcto');
+                    addUserMessage('✅ Sí, es correcto - Enviar');
                     submitFormLineal();
                 };
                 document.getElementById('btnCancelarLineal').onclick = () => {
@@ -1164,6 +1342,7 @@
             }, 100);
         }
 
+        // Función para enviar formulario lineal
         function submitFormLineal() {
             addBotMessage('Guardando participación lineal... ⏳');
 
@@ -1175,7 +1354,7 @@
                 document.getElementById('googleFormLineal').submit();
 
                 setTimeout(() => {
-                    addBotMessage('✅ ¡Participación lineal registrada!');
+                    addBotMessage('✅ ¡Participación lineal registrada exitosamente!');
                     
                     setTimeout(() => {
                         askForAnotherRegistro();
@@ -1184,18 +1363,19 @@
             }, 500);
         }
 
+        // Función para preguntar si desea registrar otro
         function askForAnotherRegistro() {
             const askBubble = document.createElement('div');
             askBubble.className = 'select-bubble';
 
             askBubble.innerHTML = `
-                <div class="select-bubble-text">¿Deseas registrar otra participación?</div>
+                <div class="select-bubble-text">¿Qué deseas hacer ahora?</div>
                 <div class="menu-options">
                     <button class="menu-button" id="btnSiOtro">
-                        ✅ Sí, registrar otro
+                        ✅ Sí, registrar otra participación
                     </button>
                     <button class="menu-button" id="btnNoMenu">
-                        🏠 No, ir al menú
+                        🏠 Volver al menú principal
                     </button>
                 </div>
             `;
@@ -1205,6 +1385,7 @@
             setTimeout(() => {
                 document.getElementById('btnSiOtro').onclick = () => {
                     addUserMessage('✅ Sí, registrar otro');
+                    // Resetear datos lineales
                     formDataLineal.tipoMarca = '';
                     formDataLineal.producto = '';
                     formDataLineal.numeroFrente = '';
@@ -1221,17 +1402,23 @@
             }, 100);
         }
 
-        setTimeout(() => {
-            addBotMessage('¡Hola! 👋 Soy tu asistente para registros en PDV.');
+        // Inicializar chat
+        function initChat() {
             setTimeout(() => {
-                addBotMessage('Puedo ayudarte con:<br>📍 Registro de ingreso (ubicación + selfie)<br>📊 Participación lineal de productos<br>📈 Consulta de respuestas');
+                addBotMessage('¡Hola! 👋 Soy tu asistente para registros en PDV.');
                 setTimeout(() => {
-                    addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:', (asesor) => {
-                        processIngresoResponse(asesor);
-                    }));
-                }, 1200);
-            }, 1000);
-        }, 500);
+                    addBotMessage('Puedo ayudarte con:<br>📍 Registro de ingreso (ubicación + selfie)<br>📊 Participación lineal de productos<br>📱 Gestión completa de PDV');
+                    setTimeout(() => {
+                        addBotMessage('', createSelect(asesores, 'Selecciona tu nombre...', 'Para comenzar, selecciona tu nombre:', (asesor) => {
+                            processIngresoResponse(asesor);
+                        }));
+                    }, 1200);
+                }, 1000);
+            }, 500);
+        }
+
+        // Iniciar aplicación
+        initChat();
     </script>
 </body>
 </html>
