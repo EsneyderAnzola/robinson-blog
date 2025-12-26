@@ -93,7 +93,6 @@
             overflow-y: auto;
             background: #f0f2f5;
             -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
         }
 
         .chat-messages::-webkit-scrollbar {
@@ -112,14 +111,8 @@
         }
 
         @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message-content {
@@ -166,7 +159,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin-top: 8px;
             border: 1px solid rgba(0,0,0,0.05);
-            max-width: 85%;
         }
 
         .bubble-title {
@@ -209,18 +201,18 @@
         }
 
         .select-dropdown {
-            position: fixed;
-            left: 12px;
-            right: 12px;
-            bottom: 80px;
+            position: absolute;
+            left: 0;
+            right: 0;
             background: white;
             border-radius: 16px;
             max-height: 0;
             overflow: hidden;
             transition: all 0.3s;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             z-index: 1000;
             opacity: 0;
+            margin-top: 5px;
         }
 
         .select-dropdown.active {
@@ -245,7 +237,7 @@
             background: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 0.95em;
             outline: none;
         }
 
@@ -262,6 +254,22 @@
         .select-option:hover {
             background: rgba(37, 211, 102, 0.1);
             transform: translateX(5px);
+        }
+
+        .capture-container {
+            background: white;
+            padding: 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 8px;
+        }
+
+        .capture-title {
+            font-size: 0.95em;
+            color: #111;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
         }
 
         .action-button {
@@ -297,6 +305,33 @@
 
         .action-button.skip-btn {
             background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        }
+
+        video {
+            width: 100%;
+            border-radius: 12px;
+            margin: 12px 0;
+            transform: scaleX(-1);
+            display: none;
+        }
+
+        .captured-photo {
+            width: 100%;
+            border-radius: 12px;
+            margin: 12px 0;
+            display: none;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .info-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
         }
 
         .menu-options {
@@ -374,7 +409,7 @@
             background: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 0.95em;
             outline: none;
         }
 
@@ -400,16 +435,6 @@
             transform: scale(0.98);
         }
 
-        .info-text {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 10px;
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
         @media (min-width: 768px) {
             body {
                 padding: 20px;
@@ -422,12 +447,6 @@
                 overflow: hidden;
                 box-shadow: 0 10px 40px rgba(0,0,0,0.15);
             }
-
-            .select-dropdown {
-                left: auto;
-                right: auto;
-                width: 100%;
-            }
         }
     </style>
 </head>
@@ -439,7 +458,7 @@
                 <div class="header-name">Asistente PDV Beer</div>
                 <div class="header-status">
                     <div class="status-dot"></div>
-                    en línea
+                    <span id="connectionStatus">inicializando...</span>
                 </div>
             </div>
         </div>
@@ -447,10 +466,15 @@
         <div class="chat-messages" id="chatMessages"></div>
     </div>
 
-    <iframe name="hidden_iframe_ingreso" style="display:none;"></iframe>
+    <!-- Elementos multimedia ocultos -->
+    <video id="videoStream" autoplay playsinline style="display:none;"></video>
+    <canvas id="photoCanvas" style="display:none;"></canvas>
+
+    <!-- Formularios ocultos -->
+    <iframe name="hidden_iframe_ingreso" id="hiddenIframeIngreso" style="display:none;"></iframe>
     <form id="googleFormIngreso" 
           action="https://docs.google.com/forms/d/e/1FAIpQLSc0Kt8C392ffQH6b5eFt-TE8-778mqqwb9tdWCt8XWqQfUgFg/formResponse" 
-          target="hidden_iframe_ingreso" 
+          target="hiddenIframeIngreso" 
           method="POST"
           style="display:none;">
         <input type="text" name="entry.1176318650" id="asesorField">
@@ -461,43 +485,193 @@
         <input type="text" name="entry.1281420665" id="confirmacionField" value="Sí, es correcta">
     </form>
 
-    <iframe name="hidden_iframe_lineal" style="display:none;"></iframe>
+    <iframe name="hidden_iframe_lineal" id="hiddenIframeLineal" style="display:none;"></iframe>
+    <!-- FORMULARIO LINEAL CON TODOS LOS CAMPOS OCULTOS -->
     <form id="googleFormLineal" 
           action="https://docs.google.com/forms/d/e/1FAIpQLScieYTjkAlXma8QLdmMQD2q-gcQb3h8fBWlw1kAWdHrLs8Vow/formResponse" 
-          target="hidden_iframe_lineal" 
+          target="hiddenIframeLineal" 
           method="POST"
           style="display:none;">
-        <input type="text" name="entry.293595922" id="asesorLinealField">
-        <input type="text" name="entry.1357513793" id="ciudadLinealField">
-        <input type="text" name="entry.1347251759" id="pdvLinealField">
+        <!-- Campos del asesor, ciudad y PDV (ocultos) -->
+        <input type="text" name="entry.293595922" id="linealAsesorField">
+        <input type="text" name="entry.1357513793" id="linealCiudadField">
+        <input type="text" name="entry.1347251759" id="linealPuntoVentaField">
+        
+        <!-- Campos que el usuario verá y completará -->
         <input type="text" name="entry.238753566" id="tipoMarcaField">
         <input type="text" name="entry.536323816" id="productoField">
         <input type="text" name="entry.857124037" id="numeroFrentesField">
         <input type="text" name="entry.1305667853" id="datosCorrectosField" value="Sí">
+        
+        <!-- Campos adicionales para marca competencia -->
+        <input type="text" name="entry.384259513" id="productoCompetenciaField">
+        <input type="text" name="entry.1918813643" id="frentesCompetenciaField">
+        <input type="text" name="entry.1870261210" id="confirmacionCompetenciaField" value="Sí">
     </form>
 
     <script>
+        // ========== CONFIGURACIÓN ==========
+        const API_KEY = 'TU_API_KEY_AQUI'; // Necesitarás obtener una API Key de Google Cloud
+        
+        // IDs de los Google Sheets
+        const SHEET_ASESORES = '185O1g8wAYZoQn3fiPkOOnVhauaDiTR_hC12f_34oxh4';
+        const SHEET_DATOS = '1RO0xo3-61sEiwEM0oHBXZiP90Zio8nJqUCvQsiSjneg';
+        
+        // Nombres de las hojas
+        const HOJA_USUARIOS = 'Usuarios';
+        const HOJA_PDV_CIUDADES = 'PDV_Ciudades';
+        const HOJA_LISTAS_ACTUALIZADAS = 'Listas_Actualizadas';
+
+        // ========== VARIABLES GLOBALES ==========
         let appState = {
-            asesorData: null,
-            asesoresList: [],
-            lineal: { tipoMarca: '', producto: '', numeroFrente: '', enviando: false },
+            // Estado del ingreso
+            ingreso: {
+                asesor: '',
+                ubicacion: '',
+                selfie: '',
+                ciudad: '',
+                puntoVenta: '',
+                completado: false
+            },
+            // Estado del lineal
+            lineal: {
+                asesor: '',
+                ciudad: '',
+                pdv: '',
+                tipoMarca: '',
+                producto: '',
+                numeroFrente: '',
+                enviando: false
+            },
+            // Datos cargados
+            datos: {
+                asesores: [],
+                ciudadesPDV: {},
+                listasActualizadas: {}
+            },
             currentStep: 0,
+            isProcessingPhoto: false,
             menuBloqueado: false
         };
 
         const chatMessages = document.getElementById('chatMessages');
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1RO0xo3-61sEiwEM0oHBXZiP90Zio8nJqUCvQsiSjneg/gviz/tq?tqx=out:json&sheet=Listas_Actualizadas';
+        const connectionStatus = document.getElementById('connectionStatus');
 
-        const productosMarcaPropia = [
-            'ANDINA 330 ml x 6', 'ANDINA 330 ml x 24', 'ANDINA ZERO 330 ml x 6',
-            'CLUB COLOMBIA DORADA 330 ml x 6', 'CLUB COLOMBIA DORADA 330 ml x 24',
-            'POKER 330 ml x 6', 'POKER 330 ml x 24', 'PILSEN 330 ml x 6',
-            'COSTEÑA 330 ml x 6', 'ÁGUILA 330 ml x 6', 'ÁGUILA LIGHT 330 ml x 6'
-        ];
+        // ========== FUNCIONES PARA CARGAR DATOS ==========
+        async function cargarDatosIniciales() {
+            try {
+                connectionStatus.textContent = 'cargando datos...';
+                
+                // 1. Cargar asesores iniciales
+                const urlAsesores = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ASESORES}/values/${HOJA_USUARIOS}!C:C?key=${API_KEY}`;
+                const respuestaAsesores = await fetch(urlAsesores);
+                const datosAsesores = await respuestaAsesores.json();
+                
+                if (datosAsesores.values && datosAsesores.values.length > 1) {
+                    appState.datos.asesores = datosAsesores.values
+                        .slice(1) // Saltar encabezado
+                        .map(row => row[0]?.trim())
+                        .filter(nombre => nombre && nombre !== '');
+                }
+                
+                // 2. Cargar datos de Listas_Actualizadas
+                const urlListas = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_DATOS}/values/${HOJA_LISTAS_ACTUALIZADAS}!A:Z?key=${API_KEY}`;
+                const respuestaListas = await fetch(urlListas);
+                const datosListas = await respuestaListas.json();
+                
+                if (datosListas.values && datosListas.values.length > 1) {
+                    procesarListasActualizadas(datosListas.values);
+                }
+                
+                // 3. Cargar ciudades y PDVs
+                const urlCiudades = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ASESORES}/values/${HOJA_PDV_CIUDADES}!A:B?key=${API_KEY}`;
+                const respuestaCiudades = await fetch(urlCiudades);
+                const datosCiudades = await respuestaCiudades.json();
+                
+                if (datosCiudades.values && datosCiudades.values.length > 1) {
+                    procesarCiudadesPDV(datosCiudades.values);
+                }
+                
+                connectionStatus.textContent = 'en línea';
+                console.log('Datos cargados exitosamente');
+                return true;
+                
+            } catch (error) {
+                console.error('Error cargando datos:', error);
+                connectionStatus.textContent = 'error conexión';
+                
+                // Datos de respaldo
+                appState.datos.asesores = ['Ana Lucia Calderon', 'Robinson Esneyder Zapata Anzola'];
+                appState.datos.listasActualizadas = {
+                    'Robinson Esneyder Zapata Anzola': {
+                        ciudad: 'Armenia',
+                        pdv: 'Si 4239 Super Inter Armenia Plaza'
+                    },
+                    'Ana Lucia Calderon': {
+                        ciudad: 'Armenia',
+                        pdv: 'St 355 Armenia Norte'
+                    }
+                };
+                
+                setTimeout(() => {
+                    connectionStatus.textContent = 'modo local';
+                }, 2000);
+                
+                return false;
+            }
+        }
 
+        function procesarListasActualizadas(datos) {
+            const encabezados = datos[0];
+            const indiceAsesor = encabezados.findIndex(h => 
+                h.toLowerCase().includes('asesor') || h.toLowerCase().includes('nombre')
+            );
+            const indiceCiudad = encabezados.findIndex(h => 
+                h.toLowerCase().includes('ciudad')
+            );
+            const indicePDV = encabezados.findIndex(h => 
+                h.toLowerCase().includes('punto') || h.toLowerCase().includes('pdv')
+            );
+            
+            for (let i = 1; i < datos.length; i++) {
+                const fila = datos[i];
+                if (fila.length > Math.max(indiceAsesor, indiceCiudad, indicePDV)) {
+                    const asesor = fila[indiceAsesor]?.trim();
+                    const ciudad = fila[indiceCiudad]?.trim();
+                    const pdv = fila[indicePDV]?.trim();
+                    
+                    if (asesor) {
+                        appState.datos.listasActualizadas[asesor] = {
+                            ciudad: ciudad || 'No especificada',
+                            pdv: pdv || 'No especificado'
+                        };
+                    }
+                }
+            }
+        }
+
+        function procesarCiudadesPDV(datos) {
+            for (let i = 1; i < datos.length; i++) {
+                const fila = datos[i];
+                if (fila.length >= 2) {
+                    const ciudad = fila[0]?.trim();
+                    const pdv = fila[1]?.trim();
+                    
+                    if (ciudad && pdv) {
+                        if (!appState.datos.ciudadesPDV[ciudad]) {
+                            appState.datos.ciudadesPDV[ciudad] = [];
+                        }
+                        appState.datos.ciudadesPDV[ciudad].push(pdv);
+                    }
+                }
+            }
+        }
+
+        // ========== FUNCIONES BÁSICAS ==========
         function getTime() {
             const now = new Date();
-            return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+            return now.getHours().toString().padStart(2, '0') + ':' + 
+                   now.getMinutes().toString().padStart(2, '0');
         }
 
         function scrollToBottom() {
@@ -573,35 +747,7 @@
             if (typing) typing.remove();
         }
 
-        async function loadAsesoresData() {
-            try {
-                const response = await fetch(SHEET_URL);
-                const text = await response.text();
-                const json = JSON.parse(text.substring(47).slice(0, -2));
-                
-                const rows = json.table.rows;
-                const asesoresMap = new Map();
-
-                rows.forEach((row, index) => {
-                    if (index === 0) return;
-                    const cells = row.c;
-                    if (cells && cells[1] && cells[1].v) {
-                        const nombre = cells[1].v;
-                        const ciudad = cells[4] ? cells[4].v : '';
-                        const pdv = cells[5] ? cells[5].v : '';
-                        
-                        asesoresMap.set(nombre, { nombre, ciudad, pdv });
-                    }
-                });
-
-                appState.asesoresList = Array.from(asesoresMap.values());
-                return true;
-            } catch (error) {
-                console.error('Error cargando asesores:', error);
-                return false;
-            }
-        }
-
+        // ========== COMPONENTES ==========
         function createSelect(options, placeholder, label, onSelect) {
             const bubble = document.createElement('div');
             bubble.className = 'bubble-container';
@@ -641,7 +787,6 @@
                         dropdown.classList.remove('active');
                         btn.classList.remove('active');
                         addUserMessage(opt);
-                        scrollToBottom();
                         if (onSelect) onSelect(opt);
                     };
                     optionsContainer.appendChild(optDiv);
@@ -657,7 +802,6 @@
                     if (!isOpen) {
                         dropdown.classList.add('active');
                         btn.classList.add('active');
-                        scrollToBottom();
                         setTimeout(() => search.focus(), 100);
                     }
                 };
@@ -717,69 +861,367 @@
             return bubble;
         }
 
+        // ========== FLUJO DE INGRESO ==========
         async function startIngresoFlow() {
+            appState.currentStep = 0;
+            appState.ingreso = {
+                asesor: '',
+                ubicacion: '',
+                selfie: '',
+                ciudad: '',
+                puntoVenta: '',
+                completado: false
+            };
+            
+            // Esperar datos si no están cargados
+            if (appState.datos.asesores.length === 0) {
+                showTyping();
+                setTimeout(async () => {
+                    hideTyping();
+                    await cargarDatosIniciales();
+                    mostrarSeleccionAsesorIngreso();
+                }, 800);
+            } else {
+                mostrarSeleccionAsesorIngreso();
+            }
+        }
+
+        function mostrarSeleccionAsesorIngreso() {
             showTyping();
-            
-            const loaded = await loadAsesoresData();
-            
             setTimeout(() => {
                 hideTyping();
+                addBotMessage('¡Bienvenido! Vamos a registrar tu ingreso al PDV.');
                 
-                if (!loaded || appState.asesoresList.length === 0) {
-                    addBotMessage('❌ Error cargando datos. Por favor recarga la página.');
+                if (appState.datos.asesores.length === 0) {
+                    addBotMessage('⚠️ No hay asesores disponibles.');
                     return;
                 }
                 
-                addBotMessage('🍺 ¡Hola! Vamos a registrar tu ingreso al PDV.');
-                
                 setTimeout(() => {
-                    const nombres = appState.asesoresList.map(a => a.nombre).sort();
                     addBotMessage('', createSelect(
-                        nombres,
+                        appState.datos.asesores,
                         'Selecciona tu nombre...',
                         '👤 Selecciona tu nombre:',
-                        (nombre) => handleAsesorSelected(nombre)
+                        (asesor) => handleSeleccionAsesorIngreso(asesor)
                     ));
                 }, 600);
-            }, 1000);
+            }, 800);
         }
 
-        function handleAsesorSelected(nombreAsesor) {
-            const asesor = appState.asesoresList.find(a => a.nombre === nombreAsesor);
-            
-            if (!asesor) {
-                addBotMessage('❌ Error: No se encontró la información del asesor.');
-                return;
-            }
-            
-            appState.asesorData = asesor;
+        function handleSeleccionAsesorIngreso(asesorNombre) {
+            appState.ingreso.asesor = asesorNombre;
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
                 
-                document.getElementById('asesorField').value = asesor.nombre;
-                document.getElementById('ubicacionField').value = 'Ubicación capturada';
-                document.getElementById('selfieField').value = 'Selfie capturada';
-                document.getElementById('ciudadField').value = asesor.ciudad;
-                document.getElementById('puntoVentaField').value = asesor.pdv;
+                addBotMessage(`✅ <strong>Asesor registrado:</strong> ${asesorNombre}`);
+                
+                // Mostrar selección de ciudad
+                const ciudades = Object.keys(appState.datos.ciudadesPDV);
+                if (ciudades.length > 0) {
+                    setTimeout(() => {
+                        addBotMessage('', createSelect(
+                            ciudades,
+                            'Selecciona tu ciudad...',
+                            '📍 Selecciona tu ciudad:',
+                            (ciudad) => handleSeleccionCiudad(ciudad)
+                        ));
+                    }, 600);
+                } else {
+                    // Si no hay ciudades, ir directamente a captura
+                    iniciarCapturaUbicacion();
+                }
+            }, 800);
+        }
 
+        function handleSeleccionCiudad(ciudad) {
+            appState.ingreso.ciudad = ciudad;
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                
+                const pdvs = appState.datos.ciudadesPDV[ciudad] || [];
+                
+                if (pdvs.length > 0) {
+                    setTimeout(() => {
+                        addBotMessage('', createSelect(
+                            pdvs,
+                            'Selecciona el PDV...',
+                            `🏪 Selecciona el punto de venta en ${ciudad}:`,
+                            (pdv) => handleSeleccionPDV(pdv)
+                        ));
+                    }, 600);
+                } else {
+                    // Si no hay PDVs, pedir que se escriba
+                    setTimeout(() => {
+                        addBotMessage('', createInputBubble(
+                            `Escribe el nombre del PDV en ${ciudad}:`,
+                            'Ej: Tienda La Economía...',
+                            (pdv) => handleSeleccionPDV(pdv)
+                        ));
+                    }, 600);
+                }
+            }, 800);
+        }
+
+        function handleSeleccionPDV(pdv) {
+            appState.ingreso.puntoVenta = pdv;
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                addBotMessage(`✅ <strong>PDV registrado:</strong> ${pdv}`);
+                
+                // Iniciar captura de ubicación y foto
+                setTimeout(() => {
+                    mostrarCapturaUbicacion();
+                }, 800);
+            }, 800);
+        }
+
+        function mostrarCapturaUbicacion() {
+            const captureContainer = document.createElement('div');
+            captureContainer.className = 'capture-container';
+            captureContainer.id = 'captureContainer';
+
+            captureContainer.innerHTML = `
+                <div class="capture-title">📍 Captura de ubicación y foto</div>
+                <div class="info-text">Primero captura tu ubicación GPS, luego puedes tomar una foto selfie.</div>
+                <button class="action-button" id="locationBtn">
+                    <span style="font-size:1.2em;">📍</span> Capturar ubicación
+                </button>
+                <button class="action-button camera-btn" id="cameraBtn" style="display:none;">
+                    <span style="font-size:1.2em;">📸</span> Abrir cámara
+                </button>
+                <button class="action-button skip-btn" id="skipPhotoBtn" style="display:none;">
+                    <span style="font-size:1.2em;">⏭️</span> Continuar sin foto
+                </button>
+                <div class="info-text" id="infoText"></div>
+            `;
+
+            addBotMessage('', captureContainer);
+
+            setTimeout(() => {
+                document.getElementById('locationBtn').onclick = capturarUbicacion;
+                document.getElementById('cameraBtn').onclick = abrirCamara;
+                document.getElementById('skipPhotoBtn').onclick = saltarFoto;
+            }, 100);
+        }
+
+        function capturarUbicacion() {
+            const btn = document.getElementById('locationBtn');
+            const infoText = document.getElementById('infoText');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Obteniendo...';
+            infoText.textContent = 'Solicitando permiso de ubicación...';
+
+            if (!navigator.geolocation) {
+                infoText.textContent = '❌ Tu dispositivo no soporta geolocalización';
+                appState.ingreso.ubicacion = 'No soportado';
+                mostrarOpcionesCamara();
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const coords = `${position.coords.latitude.toFixed(7)},${position.coords.longitude.toFixed(7)}`;
+                    appState.ingreso.ubicacion = coords;
+                    
+                    btn.innerHTML = '<span style="font-size:1.2em;">✅</span> Ubicación capturada';
+                    btn.style.background = 'linear-gradient(135deg, #128c7e 0%, #075e54 100%)';
+                    infoText.innerHTML = `
+                        ✅ <strong>Ubicación capturada</strong><br>
+                        📍 ${coords}
+                    `;
+                    
+                    mostrarOpcionesCamara();
+                },
+                (error) => {
+                    infoText.innerHTML = `⚠️ <strong>No se pudo obtener la ubicación.</strong>`;
+                    appState.ingreso.ubicacion = 'Error: ' + error.message;
+                    
+                    btn.disabled = false;
+                    btn.innerHTML = '<span style="font-size:1.2em;">📍</span> Reintentar';
+                    
+                    // Mostrar opciones de cámara de todas formas
+                    setTimeout(() => mostrarOpcionesCamara(), 1000);
+                },
+                { 
+                    enableHighAccuracy: true, 
+                    timeout: 20000, 
+                    maximumAge: 0 
+                }
+            );
+        }
+
+        function mostrarOpcionesCamara() {
+            setTimeout(() => {
+                document.getElementById('cameraBtn').style.display = 'block';
+                document.getElementById('skipPhotoBtn').style.display = 'block';
+                scrollToBottom();
+            }, 500);
+        }
+
+        async function abrirCamara() {
+            if (appState.isProcessingPhoto) return;
+            
+            const btn = document.getElementById('cameraBtn');
+            const video = document.getElementById('videoStream');
+            const infoText = document.getElementById('infoText');
+
+            try {
+                appState.isProcessingPhoto = true;
+                btn.disabled = true;
+                btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Iniciando...';
+                infoText.textContent = 'Solicitando permiso de cámara...';
+
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                });
+
+                video.srcObject = stream;
+                
+                // Crear contenedor para la cámara
+                const cameraContainer = document.createElement('div');
+                cameraContainer.className = 'capture-container';
+                cameraContainer.innerHTML = `
+                    <div class="capture-title">📸 Toma tu selfie</div>
+                    <video id="videoPreview" autoplay playsinline style="width:100%; border-radius:12px; margin:12px 0; transform:scaleX(-1);"></video>
+                    <button class="action-button" id="capturePhotoBtn">
+                        <span style="font-size:1.2em;">📷</span> Tomar foto
+                    </button>
+                    <img id="capturedPhoto" class="captured-photo" style="display:none;">
+                    <div class="info-text" id="cameraInfoText"></div>
+                `;
+                
+                addBotMessage('', cameraContainer);
+                
+                setTimeout(() => {
+                    const videoPreview = document.getElementById('videoPreview');
+                    videoPreview.srcObject = stream;
+                    
+                    document.getElementById('capturePhotoBtn').onclick = () => tomarFoto(stream);
+                }, 100);
+                
+                // Ocultar botones anteriores
+                btn.style.display = 'none';
+                document.getElementById('skipPhotoBtn').style.display = 'none';
+
+            } catch (error) {
+                infoText.innerHTML = `
+                    ❌ <strong>No se pudo acceder a la cámara.</strong><br>
+                    Puedes continuar sin foto.
+                `;
+                
+                btn.disabled = false;
+                btn.innerHTML = '<span style="font-size:1.2em;">📸</span> Intentar de nuevo';
+                appState.isProcessingPhoto = false;
+            }
+        }
+
+        async function tomarFoto(stream) {
+            const btn = document.getElementById('capturePhotoBtn');
+            const video = document.getElementById('videoPreview');
+            const canvas = document.getElementById('photoCanvas');
+            const capturedImg = document.getElementById('capturedPhoto');
+            const infoText = document.getElementById('cameraInfoText');
+
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<span style="font-size:1.2em;">⏳</span> Capturando...';
+                infoText.textContent = 'Capturando foto...';
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Detener cámara
+                stream.getTracks().forEach(track => track.stop());
+                
+                // Simular subida exitosa
+                appState.ingreso.selfie = 'Selfie capturada - ' + new Date().toLocaleString();
+                
+                infoText.textContent = '✅ Foto capturada correctamente';
+                btn.style.display = 'none';
+                
+                // Continuar con el flujo
+                setTimeout(() => {
+                    finalizarIngreso();
+                }, 1500);
+
+            } catch (error) {
+                infoText.innerHTML = '⚠️ Error al capturar la foto. Continuando sin foto.';
+                appState.ingreso.selfie = 'Error al capturar: ' + error.message;
+                
+                setTimeout(() => {
+                    finalizarIngreso();
+                }, 1500);
+            } finally {
+                appState.isProcessingPhoto = false;
+            }
+        }
+
+        function saltarFoto() {
+            appState.ingreso.selfie = 'No capturada - Usuario decidió saltar';
+            finalizarIngreso();
+        }
+
+        function finalizarIngreso() {
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                
+                // Llenar formulario
+                document.getElementById('asesorField').value = appState.ingreso.asesor;
+                document.getElementById('ubicacionField').value = appState.ingreso.ubicacion;
+                document.getElementById('selfieField').value = appState.ingreso.selfie;
+                document.getElementById('ciudadField').value = appState.ingreso.ciudad;
+                document.getElementById('puntoVentaField').value = appState.ingreso.puntoVenta;
+
+                // Enviar formulario
                 document.getElementById('googleFormIngreso').submit();
 
                 addBotMessage(`
-                    ✅ <strong>¡Ingreso registrado!</strong><br><br>
+                    ✅ <strong>¡Ingreso registrado exitosamente!</strong><br><br>
                     📋 <strong>Resumen:</strong><br>
-                    👤 ${asesor.nombre}<br>
-                    📍 ${asesor.ciudad}<br>
-                    🏪 ${asesor.pdv}
+                    👤 Asesor: ${appState.ingreso.asesor}<br>
+                    📍 Ciudad: ${appState.ingreso.ciudad}<br>
+                    🏪 PDV: ${appState.ingreso.puntoVenta}<br>
+                    📸 Selfie: ${appState.ingreso.selfie.includes('No capturada') ? 'No capturada' : 'Capturada'}
                 `);
                 
-                setTimeout(() => showMainMenu(), 1500);
+                appState.ingreso.completado = true;
+                
+                // Preguntar qué desea hacer
+                setTimeout(() => {
+                    mostrarMenuPrincipal();
+                }, 1500);
             }, 1500);
         }
 
+        // ========== FLUJO LINEAL ==========
         function startLinealFlow() {
-            appState.lineal = { tipoMarca: '', producto: '', numeroFrente: '', enviando: false };
+            // Resetear estado
+            appState.lineal = {
+                asesor: '',
+                ciudad: '',
+                pdv: '',
+                tipoMarca: '',
+                producto: '',
+                numeroFrente: '',
+                enviando: false
+            };
             appState.currentStep = 0;
             appState.menuBloqueado = true;
             
@@ -788,99 +1230,180 @@
                 hideTyping();
                 addBotMessage('📊 <strong>Registro de Participación Lineal</strong>');
                 
+                // Obtener lista de asesores desde Listas_Actualizadas
+                const asesoresLineal = Object.keys(appState.datos.listasActualizadas);
+                
+                if (asesoresLineal.length === 0) {
+                    addBotMessage('⚠️ No hay asesores disponibles para lineal.');
+                    appState.menuBloqueado = false;
+                    return;
+                }
+                
                 setTimeout(() => {
                     addBotMessage('', createSelect(
-                        ['MARCA PROPIA', 'MARCA COMPETENCIA'],
-                        'Selecciona el tipo...',
-                        '🏷️ <strong>Paso 1:</strong> Tipo de marca:',
-                        (tipo) => handleLinealStep1(tipo)
+                        asesoresLineal,
+                        'Selecciona el asesor...',
+                        '👤 <strong>Paso 1:</strong> Selecciona el asesor:',
+                        (asesor) => handleSeleccionAsesorLineal(asesor)
                     ));
                 }, 600);
             }, 800);
         }
 
-        function handleLinealStep1(tipo) {
+        function handleSeleccionAsesorLineal(asesorNombre) {
+            // Obtener ciudad y PDV automáticamente de Listas_Actualizadas
+            const infoAsesor = appState.datos.listasActualizadas[asesorNombre] || {
+                ciudad: 'No encontrada',
+                pdv: 'No encontrado'
+            };
+            
+            appState.lineal.asesor = asesorNombre;
+            appState.lineal.ciudad = infoAsesor.ciudad;
+            appState.lineal.pdv = infoAsesor.pdv;
+            
+            showTyping();
+            setTimeout(() => {
+                hideTyping();
+                
+                addBotMessage(`
+                    ✅ <strong>Asesor registrado:</strong> ${asesorNombre}<br>
+                    📍 <strong>Ciudad:</strong> ${infoAsesor.ciudad}<br>
+                    🏪 <strong>PDV:</strong> ${infoAsesor.pdv}
+                `);
+                
+                // Continuar con tipo de marca
+                setTimeout(() => {
+                    addBotMessage('', createSelect(
+                        ['MARCA PROPIA', 'MARCA COMPETENCIA'],
+                        'Selecciona el tipo...',
+                        '🏷️ <strong>Paso 2:</strong> Tipo de marca:',
+                        (tipo) => handleTipoMarca(tipo)
+                    ));
+                }, 800);
+            }, 800);
+        }
+
+        function handleTipoMarca(tipo) {
             appState.lineal.tipoMarca = tipo;
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
                 
+                addBotMessage(`✅ <strong>Tipo de marca:</strong> ${tipo}`);
+                
                 if (tipo === 'MARCA PROPIA') {
-                    addBotMessage('✅ Marca propia seleccionada');
+                    const productosMarcaPropia = [
+                        'ANDINA 330 ml x 6', 'ANDINA 330 ml x 24', 'ANDINA ZERO 330 ml x 6',
+                        'CLUB COLOMBIA DORADA 330 ml x 6', 'CLUB COLOMBIA DORADA 330 ml x 24',
+                        'POKER 330 ml x 6', 'POKER 330 ml x 24', 'PILSEN 330 ml x 6',
+                        'COSTEÑA 330 ml x 6', 'ÁGUILA 330 ml x 6', 'ÁGUILA LIGHT 330 ml x 6'
+                    ];
                     
                     setTimeout(() => {
                         addBotMessage('', createSelect(
                             productosMarcaPropia,
-                            'Selecciona la referencia...',
-                            '📦 <strong>Paso 2:</strong> Selecciona la referencia:',
-                            (producto) => handleLinealStep2(producto)
+                            'Selecciona el producto...',
+                            '📦 <strong>Paso 3:</strong> Selecciona el producto:',
+                            (producto) => handleProducto(producto)
                         ));
                     }, 600);
                 } else {
-                    addBotMessage('✅ Marca competencia seleccionada');
-                    
                     setTimeout(() => {
                         addBotMessage('', createInputBubble(
-                            '📝 <strong>Paso 2:</strong> Escribe el producto competencia:',
-                            'Ej: Corona, Heineken...',
-                            (producto) => handleLinealStep2(producto)
+                            '📝 <strong>Paso 3:</strong> Escribe el producto competencia:',
+                            'Ej: Corona, Heineken, Budweiser...',
+                            (producto) => handleProductoCompetencia(producto)
                         ));
                     }, 600);
                 }
             }, 800);
         }
 
-        function handleLinealStep2(producto) {
+        function handleProducto(producto) {
             appState.lineal.producto = producto;
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
-                addBotMessage('✅ Referencia registrada');
+                
+                addBotMessage(`✅ <strong>Producto registrado:</strong> ${producto}`);
                 
                 setTimeout(() => {
                     addBotMessage('', createInputBubble(
-                        '🔢 <strong>Paso 3:</strong> Cantidad de caras/frentes:',
-                        'Solo números...',
-                        (numero) => handleLinealStep3(numero),
+                        '🔢 <strong>Paso 4:</strong> Número de frentes:',
+                        'Ingresa solo números...',
+                        (numero) => handleNumeroFrentes(numero),
                         'number'
                     ));
                 }, 600);
             }, 800);
         }
 
-        function handleLinealStep3(numero) {
-            const num = parseInt(numero);
-            if (isNaN(num) || num <= 0) {
-                addBotMessage('❌ Ingresa un número válido mayor a 0.');
-                setTimeout(() => {
-                    addBotMessage('', createInputBubble(
-                        '🔢 <strong>Paso 3:</strong> Cantidad de caras/frentes:',
-                        'Solo números...',
-                        (numero) => handleLinealStep3(numero),
-                        'number'
-                    ));
-                }, 600);
-                return;
-            }
-            
-            appState.lineal.numeroFrente = numero;
+        function handleProductoCompetencia(producto) {
+            appState.lineal.producto = producto;
             
             showTyping();
             setTimeout(() => {
                 hideTyping();
-                showConfirmacionLineal();
+                
+                addBotMessage(`✅ <strong>Producto competencia:</strong> ${producto}`);
+                
+                setTimeout(() => {
+                    addBotMessage('', createInputBubble(
+                        '🔢 <strong>Paso 4:</strong> Número de frentes:',
+                        'Ingresa solo números...',
+                        (numero) => handleNumeroFrentesCompetencia(numero),
+                        'number'
+                    ));
+                }, 600);
             }, 800);
         }
 
-        function showConfirmacionLineal() {
+        function handleNumeroFrentes(numero) {
+            if (!isNaN(numero) && numero.trim() !== '' && parseInt(numero) > 0) {
+                appState.lineal.numeroFrente = numero.trim();
+                
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    mostrarConfirmacionLineal();
+                }, 800);
+            } else {
+                addBotMessage('❌ Por favor ingresa un número válido mayor a 0.');
+            }
+        }
+
+        function handleNumeroFrentesCompetencia(numero) {
+            if (!isNaN(numero) && numero.trim() !== '' && parseInt(numero) > 0) {
+                appState.lineal.numeroFrente = numero.trim();
+                
+                showTyping();
+                setTimeout(() => {
+                    hideTyping();
+                    mostrarConfirmacionLinealCompetencia();
+                }, 800);
+            } else {
+                addBotMessage('❌ Por favor ingresa un número válido mayor a 0.');
+            }
+        }
+
+        function mostrarConfirmacionLineal() {
             const confirmBubble = document.createElement('div');
             confirmBubble.className = 'bubble-container';
 
             confirmBubble.innerHTML = `
-                <div class="bubble-title">📋 <strong>Paso 4:</strong> Confirma los datos</div>
+                <div class="bubble-title">📋 <strong>Paso 5:</strong> Confirma los datos</div>
                 <div style="background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(37, 211, 102, 0.2);">
+                    <div style="margin-bottom: 10px;">
+                        <strong>👤 Asesor:</strong> ${appState.lineal.asesor}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>📍 Ciudad:</strong> ${appState.lineal.ciudad}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>🏪 PDV:</strong> ${appState.lineal.pdv}
+                    </div>
                     <div style="margin-bottom: 10px;">
                         <strong>🏷️ Tipo:</strong> ${appState.lineal.tipoMarca}
                     </div>
@@ -908,56 +1431,115 @@
 
             setTimeout(() => {
                 document.getElementById('btnConfirmarLineal').onclick = () => {
-                    if (appState.lineal.enviando) return;
-                    appState.lineal.enviando = true;
-                    submitFormLineal();
+                    enviarFormularioLineal();
                 };
                 
                 document.getElementById('btnCorregirLineal').onclick = () => {
-                    const messages = Array.from(document.querySelectorAll('.message'));
+                    // Volver al inicio del flujo lineal
+                    const messages = document.querySelectorAll('.message');
                     for (let i = messages.length - 1; i >= 0; i--) {
-                        const msg = messages[i];
-                        if (msg.textContent.includes('Participación Lineal') || 
-                            msg.textContent.includes('Tipo de marca') ||
-                            msg.textContent.includes('seleccionada') ||
-                            msg.textContent.includes('Referencia') ||
-                            msg.textContent.includes('Frentes') ||
-                            msg.textContent.includes('Confirma')) {
-                            msg.remove();
+                        if (messages[i].textContent.includes('Registro de Participación Lineal')) {
+                            break;
                         }
+                        messages[i].remove();
                     }
                     startLinealFlow();
                 };
             }, 100);
         }
 
-        function submitFormLineal() {
+        function mostrarConfirmacionLinealCompetencia() {
+            const confirmBubble = document.createElement('div');
+            confirmBubble.className = 'bubble-container';
+
+            confirmBubble.innerHTML = `
+                <div class="bubble-title">📋 <strong>Paso 5:</strong> Confirma los datos</div>
+                <div style="background: rgba(37, 211, 102, 0.1); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid rgba(37, 211, 102, 0.2);">
+                    <div style="margin-bottom: 10px;">
+                        <strong>👤 Asesor:</strong> ${appState.lineal.asesor}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>📍 Ciudad:</strong> ${appState.lineal.ciudad}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>🏪 PDV:</strong> ${appState.lineal.pdv}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>🏷️ Tipo:</strong> ${appState.lineal.tipoMarca}
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>📦 Producto:</strong> ${appState.lineal.producto}
+                    </div>
+                    <div>
+                        <strong>🔢 Frentes:</strong> ${appState.lineal.numeroFrente}
+                    </div>
+                </div>
+                <div style="margin-bottom: 12px; font-size: 0.9em; color: #666;">
+                    ¿Los datos son correctos?
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="action-button" id="btnConfirmarLinealCompetencia" style="flex:1;">
+                        ✅ Sí, enviar
+                    </button>
+                    <button class="action-button skip-btn" id="btnCorregirLinealCompetencia" style="flex:1;">
+                        ❌ No, corregir
+                    </button>
+                </div>
+            `;
+
+            addBotMessage('', confirmBubble);
+
+            setTimeout(() => {
+                document.getElementById('btnConfirmarLinealCompetencia').onclick = () => {
+                    enviarFormularioLinealCompetencia();
+                };
+                
+                document.getElementById('btnCorregirLinealCompetencia').onclick = () => {
+                    // Volver al inicio del flujo lineal
+                    const messages = document.querySelectorAll('.message');
+                    for (let i = messages.length - 1; i >= 0; i--) {
+                        if (messages[i].textContent.includes('Registro de Participación Lineal')) {
+                            break;
+                        }
+                        messages[i].remove();
+                    }
+                    startLinealFlow();
+                };
+            }, 100);
+        }
+
+        function enviarFormularioLineal() {
+            if (appState.lineal.enviando) return;
+            appState.lineal.enviando = true;
+            
             showTyping();
             
             setTimeout(() => {
                 hideTyping();
                 
-                if (!appState.asesorData) {
-                    addBotMessage('❌ Error: No hay datos del asesor. Reinicia el flujo.');
-                    appState.menuBloqueado = false;
-                    return;
-                }
-                
-                document.getElementById('asesorLinealField').value = appState.asesorData.nombre;
-                document.getElementById('ciudadLinealField').value = appState.asesorData.ciudad;
-                document.getElementById('pdvLinealField').value = appState.asesorData.pdv;
+                // Llenar todos los campos del formulario lineal
+                document.getElementById('linealAsesorField').value = appState.lineal.asesor;
+                document.getElementById('linealCiudadField').value = appState.lineal.ciudad;
+                document.getElementById('linealPuntoVentaField').value = appState.lineal.pdv;
                 document.getElementById('tipoMarcaField').value = appState.lineal.tipoMarca;
                 document.getElementById('productoField').value = appState.lineal.producto;
                 document.getElementById('numeroFrentesField').value = appState.lineal.numeroFrente;
+                document.getElementById('datosCorrectosField').value = 'Sí';
+                
+                // Limpiar campos de competencia si no se usan
+                document.getElementById('productoCompetenciaField').value = '';
+                document.getElementById('frentesCompetenciaField').value = '';
+                document.getElementById('confirmacionCompetenciaField').value = '';
 
+                // Enviar formulario
                 document.getElementById('googleFormLineal').submit();
 
                 addBotMessage(`
                     ✅ <strong>¡Participación lineal registrada!</strong><br><br>
                     📋 <strong>Datos enviados:</strong><br>
-                    👤 ${appState.asesorData.nombre}<br>
-                    📍 ${appState.asesorData.ciudad}<br>
-                    🏪 ${appState.asesorData.pdv}<br>
+                    👤 Asesor: ${appState.lineal.asesor}<br>
+                    📍 Ciudad: ${appState.lineal.ciudad}<br>
+                    🏪 PDV: ${appState.lineal.pdv}<br>
                     🏷️ Tipo: ${appState.lineal.tipoMarca}<br>
                     📦 Producto: ${appState.lineal.producto}<br>
                     🔢 Frentes: ${appState.lineal.numeroFrente}
@@ -965,6 +1547,7 @@
                 
                 appState.menuBloqueado = false;
                 
+                // Preguntar qué hacer
                 setTimeout(() => {
                     const askBubble = document.createElement('div');
                     askBubble.className = 'bubble-container';
@@ -983,14 +1566,88 @@
                     addBotMessage('', askBubble);
                     
                     setTimeout(() => {
-                        document.getElementById('btnOtroRegistro').onclick = () => startLinealFlow();
-                        document.getElementById('btnVolverMenu').onclick = () => showMainMenu();
+                        document.getElementById('btnOtroRegistro').onclick = () => {
+                            startLinealFlow();
+                        };
+                        document.getElementById('btnVolverMenu').onclick = () => {
+                            mostrarMenuPrincipal();
+                        };
                     }, 100);
                 }, 1000);
             }, 1500);
         }
 
-        function showMainMenu() {
+        function enviarFormularioLinealCompetencia() {
+            if (appState.lineal.enviando) return;
+            appState.lineal.enviando = true;
+            
+            showTyping();
+            
+            setTimeout(() => {
+                hideTyping();
+                
+                // Llenar todos los campos del formulario lineal
+                document.getElementById('linealAsesorField').value = appState.lineal.asesor;
+                document.getElementById('linealCiudadField').value = appState.lineal.ciudad;
+                document.getElementById('linealPuntoVentaField').value = appState.lineal.pdv;
+                document.getElementById('tipoMarcaField').value = appState.lineal.tipoMarca;
+                document.getElementById('productoCompetenciaField').value = appState.lineal.producto;
+                document.getElementById('frentesCompetenciaField').value = appState.lineal.numeroFrente;
+                document.getElementById('confirmacionCompetenciaField').value = 'Sí';
+                
+                // Limpiar campos de marca propia si no se usan
+                document.getElementById('productoField').value = '';
+                document.getElementById('numeroFrentesField').value = '';
+                document.getElementById('datosCorrectosField').value = '';
+
+                // Enviar formulario
+                document.getElementById('googleFormLineal').submit();
+
+                addBotMessage(`
+                    ✅ <strong>¡Participación lineal registrada!</strong><br><br>
+                    📋 <strong>Datos enviados:</strong><br>
+                    👤 Asesor: ${appState.lineal.asesor}<br>
+                    📍 Ciudad: ${appState.lineal.ciudad}<br>
+                    🏪 PDV: ${appState.lineal.pdv}<br>
+                    🏷️ Tipo: ${appState.lineal.tipoMarca}<br>
+                    📦 Producto: ${appState.lineal.producto}<br>
+                    🔢 Frentes: ${appState.lineal.numeroFrente}
+                `);
+                
+                appState.menuBloqueado = false;
+                
+                // Preguntar qué hacer
+                setTimeout(() => {
+                    const askBubble = document.createElement('div');
+                    askBubble.className = 'bubble-container';
+                    askBubble.innerHTML = `
+                        <div class="bubble-title">¿Qué deseas hacer ahora?</div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button class="action-button" id="btnOtroRegistroComp" style="flex:1;">
+                                📊 Registrar otro
+                            </button>
+                            <button class="action-button camera-btn" id="btnVolverMenuComp" style="flex:1;">
+                                🏠 Menú principal
+                            </button>
+                        </div>
+                    `;
+                    
+                    addBotMessage('', askBubble);
+                    
+                    setTimeout(() => {
+                        document.getElementById('btnOtroRegistroComp').onclick = () => {
+                            startLinealFlow();
+                        };
+                        document.getElementById('btnVolverMenuComp').onclick = () => {
+                            mostrarMenuPrincipal();
+                        };
+                    }, 100);
+                }, 1000);
+            }, 1500);
+        }
+
+        // ========== MENÚ PRINCIPAL ==========
+        function mostrarMenuPrincipal() {
             appState.menuBloqueado = false;
             
             const menuBubble = document.createElement('div');
@@ -999,9 +1656,9 @@
             menuBubble.innerHTML = `
                 <div class="bubble-title">📱 Menú Principal</div>
                 <div class="info-text" style="margin-bottom: 15px;">
-                    Selecciona una opción:
+                    ¿Qué deseas reportar hoy?
                 </div>
-                <div class="menu-options">
+                <div class="menu-options" id="menuOptions">
                     <button class="menu-button" id="btnLineal">
                         <span style="font-size:1.2em;">📊</span>
                         <div>
@@ -1054,8 +1711,8 @@
                     <button class="menu-button" id="btnNuevoIngreso">
                         <span style="font-size:1.2em;">🔄</span>
                         <div>
-                            <strong>Nuevo Ingreso</strong><br>
-                            <small style="font-size:0.8em; color:#666;">Registrar nuevo ingreso PDV</small>
+                            <strong>Nuevo Ingreso PDV</strong><br>
+                            <small style="font-size:0.8em; color:#666;">Registro inicial en PDV</small>
                         </div>
                     </button>
                 </div>
@@ -1064,7 +1721,7 @@
             addBotMessage('', menuBubble);
 
             setTimeout(() => {
-                const handlers = {
+                const actions = {
                     btnLineal: () => {
                         if (appState.menuBloqueado) return;
                         addUserMessage('📊 Participación Lineal');
@@ -1075,8 +1732,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Galería PDV</strong><br><br>Próximamente podrás subir y ver fotos.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Galería PDV</strong><br><br>Próximamente podrás subir y ver fotos de puntos de venta.');
                         }, 800);
                     },
                     btnProximosVencer: () => {
@@ -1084,8 +1740,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Próximos a Vencer</strong><br><br>Próximamente disponible.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Próximos a Vencer</strong><br><br>Próximamente podrás registrar productos con fechas cercanas.');
                         }, 800);
                     },
                     btnAgotados: () => {
@@ -1093,8 +1748,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Productos Agotados</strong><br><br>Próximamente disponible.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Productos Agotados</strong><br><br>Próximamente podrás reportar inventario agotado.');
                         }, 800);
                     },
                     btnDescuentos: () => {
@@ -1102,8 +1756,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Descuentos</strong><br><br>Próximamente disponible.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Descuentos</strong><br><br>Próximamente podrás registrar promociones activas.');
                         }, 800);
                     },
                     btnRegistrosVentas: () => {
@@ -1111,8 +1764,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Registro de Ventas</strong><br><br>Próximamente disponible.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Registro de Ventas</strong><br><br>Próximamente podrás capturar ventas diarias.');
                         }, 800);
                     },
                     btnVozConsumidor: () => {
@@ -1120,8 +1772,7 @@
                         showTyping();
                         setTimeout(() => {
                             hideTyping();
-                            addBotMessage('🔧 <strong>Voz del Consumidor</strong><br><br>Próximamente disponible.');
-                            setTimeout(() => showMainMenu(), 2000);
+                            addBotMessage('🔧 <strong>Voz del Consumidor</strong><br><br>Próximamente podrás capturar feedback de clientes.');
                         }, 800);
                     },
                     btnNuevoIngreso: () => {
@@ -1131,26 +1782,32 @@
                     }
                 };
 
-                Object.keys(handlers).forEach(id => {
+                Object.keys(actions).forEach(id => {
                     const btn = document.getElementById(id);
-                    if (btn) btn.onclick = handlers[id];
+                    if (btn) btn.onclick = actions[id];
                 });
             }, 100);
         }
 
+        // ========== INICIALIZACIÓN ==========
         async function initChat() {
+            addBotMessage(`
+                🍺 <strong>¡Bienvenido al Asistente PDV Beer!</strong><br><br>
+                Sistema integral para registro de puntos de venta.
+            `);
+            
+            // Cargar datos iniciales
+            await cargarDatosIniciales();
+            
             setTimeout(() => {
-                addBotMessage(`
-                    🍺 <strong>¡Hola!</strong><br>
-                    Soy tu asistente para registros en PDV Beer.<br><br>
-                    <em>Cargando datos...</em>
-                `);
-                
+                // Iniciar flujo de ingreso
                 startIngresoFlow();
-            }, 500);
+            }, 1000);
         }
 
+        // Iniciar cuando cargue la página
         window.addEventListener('DOMContentLoaded', initChat);
+
     </script>
 </body>
 </html>
